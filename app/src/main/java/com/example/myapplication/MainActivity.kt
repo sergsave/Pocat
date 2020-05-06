@@ -1,30 +1,52 @@
 package com.example.myapplication
 
-import android.app.Activity
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
 import android.Manifest
+//import android.R
+//import android.R.layout
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.ComponentName
 import android.content.Context
-import android.content.Context.*
-
+import android.content.Intent
+import android.content.ServiceConnection
+import android.content.pm.PackageManager
+import android.media.MediaPlayer
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
-import android.content.pm.PackageManager
-import android.content.Intent
-import android.media.MediaPlayer
-import android.os.VibrationEffect
-import android.os.VibrationEffect.*
+import android.os.Bundle
+import android.os.IBinder
+import android.os.VibrationEffect.createWaveform
 import android.os.Vibrator
-import android.view.MotionEvent
-import android.view.MotionEvent.*
-
+import android.os.Handler
+import android.os.Message
+import android.view.MotionEvent.ACTION_MOVE
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.example.myapplication.MusicWatcher.WatcherBinder
 import kotlinx.android.synthetic.main.activity_main.*
-//import com.example.myProject.R;
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ServiceConnection {
 
     private var mediaPlayer : MediaPlayer? = null
+
+//    @SuppressLint("HandlerLeak")
+    var handler: Handler = object : Handler() {
+        override fun handleMessage(msg: Message) {
+            if (msg.what === 1) {
+                val vibrator =
+                    getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+                vibrator.vibrate(
+                    createWaveform(
+                        longArrayOf(20), intArrayOf(
+                            msg.obj as Int
+                        ), -1
+                    )
+                )
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,12 +98,30 @@ class MainActivity : AppCompatActivity() {
         image_view.setOnTouchListener { _, event ->
             if(event.getAction() == ACTION_MOVE) {
                 playAudio()
-                vibrate()
+//                vibrate()
             }
             true
         }
 
+        requestPermission()
+        bindService(
+            Intent(this, MusicWatcher::class.java),
+            this,
+            Context.BIND_AUTO_CREATE
+        )
     }
+
+    override fun onServiceConnected(name: ComponentName?, service: IBinder) {
+        val service1 = service as WatcherBinder
+        service1.service.setListener { max: Int ->
+            val message = Message()
+            message.what = 1
+            message.obj = max
+            handler.sendMessage(message)
+        }
+    }
+
+    override fun onServiceDisconnected(name: ComponentName?) {}
 
     private fun playAudio() {
         if(mediaPlayer?.isPlaying() ?: false) {
@@ -99,6 +139,27 @@ class MainActivity : AppCompatActivity() {
                 vibrator.vibrate(createWaveform(pattern, -1)) // New vibrate method for API Level 26 or higher
             } else {
                 vibrator.vibrate(pattern, -1) // Vibrate method for below API Level 26
+            }
+        }
+    }
+
+    private fun requestPermission() {
+        val permissions = arrayOf(
+            Manifest.permission.RECORD_AUDIO //音频
+        )
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.RECORD_AUDIO
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                    this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
+            ) {
+                Toast.makeText(this, "用户曾拒绝xxxx", Toast.LENGTH_SHORT).show()
+            } else {
+                ActivityCompat.requestPermissions(this, permissions, PERMISSION_RECORD_CODE)
             }
         }
     }
@@ -124,6 +185,8 @@ class MainActivity : AppCompatActivity() {
         private val PERMISSION_CODE = 1001;
 
         private val SOUND_PICK_CODE = 1002;
+
+        private val PERMISSION_RECORD_CODE = 1003;
     }
 
     //handle requested permission result
