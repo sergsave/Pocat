@@ -14,7 +14,6 @@ import static android.content.ContentValues.TAG;
 
 public class MusicWatcher extends Service {
 
-
     public class WatcherBinder extends Binder {
         public MusicWatcher getService() {
             return MusicWatcher.this;

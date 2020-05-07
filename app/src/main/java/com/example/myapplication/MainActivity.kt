@@ -1,24 +1,17 @@
 package com.example.myapplication
 
-import android.Manifest
 //import android.R
 //import android.R.layout
-import android.annotation.SuppressLint
+import android.Manifest
 import android.app.Activity
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
+import android.os.*
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
-import android.os.Bundle
-import android.os.IBinder
 import android.os.VibrationEffect.createWaveform
-import android.os.Vibrator
-import android.os.Handler
-import android.os.Message
+import android.util.Log
 import android.view.MotionEvent.ACTION_MOVE
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -37,13 +30,15 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
             if (msg.what === 1) {
                 val vibrator =
                     getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-                vibrator.vibrate(
-                    createWaveform(
-                        longArrayOf(20), intArrayOf(
-                            msg.obj as Int
-                        ), -1
-                    )
-                )
+//                val t = vibrator.hasAmplitudeControl()
+                Log.i(ContentValues.TAG, (msg.obj as Int).toString())
+
+                val volume = msg.obj as Int
+                if (volume > 225) {
+                    vibrator.vibrate(15)
+                }
+//                vibrator.vibrate(longArrayOf(20), -1)
+//                vibrator.vibrate(createWaveform(longArrayOf(20), intArrayOf(msg.obj as Int), -1) )
             }
         }
     }
