@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.github.sergsave.purr_your_cat
 
 //import android.R
 //import android.R.layout
@@ -24,13 +24,19 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.myapplication.MusicWatcher.WatcherBinder
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.Timer
 import kotlin.concurrent.schedule
 
 
-class MainActivity : AppCompatActivity(), ServiceConnection, Visualizer.OnDataCaptureListener {
+class MainActivity : AppCompatActivity(), Visualizer.OnDataCaptureListener {
+
+//    private lateinit var recyclerView: RecyclerView
+//    private lateinit var viewAdapter: RecyclerView.Adapter<*>
+//    private lateinit var viewManager: RecyclerView.LayoutManager
 
     private var mediaPlayer : MediaPlayer? = null
     private var visualiser : Visualizer? = null
@@ -110,13 +116,6 @@ class MainActivity : AppCompatActivity(), ServiceConnection, Visualizer.OnDataCa
 
     private fun startVisualiser() {
 
-//        val am = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-//        val originalVolume = am.getStreamVolume(STREAM_MUSIC)
-//        am.setStreamVolume(
-//            STREAM_MUSIC,
-//            am.getStreamMaxVolume(STREAM_MUSIC), 0
-//        )
-
         if(visualiser != null) {
             visualiser?.setEnabled(true)
             return
@@ -138,108 +137,91 @@ class MainActivity : AppCompatActivity(), ServiceConnection, Visualizer.OnDataCa
         visualiser?.setScalingMode(Visualizer.SCALING_MODE_NORMALIZED)
     }
 
-//    @SuppressLint("HandlerLeak")
-    var handler: Handler = object : Handler() {
-        override fun handleMessage(msg: Message) {
-            if (msg.what === 1) {
-                val vibrator =
-                    getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-//                val t = vibrator.hasAmplitudeControl()
-//                Log.i(ContentValues.TAG, (msg.obj as Int).toString())
-
-                val volume = msg.obj as Int
-                if (volume > 225) {
-//                    vibrator.vibrate(15)
-                }
-
-//                var measurement = MeasurementPeakRms()
-//                if(visualiser?.enabled ?: false) {
-//                    visualiser?.getMeasurementPeakRms(measurement)
-//                    Log.i(ContentValues.TAG, "peak : " + measurement.mPeak + " rms : " + measurement.mRms)
-// //                   if (measurement.mPeak > -4500) vibrator.vibrate(15)
-//                      if (measurement.mRms > -5000) vibrator.vibrate(15)
-//                }
-            }
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // TODO: remove hardcode
+        val columnWidth = 180
+        val itemMargin = 16
+
+        val viewManager = AutoFitGridLayoutManager(this, columnWidth)
+        val itemDecoration = MarginItemDecoration(itemMargin, { viewManager.spanCount })
+        val viewAdapter = CatsListAdapter(arrayListOf(
+            CatItem("Simka"),
+            CatItem("Masik"),
+            CatItem("Uta"),
+            CatItem("Sherya"),
+            CatItem("Sema"),
+            CatItem("Philya"),
+            CatItem("Ganya")
+        ))
+
+        recycler_view.apply {
+            setHasFixedSize(true)
+
+            layoutManager = viewManager
+            adapter = viewAdapter
+            addItemDecoration(itemDecoration)
+        }
+
+
         setVolumeControlStream (AudioManager.STREAM_MUSIC)
 
         //BUTTON CLICK
-        choose_img_button.setOnClickListener {
-            //check runtime permission
-            if (VERSION.SDK_INT >= VERSION_CODES.M){
-                if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) ==
-                    PackageManager.PERMISSION_DENIED){
-                    //permission denied
-                    val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE);
-                    //show popup to request runtime permission
-                    requestPermissions(permissions, PERMISSION_CODE);
-                }
-                else{
-                    //permission already granted
-                    pickImageFromGallery();
-                }
-            }
-            else{
-                //system OS is < Marshmallow
-                pickImageFromGallery();
-            }
-        }
+//        choose_img_button.setOnClickListener {
+//            //check runtime permission
+//            if (VERSION.SDK_INT >= VERSION_CODES.M){
+//                if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) ==
+//                    PackageManager.PERMISSION_DENIED){
+//                    //permission denied
+//                    val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE);
+//                    //show popup to request runtime permission
+//                    requestPermissions(permissions, PERMISSION_CODE);
+//                }
+//                else{
+//                    //permission already granted
+//                    pickImageFromGallery();
+//                }
+//            }
+//            else{
+//                //system OS is < Marshmallow
+//                pickImageFromGallery();
+//            }
+//        }
+//
+//        choose_sound_btn.setOnClickListener {
+//            //check runtime permission
+//            if (VERSION.SDK_INT >= VERSION_CODES.M){
+//                if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) ==
+//                    PackageManager.PERMISSION_DENIED){
+//                    //permission denied
+//                    val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE);
+//                    //show popup to request runtime permission
+//                    requestPermissions(permissions, PERMISSION_CODE);
+//                }
+//                else{
+//                    //permission already granted
+//                    pickAudio();
+//                }
+//            }
+//            else{
+//                //system OS is < Marshmallow
+//                pickAudio();
+//            }
+//        }
 
-        choose_sound_btn.setOnClickListener {
-            //check runtime permission
-            if (VERSION.SDK_INT >= VERSION_CODES.M){
-                if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) ==
-                    PackageManager.PERMISSION_DENIED){
-                    //permission denied
-                    val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE);
-                    //show popup to request runtime permission
-                    requestPermissions(permissions, PERMISSION_CODE);
-                }
-                else{
-                    //permission already granted
-                    pickAudio();
-                }
-            }
-            else{
-                //system OS is < Marshmallow
-                pickAudio();
-            }
-        }
-
-        image_view.setOnTouchListener { _, event ->
-            if(event.getAction() == ACTION_MOVE) {
-                playAudio()
-                startVisualiser()
-//                vibrate()
-            }
-            true
-        }
+//        image_view.setOnTouchListener { _, event ->
+//            if(event.getAction() == ACTION_MOVE) {
+//                playAudio()
+//                startVisualiser()
+////                vibrate()
+//            }
+//            true
+//        }
 
         requestPermission()
-//        bindService(
-//            Intent(this, MusicWatcher::class.java),
-//            this,
-//            Context.BIND_AUTO_CREATE
-//        )
     }
-
-    override fun onServiceConnected(name: ComponentName?, service: IBinder) {
-        val service1 = service as WatcherBinder
-        service1.service.setListener { max: Int ->
-            val message = Message()
-            message.what = 1
-            message.obj = max
-            handler.sendMessage(message)
-        }
-    }
-
-    override fun onServiceDisconnected(name: ComponentName?) {}
 
     private fun playAudio() {
 //        if(mediaPlayer?.isPlaying() ?: false) {
@@ -334,7 +316,7 @@ class MainActivity : AppCompatActivity(), ServiceConnection, Visualizer.OnDataCa
     //handle result of picked image
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE){
-            image_view.setImageURI(data?.data)
+            //image_view.setImageURI(data?.data)
         }
 
         if (resultCode == Activity.RESULT_OK && requestCode == SOUND_PICK_CODE){
