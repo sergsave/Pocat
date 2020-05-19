@@ -147,6 +147,8 @@ class MainActivity : AppCompatActivity(), Visualizer.OnDataCaptureListener {
 
         val viewManager = AutoFitGridLayoutManager(this, columnWidth)
         val itemDecoration = MarginItemDecoration(itemMargin, { viewManager.spanCount })
+        val onClick : (CatItem) -> Unit = { item -> println(item) }
+
         val viewAdapter = CatsListAdapter(arrayListOf(
             CatItem("Simka"),
             CatItem("Masik"),
@@ -155,7 +157,7 @@ class MainActivity : AppCompatActivity(), Visualizer.OnDataCaptureListener {
             CatItem("Sema"),
             CatItem("Philya"),
             CatItem("Ganya")
-        ))
+        ), onClick)
 
         recycler_view.apply {
             setHasFixedSize(true)
@@ -165,7 +167,13 @@ class MainActivity : AppCompatActivity(), Visualizer.OnDataCaptureListener {
             addItemDecoration(itemDecoration)
         }
 
+        fab.setOnClickListener {
+            val intent = Intent(this, CatInfoActivity::class.java)
+            intent.putExtra("cat_name", "cat name")
+            startActivity(intent)
+        }
 
+        fab_clickable_layout.setOnClickListener { fab.performClick() }
         setVolumeControlStream (AudioManager.STREAM_MUSIC)
 
         //BUTTON CLICK

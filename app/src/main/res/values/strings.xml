@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">PurrYourCat</string>
+    <string name="add_new_cat">Add a new cat</string>
+    <string name="name">Name</string>
+    <string name="go_to_purr">Go to Purr</string>
+    <string name="choose_sound">Add a purring sound</string>
 </resources>

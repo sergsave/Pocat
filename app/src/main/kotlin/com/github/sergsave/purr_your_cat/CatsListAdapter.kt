@@ -7,14 +7,17 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.view_cat_item.*
 
-class CatsListAdapter(private var catItems: ArrayList<CatItem>) :
+class CatsListAdapter(private var catItems: ArrayList<CatItem>,
+                      private val onClickListener: (CatItem) -> Unit) :
     RecyclerView.Adapter<CatsListAdapter.ViewHolder>() {
 
     class ViewHolder(override val containerView: View) :
         RecyclerView.ViewHolder(containerView), LayoutContainer {
 
-        fun bind(item: CatItem) {
+        fun bind(item: CatItem, onClickListener: (CatItem) -> Unit) {
             name_text.text = item.name
+
+            containerView.setOnClickListener({ onClickListener(item) })
         }
     }
 
@@ -36,7 +39,7 @@ class CatsListAdapter(private var catItems: ArrayList<CatItem>) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(catItems.get(position))
+        holder.bind(catItems.get(position), onClickListener)
     }
 
     override fun getItemCount() = catItems.size
