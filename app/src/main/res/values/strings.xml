@@ -2,6 +2,8 @@
     <string name="app_name">PurrYourCat</string>
     <string name="add_new_cat">Add a new cat</string>
     <string name="name">Name</string>
-    <string name="go_to_purr">Go to Purr</string>
+    <string name="go_to_purr">Apply</string>
     <string name="choose_sound">Add a purring sound</string>
+    <string name="purring_title">Touch for a purr</string>
+    <string name="edit_cat">Edit a cat card</string>
 </resources>

@@ -137,6 +137,10 @@ class MainActivity : AppCompatActivity(), Visualizer.OnDataCaptureListener {
         visualiser?.setScalingMode(Visualizer.SCALING_MODE_NORMALIZED)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -147,7 +151,12 @@ class MainActivity : AppCompatActivity(), Visualizer.OnDataCaptureListener {
 
         val viewManager = AutoFitGridLayoutManager(this, columnWidth)
         val itemDecoration = MarginItemDecoration(itemMargin, { viewManager.spanCount })
-        val onClick : (CatItem) -> Unit = { item -> println(item) }
+        val onClick : (CatItem) -> Unit = { item ->
+            println(item)
+            val intent = Intent(this, PurringActivity::class.java)
+            //intent.putExtra("cat_name", "cat name")
+            startActivity(intent)
+        }
 
         val viewAdapter = CatsListAdapter(arrayListOf(
             CatItem("Simka"),
@@ -168,8 +177,10 @@ class MainActivity : AppCompatActivity(), Visualizer.OnDataCaptureListener {
         }
 
         fab.setOnClickListener {
-            val intent = Intent(this, CatInfoActivity::class.java)
-            intent.putExtra("cat_name", "cat name")
+            val intent = Intent(this, CatProfileActivity::class.java)
+            val mode = CatProfileActivity.Mode.CREATE
+            mode.attachTo(intent)
+            //intent.putExtra("cat_name", "cat name")
             startActivity(intent)
         }
 
