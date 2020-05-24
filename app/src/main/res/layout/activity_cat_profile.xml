@@ -25,38 +25,51 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" >
 
-            <ImageView
-                android:id="@+id/photo_image"
-                android:layout_width="match_parent"
+            <FrameLayout
+                android:id="@+id/photo_layout"
+                android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:src="@drawable/cat"
-                app:layout_constraintBottom_toTopOf="@+id/textEditLayout"
+                app:layout_constraintBottom_toTopOf="@+id/form_layout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_weight="4" />
+                app:layout_constraintVertical_weight="4">
+
+                <ImageView
+                    android:id="@+id/photo_frame_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/ic_launcher_background" />
+
+                <ImageView
+                    android:id="@+id/photo_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/cat" />
+            </FrameLayout>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/floatingActionButton"
+                android:id="@+id/fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
                 android:src="@drawable/ic_add_a_photo_black_24dp"
-                app:layout_constraintBottom_toBottomOf="@+id/photo_image"
+                app:layout_constraintBottom_toBottomOf="@+id/photo_layout"
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/textEditLayout"
+                android:id="@+id/form_layout"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_margin="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/photo_image"
+                app:layout_constraintTop_toBottomOf="@+id/photo_layout"
                 app:layout_constraintVertical_weight="3">
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/name_text_input_layout"
+                    android:id="@+id/name_text_layout"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -74,17 +87,17 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/sound_text_input_layout"
+                    android:id="@+id/sound_text_layout"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/name_text_input_layout">
+                    app:layout_constraintTop_toBottomOf="@+id/name_text_layout">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/pick_sound_edit_text"
+                        android:id="@+id/sound_edit_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:drawableRight="@drawable/ic_attach_file_black_24dp"
@@ -95,14 +108,14 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <Button
-                    android:id="@+id/applyButton"
+                    android:id="@+id/apply_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:text="@string/go_to_purr"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/sound_text_input_layout" />
+                    app:layout_constraintTop_toBottomOf="@+id/sound_text_layout" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>

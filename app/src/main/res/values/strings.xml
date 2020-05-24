@@ -6,4 +6,5 @@
     <string name="choose_sound">Add a purring sound</string>
     <string name="purring_title">Touch for a purr</string>
     <string name="edit_cat">Edit a cat card</string>
+    <string name="add_photo_with">Add photo with...</string>
 </resources>
