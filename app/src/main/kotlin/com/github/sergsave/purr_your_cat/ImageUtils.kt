@@ -43,6 +43,9 @@ class ImageUtils {
         }
 
         fun getScaledBitmapFromUri(context: Context, uri : Uri, reqWidth: Int, reqHeight: Int): Bitmap? {
+            if(reqWidth == 0 || reqHeight == 0)
+                return null
+
             val openStream = { context.getContentResolver().openInputStream(uri) }
 
             try {

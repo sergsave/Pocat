@@ -6,12 +6,12 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
 
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-    }
-
     androidExtensions {
         experimental = true
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
     }
 
     defaultConfig {

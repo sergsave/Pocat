@@ -20,30 +20,8 @@ import kotlinx.android.synthetic.main.activity_cat_profile.*
 
 class CatProfileActivity : AppCompatActivity() {
 
-    enum class Mode {
-        CREATE, EDIT;
-
-        fun attachTo(intent: Intent) {
-            intent.putExtra(KEY, ordinal)
-        }
-
-        companion object {
-            private val KEY = "CatProfileActivityMode"
-            private val values = values()
-
-            fun detachFrom(intent: Intent) : Mode? {
-                if(!intent.hasExtra(KEY))
-                    return null
-
-                val value = intent.getIntExtra(KEY, -1)
-                return values.firstOrNull { it.ordinal == value}
-            }
-        }
-    }
-
+    private var catData: CatData? = null
     private var cameraImageUri: Uri? = null
-    private var currentImageUri: Uri? = null
-    private var currentAudioUri: Uri? = null
 
     override fun onDestroy() {
         super.onDestroy()
@@ -53,17 +31,23 @@ class CatProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cat_profile)
 
-        restoreState(savedInstanceState)
+        // First launch
+        if(savedInstanceState == null)
+            initState(intent)
+        else
+            restoreState(savedInstanceState)
 
-        val mode = Mode.detachFrom(getIntent())
+        val mode = if(catData == null) Mode.CREATE else Mode.EDIT
         setupToolbar(mode)
+
+        if(catData == null) catData = CatData()
 
         fab.setOnClickListener{ addPhoto() }
         photo_image.setOnClickListener{ addPhoto() }
 
         // Restore photo
         photo_layout.setOnSizeReadyListener{ width, height ->
-            setPhotoImage(currentImageUri, width, height)
+            setPhotoImage(catData?.photoUri, width, height)
         }
 
         // Clear focus on Ok in keyboard
@@ -79,7 +63,6 @@ class CatProfileActivity : AppCompatActivity() {
 
         apply_button.setOnClickListener {
             val intent = Intent(this, PurringActivity::class.java)
-            intent.putExtra("cat_name", "cat name")
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(intent)
 
@@ -87,11 +70,14 @@ class CatProfileActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupToolbar(mode: Mode?) {
+    private enum class Mode {
+        CREATE, EDIT
+    }
+
+    private fun setupToolbar(mode: Mode) {
         val title = when(mode) {
             Mode.CREATE -> getResources().getString(R.string.add_new_cat)
             Mode.EDIT -> getResources().getString(R.string.edit_cat)
-            else -> ""
         }
 
         setSupportActionBar(toolbar)
@@ -145,7 +131,7 @@ class CatProfileActivity : AppCompatActivity() {
         val pickIntent = Intent(Intent.ACTION_PICK)
         pickIntent.type = "image/*"
 
-        // TODO: Rename file! For accessibility in gallery
+        // TODO: Rename file? For accessibility in gallery
         val values = ContentValues()
         values.put(MediaStore.Images.Media.TITLE, "New Picture")
         values.put(MediaStore.Images.Media.DESCRIPTION, "From the Camera")
@@ -164,7 +150,8 @@ class CatProfileActivity : AppCompatActivity() {
         val pickIntent = Intent(Intent.ACTION_PICK)
         pickIntent.type = "audio/*"
 
-        // TODO: Rename file! For accessibility in gallery
+        // TODO: Rename file?
+
         val values = ContentValues()
         values.put(MediaStore.Images.Media.TITLE, "New Audio")
         values.put(MediaStore.Images.Media.DESCRIPTION, "From the Recorder")
@@ -188,12 +175,12 @@ class CatProfileActivity : AppCompatActivity() {
                 // Null data - image from camera
                 val uri = data?.data ?: cameraImageUri
                 setPhotoImage(uri, photo_layout.width, photo_layout.height)
-                currentImageUri = uri
+                catData?.photoUri = uri
             }
             AUDIO_PICK_CODE -> {
                 val uri = data?.data
                 sound_edit_text.setText(uri?.getLastPathSegment())
-                currentAudioUri = uri
+                catData?.purrAudioUri = uri
             }
         }
     }
@@ -243,28 +230,19 @@ class CatProfileActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        val uriMap = mapOf<String, Uri?>(
-            CAMERA_IMAGE_URI_KEY to cameraImageUri,
-            CURRENT_IMAGE_URI_KEY to currentImageUri,
-            CURRENT_AUDIO_URI_KEY to currentAudioUri
-        )
-
-        uriMap.forEach { (key, value) -> outState.putString(key, value?.toString()) }
+        outState.putParcelable(CAT_DATA_KEY, catData)
+        outState.putParcelable(CAMERA_IMAGE_URI_KEY, cameraImageUri)
     }
 
     private fun restoreState(savedInstanceState: Bundle?) {
+        catData = savedInstanceState?.getParcelable(CAT_DATA_KEY)
+        cameraImageUri = savedInstanceState?.getParcelable(CAMERA_IMAGE_URI_KEY)
+    }
 
-        val parse : (String)->Uri? = { key ->
-            val path = savedInstanceState?.getString(key)
-            if(path != null)
-                Uri.parse(path)
-            else
-                null
-        }
-
-        cameraImageUri = parse(CAMERA_IMAGE_URI_KEY)
-        currentImageUri = parse(CURRENT_IMAGE_URI_KEY)
-        currentAudioUri = parse(CURRENT_AUDIO_URI_KEY)
+    private fun initState(intent: Intent) {
+        val hasCatData = intent.hasExtra(Constants.CAT_DATA_INTENT_KEY)
+        if(hasCatData)
+            catData = intent.getParcelableExtra(Constants.CAT_DATA_INTENT_KEY)
     }
 
     companion object {
@@ -274,7 +252,6 @@ class CatProfileActivity : AppCompatActivity() {
         private val AUDIO_PICK_CODE = 1003
 
         private val CAMERA_IMAGE_URI_KEY = "CameraUri"
-        private val CURRENT_IMAGE_URI_KEY = "ImageUri"
-        private val CURRENT_AUDIO_URI_KEY = "AudioUri"
+        private val CAT_DATA_KEY = "CatData"
     }
 }
