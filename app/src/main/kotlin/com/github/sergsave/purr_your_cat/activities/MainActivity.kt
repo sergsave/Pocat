@@ -3,10 +3,9 @@ package com.github.sergsave.purr_your_cat
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.core.app.ActivityOptionsCompat
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -40,9 +39,8 @@ class MainActivity : AppCompatActivity() {
         setupCatsList(initState)
 
         fab.setOnClickListener {
-            val intent = Intent(this, CatProfileActivity::class.java)
+            val intent = Intent(this, CatCardActivity::class.java)
             startActivity(intent)
-//            catsListAdapter.addItems(arrayListOf(CatData("Pusik")))
         }
 
         fab_clickable_layout.setOnClickListener { fab.performClick() }
@@ -53,12 +51,13 @@ class MainActivity : AppCompatActivity() {
         val columnWidth = 180
         val itemMargin = 16
 
-        val onItemClick: (CatData) -> Unit = { cat ->
-            val intent = Intent(this, PurringActivity::class.java)
-            intent.putExtra(Constants.CAT_DATA_INTENT_KEY, cat)
-            startActivity(intent)
+        val listener = object : CatsListAdapter.OnClickListener {
+            override fun onClick(catData: CatData, sharedElement: View, sharedElementTransitionName: String) {
+                goToPurringAnimated(catData, sharedElement, sharedElementTransitionName)
+            }
         }
-        catsListAdapter = CatsListAdapter(onItemClick)
+
+        catsListAdapter = CatsListAdapter(listener)
         if(initState.catsList != null)
             catsListAdapter.addItems(initState.catsList)
 
@@ -75,6 +74,17 @@ class MainActivity : AppCompatActivity() {
             adapter = catsListAdapter
             addItemDecoration(itemDecoration)
         }
+    }
+
+    private fun goToPurringAnimated(cat: CatData, sharedElement: View, transitionName: String) {
+        val intent = Intent(this, CatCardActivity::class.java)
+        intent.putExtra(Constants.CAT_DATA_INTENT_KEY, cat)
+        intent.putExtra(Constants.SHARED_TRANSITION_NAME_INTENT_KEY, transitionName)
+
+        val transitionOption = ActivityOptionsCompat.makeSceneTransitionAnimation(
+            this, sharedElement, transitionName)
+
+        startActivity(intent, transitionOption.toBundle())
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

@@ -34,6 +34,7 @@
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.MaterialComponents.BottomSheetDialog</item>
         <item name="navigationViewStyle">@style/Widget.MaterialComponents.NavigationView</item>
         <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar.PrimarySurface</item>
+        <item name="floatingActionButtonStyle">@style/Widget.MyTheme.FloatingActionButton</item>
 
         <!--Android base-->
         <item name="android:statusBarColor" tools:ignore="NewApi">?attr/colorPrimaryVariant</item>
@@ -41,6 +42,13 @@
         <item name="android:navigationBarColor" tools:ignore="NewApi">?android:attr/colorBackground</item>
         <item name="android:windowLightNavigationBar" tools:ignore="NewApi">true</item>
         <item name="android:navigationBarDividerColor" tools:ignore="NewApi">?attr/colorControlHighlight</item>
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowSharedElementsUseOverlay">false</item>
+    </style>
+
+    <!-- Ripple doesn't work after update to 1.2.0-alpha05 :( -->
+    <style name="Widget.MyTheme.FloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="rippleColor">?attr/colorOnSecondary</item>
     </style>
 
     <color name="background">#ffffe5</color>

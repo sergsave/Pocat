@@ -1,13 +1,20 @@
 package com.github.sergsave.purr_your_cat
 
-import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
+import android.view.*
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_purring.*
+import androidx.fragment.app.Fragment
+import com.google.android.material.transition.MaterialFadeThrough
+import kotlinx.android.synthetic.main.fragment_purring.*
 
-class PurringActivity : AppCompatActivity() {
+class PurringFragment : Fragment() {
+
+    interface OnEditRequestedListener {
+        fun onEditRequested()
+    }
+
+    private var transitionName: String? = null
+    private var onEditListener: OnEditRequestedListener? = null
 
     override fun onDestroy() {
         super.onDestroy()
@@ -15,41 +22,76 @@ class PurringActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_purring)
 
-        setSupportActionBar(toolbar)
-        getSupportActionBar()?.setDisplayHomeAsUpEnabled(true)
-        getSupportActionBar()?.setDisplayShowHomeEnabled(true)
+        enterTransition = MaterialFadeThrough.create(requireContext())
 
-        toolbar.setNavigationOnClickListener{
-            finish()
-//            val intent = Intent(this, MainActivity::class.java)
-//            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-//            startActivity(intent)
+        arguments?.let {
+            transitionName = it.getString(ARG_TRANSITION_NAME)
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_purring, menu)
-        return true
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_purring, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val activity = getActivity() as AppCompatActivity?
+        activity?.getSupportActionBar()?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowHomeEnabled(true)
+            setTitle(getResources().getString(R.string.purring_title))
+        }
+
+        setHasOptionsMenu(true)
+
+        // Shared element transition
+        photo_image.setTransitionName(transitionName)
+        photo_image.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+            override fun onPreDraw(): Boolean {
+                photo_image.viewTreeObserver.removeOnPreDrawListener(this)
+                activity?.startPostponedEnterTransition()
+                return true;
+            }
+        })
+    }
+
+    fun setOnEditRequestedListener(listener: OnEditRequestedListener) {
+        onEditListener = listener
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_purring, menu)
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.action_edit -> {
-            val intent = Intent(this, CatProfileActivity::class.java)
-
-            intent.putExtra(Constants.CAT_DATA_INTENT_KEY, CatData("Sima"))
-
-            startActivity(intent)
+            onEditListener?.onEditRequested()
             true
         }
         else -> {
             super.onOptionsItemSelected(item)
         }
     }
+
+    companion object {
+        private val ARG_TRANSITION_NAME = "TransitionName"
+
+        @JvmStatic
+        fun newInstance(transitionName: String?) =
+            PurringFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_TRANSITION_NAME, transitionName)
+                }
+            }
+    }
 }
-
-
 
 // Trash from MainActivity
 

@@ -5,69 +5,92 @@ import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.graphics.Rect
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.view.MotionEvent
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_cat_profile.*
+import androidx.core.content.ContextCompat.getSystemService
+import com.google.android.material.transition.MaterialFadeThrough
+import kotlinx.android.synthetic.main.fragment_cat_profile.*
+import kotlinx.android.synthetic.main.form_profile.view.*
 
+class CatProfileFragment : Fragment() {
 
-class CatProfileActivity : AppCompatActivity() {
+    interface OnApplyListener {
+        fun onApply()
+    }
 
     private var catData: CatData? = null
     private var cameraImageUri: Uri? = null
+    private var onApplyListener: OnApplyListener? = null
 
     override fun onDestroy() {
+        // TODO? Save keyboard visible after orientation change
+        hideKeyboard()
         super.onDestroy()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_cat_profile)
 
-        // First launch
-        if(savedInstanceState == null)
-            initState(intent)
-        else
-            restoreState(savedInstanceState)
+        if(context != null)
+            enterTransition = MaterialFadeThrough.create(requireContext())
+
+        arguments?.let {
+            catData = it.getParcelable(ARG_CAT_DATA) as CatData?
+        }
+
+        cameraImageUri = savedInstanceState?.getParcelable(CAMERA_IMAGE_URI_BUNDLE_KEY)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_cat_profile, container, false)
+    }
+
+    // TODO? or in onViewCreate
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         val mode = if(catData == null) Mode.CREATE else Mode.EDIT
         setupToolbar(mode)
 
-        if(catData == null) catData = CatData()
+        setHasOptionsMenu(true)
 
         fab.setOnClickListener{ addPhoto() }
         photo_image.setOnClickListener{ addPhoto() }
 
         // Restore photo
-        photo_layout.setOnSizeReadyListener{ width, height ->
+        photo_image.setOnSizeReadyListener{ width, height ->
             setPhotoImage(catData?.photoUri, width, height)
         }
 
-        // Clear focus on Ok in keyboard
-        name_edit_text.setImeOptions(EditorInfo.IME_ACTION_DONE)
-        name_edit_text.setOnEditorActionListener { v, actionId, _ ->
+        form_layout.name_edit_text.setImeOptions(EditorInfo.IME_ACTION_DONE)
+        form_layout.name_edit_text.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                clearFocus(v)
+                v.clearFocus()
+                hideKeyboard()
             }
             false
         }
-        
-        sound_edit_text.setOnClickListener { addAudio() }
 
-        apply_button.setOnClickListener {
-            val intent = Intent(this, PurringActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            startActivity(intent)
+        form_layout.sound_edit_text.setOnClickListener { addAudio() }
+        form_layout.apply_button.setOnClickListener { onApplyListener?.onApply() }
+    }
 
-            finish()
-        }
+    fun setOnApplyListener(listener: OnApplyListener) {
+        onApplyListener = listener
     }
 
     private enum class Mode {
@@ -75,36 +98,40 @@ class CatProfileActivity : AppCompatActivity() {
     }
 
     private fun setupToolbar(mode: Mode) {
-        val title = when(mode) {
+        val title = when (mode) {
             Mode.CREATE -> getResources().getString(R.string.add_new_cat)
             Mode.EDIT -> getResources().getString(R.string.edit_cat)
         }
 
-        setSupportActionBar(toolbar)
-        val actionBar = getSupportActionBar()
-
-        actionBar?.title = title
-        actionBar?.setDisplayHomeAsUpEnabled(true)
-        actionBar?.setDisplayShowHomeEnabled(true)
-
-        toolbar.setNavigationOnClickListener{ finish() }
+        val activity = getActivity() as AppCompatActivity?
+        activity?.getSupportActionBar()?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowHomeEnabled(true)
+            setTitle(title)
+        }
     }
 
     private fun addPhoto() {
+        if(context == null)
+            return
+
         val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.CAMERA)
 
-        if(permissions.any { !PermissionUtils.checkPermission(this, it) })
+        if(permissions.any { !PermissionUtils.checkPermission(requireContext(), it) })
             PermissionUtils.requestPermissions(this, permissions, IMAGE_PERMISSIONS_CODE)
         else
             sendPhotoIntent()
     }
 
     private fun addAudio() {
+        if(context == null)
+            return
+
         val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.RECORD_AUDIO)
 
-        if(permissions.any { !PermissionUtils.checkPermission(this, it) })
+        if(permissions.any { !PermissionUtils.checkPermission(requireContext(), it) })
             PermissionUtils.requestPermissions(this, permissions, AUDIO_PERMISSIONS_CODE)
         else
             sendAudioIntent()
@@ -135,7 +162,9 @@ class CatProfileActivity : AppCompatActivity() {
         val values = ContentValues()
         values.put(MediaStore.Images.Media.TITLE, "New Picture")
         values.put(MediaStore.Images.Media.DESCRIPTION, "From the Camera")
-        cameraImageUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+
+        cameraImageUri = activity?.contentResolver?.insert(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
 
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraImageUri)
@@ -150,12 +179,13 @@ class CatProfileActivity : AppCompatActivity() {
         val pickIntent = Intent(Intent.ACTION_PICK)
         pickIntent.type = "audio/*"
 
-        // TODO: Rename file?
-
+        // TODO? Rename file
         val values = ContentValues()
         values.put(MediaStore.Images.Media.TITLE, "New Audio")
         values.put(MediaStore.Images.Media.DESCRIPTION, "From the Recorder")
-        val recorderAudioUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+
+        val recorderAudioUri = activity?.contentResolver?.insert(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
 
         val recorderIntent = Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION)
         recorderIntent.putExtra(MediaStore.EXTRA_OUTPUT, recorderAudioUri)
@@ -174,84 +204,55 @@ class CatProfileActivity : AppCompatActivity() {
             IMAGE_PICK_CODE -> {
                 // Null data - image from camera
                 val uri = data?.data ?: cameraImageUri
-                setPhotoImage(uri, photo_layout.width, photo_layout.height)
+                setPhotoImage(uri, photo_image.width, photo_image.height)
                 catData?.photoUri = uri
             }
             AUDIO_PICK_CODE -> {
                 val uri = data?.data
-                sound_edit_text.setText(uri?.getLastPathSegment())
+                form_layout.sound_edit_text.setText(uri?.getLastPathSegment())
                 catData?.purrAudioUri = uri
             }
         }
     }
 
     private fun setPhotoImage(uri: Uri?, width: Int, height: Int) {
-        if(uri == null)
+        if(uri == null || context == null)
             return
 
-        val bm = ImageUtils.getScaledBitmapFromUri(this, uri, width, height)
+        val bm = ImageUtils.getScaledBitmapFromUri(requireContext(), uri, width, height)
 
-        if(bm == null)
-            return
-
-        // Implement blurred image frame
-        photo_image.setImageBitmap(bm)
-
-        val blurred = ImageUtils.blur(this, bm, ImageUtils.BlurIntensity.HIGH)
-        photo_frame_image.setImageBitmap(blurred)
+        if(bm != null) {
+            val imageView = photo_image as ImageView
+            imageView.setImageBitmap(bm)
+        }
     }
 
-    private fun clearFocus(v: View) {
-        v.clearFocus()
-        val imm: InputMethodManager =
-            getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(v.getWindowToken(), 0)
-    }
-
-    // Clear focus on tap outside
-    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
-        val ret = super.dispatchTouchEvent(event)
-
-        if (event.action != MotionEvent.ACTION_DOWN)
-            return ret
-
-        val v: View? = currentFocus
-        if (v !is EditText)
-            return ret
-
-        val outRect = Rect()
-        v.getGlobalVisibleRect(outRect)
-        if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt()))
-            clearFocus(v)
-
-        return ret
+    private fun hideKeyboard() {
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+        imm?.hideSoftInputFromWindow(view?.getWindowToken(), 0)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-
-        outState.putParcelable(CAT_DATA_KEY, catData)
-        outState.putParcelable(CAMERA_IMAGE_URI_KEY, cameraImageUri)
-    }
-
-    private fun restoreState(savedInstanceState: Bundle?) {
-        catData = savedInstanceState?.getParcelable(CAT_DATA_KEY)
-        cameraImageUri = savedInstanceState?.getParcelable(CAMERA_IMAGE_URI_KEY)
-    }
-
-    private fun initState(intent: Intent) {
-        val hasCatData = intent.hasExtra(Constants.CAT_DATA_INTENT_KEY)
-        if(hasCatData)
-            catData = intent.getParcelableExtra(Constants.CAT_DATA_INTENT_KEY)
+        outState.putParcelable(CAMERA_IMAGE_URI_BUNDLE_KEY, cameraImageUri)
     }
 
     companion object {
+        private val ARG_CAT_DATA = "CatData"
+
+        private val CAMERA_IMAGE_URI_BUNDLE_KEY = "CameraImageUri"
+
         private val IMAGE_PERMISSIONS_CODE = 1000
         private val AUDIO_PERMISSIONS_CODE = 1001
         private val IMAGE_PICK_CODE = 1002
         private val AUDIO_PICK_CODE = 1003
 
-        private val CAMERA_IMAGE_URI_KEY = "CameraUri"
-        private val CAT_DATA_KEY = "CatData"
+        @JvmStatic
+        fun newInstance(catData: CatData?) =
+            CatProfileFragment().apply {
+                arguments = Bundle().apply {
+                    putParcelable(ARG_CAT_DATA, catData)
+                }
+            }
     }
 }
