@@ -1,4 +1,4 @@
-package com.github.sergsave.purr_your_cat
+package com.github.sergsave.purr_your_cat.extensions
 
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener

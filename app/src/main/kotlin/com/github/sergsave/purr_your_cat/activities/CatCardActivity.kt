@@ -1,9 +1,13 @@
-package com.github.sergsave.purr_your_cat
+package com.github.sergsave.purr_your_cat.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.activity_cat_card.*
+import com.github.sergsave.purr_your_cat.R
+import com.github.sergsave.purr_your_cat.helpers.Constants
+import com.github.sergsave.purr_your_cat.fragments.*
+import com.github.sergsave.purr_your_cat.models.CatData
 
 class CatCardActivity : AppCompatActivity() {
 

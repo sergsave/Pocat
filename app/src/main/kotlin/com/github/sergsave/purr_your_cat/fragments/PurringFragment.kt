@@ -1,4 +1,4 @@
-package com.github.sergsave.purr_your_cat
+package com.github.sergsave.purr_your_cat.fragments
 
 import android.os.Bundle
 import android.view.*
@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialFadeThrough
 import kotlinx.android.synthetic.main.fragment_purring.*
+import com.github.sergsave.purr_your_cat.R
 
 class PurringFragment : Fragment() {
 

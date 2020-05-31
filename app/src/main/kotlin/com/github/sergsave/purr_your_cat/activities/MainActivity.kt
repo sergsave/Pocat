@@ -1,4 +1,4 @@
-package com.github.sergsave.purr_your_cat
+package com.github.sergsave.purr_your_cat.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,6 +7,10 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import kotlinx.android.synthetic.main.activity_main.*
+import com.github.sergsave.purr_your_cat.R
+import com.github.sergsave.purr_your_cat.helpers.*
+import com.github.sergsave.purr_your_cat.models.CatData
+import com.github.sergsave.purr_your_cat.adapters.CatsListAdapter
 
 class MainActivity : AppCompatActivity() {
 

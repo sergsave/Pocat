@@ -1,4 +1,4 @@
-package com.github.sergsave.purr_your_cat
+package com.github.sergsave.purr_your_cat.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,8 +6,10 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.extensions.LayoutContainer
+import com.github.sergsave.purr_your_cat.R
 import kotlinx.android.synthetic.main.view_cat_item.*
 import kotlinx.android.synthetic.main.view_cat_item.view.*
+import com.github.sergsave.purr_your_cat.models.CatData
 
 class CatsListAdapter(private val onClickListener: OnClickListener):
     RecyclerView.Adapter<CatsListAdapter.ViewHolder>() {

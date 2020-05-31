@@ -1,4 +1,4 @@
-package com.github.sergsave.purr_your_cat
+package com.github.sergsave.purr_your_cat.fragments
 
 import android.Manifest
 import android.app.Activity
@@ -21,6 +21,10 @@ import androidx.core.content.ContextCompat.getSystemService
 import com.google.android.material.transition.MaterialFadeThrough
 import kotlinx.android.synthetic.main.fragment_cat_profile.*
 import kotlinx.android.synthetic.main.form_profile.view.*
+import com.github.sergsave.purr_your_cat.R
+import com.github.sergsave.purr_your_cat.helpers.*
+import com.github.sergsave.purr_your_cat.models.CatData
+import com.github.sergsave.purr_your_cat.extensions.*
 
 class CatProfileFragment : Fragment() {
 

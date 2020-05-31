@@ -1,4 +1,4 @@
-package com.github.sergsave.purr_your_cat
+package com.github.sergsave.purr_your_cat.models
 
 import android.net.Uri
 import android.os.Parcelable

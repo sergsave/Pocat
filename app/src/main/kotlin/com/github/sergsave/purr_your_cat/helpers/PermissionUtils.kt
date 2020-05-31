@@ -1,4 +1,4 @@
-package com.github.sergsave.purr_your_cat
+package com.github.sergsave.purr_your_cat.helpers
 
 import android.app.Activity
 import androidx.fragment.app.Fragment
