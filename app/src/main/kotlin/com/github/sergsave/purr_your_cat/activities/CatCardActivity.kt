@@ -111,6 +111,14 @@ class CatCardActivity : AppCompatActivity() {
             super.onBackPressed()
     }
 
+    override fun finishAfterTransition() {
+        val intent = Intent()
+        intent.putExtra(Constants.CAT_DATA_INTENT_KEY, Singleton.catData)
+        setResult(Activity.RESULT_OK, intent)
+
+        super.finishAfterTransition()
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(CURRENT_PAGE_BUNDLE_KEY, currentPage.toString())
