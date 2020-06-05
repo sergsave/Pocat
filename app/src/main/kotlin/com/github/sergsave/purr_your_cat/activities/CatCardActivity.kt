@@ -1,13 +1,17 @@
 package com.github.sergsave.purr_your_cat.activities
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import kotlinx.android.synthetic.main.activity_cat_card.*
 import com.github.sergsave.purr_your_cat.R
+import com.github.sergsave.purr_your_cat.fragments.CatProfileFragment
+import com.github.sergsave.purr_your_cat.fragments.PurringFragment
 import com.github.sergsave.purr_your_cat.helpers.Constants
-import com.github.sergsave.purr_your_cat.fragments.*
 import com.github.sergsave.purr_your_cat.models.CatData
+import com.github.sergsave.purr_your_cat.Singleton
+import kotlinx.android.synthetic.main.activity_cat_card.*
 
 class CatCardActivity : AppCompatActivity() {
 
@@ -54,7 +58,8 @@ class CatCardActivity : AppCompatActivity() {
 
     // TODO? ModelView or singleton with LiveData
     private fun getCatData() : CatData? {
-        return intent.getParcelableExtra(Constants.CAT_DATA_INTENT_KEY) as CatData?
+        Singleton.catData = intent.getParcelableExtra(Constants.CAT_DATA_INTENT_KEY) as CatData?
+        return Singleton.catData
     }
 
     private fun setCurrentFragment(fragment: Fragment, tag: String? = null)
@@ -73,7 +78,7 @@ class CatCardActivity : AppCompatActivity() {
             // Use same fragment, but different tags
             PageType.ADD_NEW, PageType.EDIT -> {
                 val fg = existingFragment as CatProfileFragment?
-                    ?: CatProfileFragment.newInstance(getCatData())
+                    ?: CatProfileFragment.newInstance(Singleton.catData)
                 fg.setOnApplyListener(object: CatProfileFragment.OnApplyListener {
                     override fun onApply() = switchToPage(PageType.PURRING)
                 })

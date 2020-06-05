@@ -1,20 +1,29 @@
 package com.github.sergsave.purr_your_cat.activities
 
+import android.content.ContentResolver
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
+import android.transition.Transition
+import android.transition.Transition.TransitionListener
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
-import kotlinx.android.synthetic.main.activity_main.*
 import com.github.sergsave.purr_your_cat.R
-import com.github.sergsave.purr_your_cat.helpers.*
-import com.github.sergsave.purr_your_cat.models.CatData
+import com.github.sergsave.purr_your_cat.Singleton
 import com.github.sergsave.purr_your_cat.adapters.CatsListAdapter
+import com.github.sergsave.purr_your_cat.helpers.AutoFitGridLayoutManager
+import com.github.sergsave.purr_your_cat.helpers.Constants
+import com.github.sergsave.purr_your_cat.helpers.MarginItemDecoration
+import com.github.sergsave.purr_your_cat.models.CatData
+import kotlinx.android.synthetic.main.activity_main.*
+
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var catsListAdapter : CatsListAdapter
+    private var catId : Int? = null
 
     override fun onDestroy() {
         super.onDestroy()
@@ -24,14 +33,20 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val testUri = Uri.parse(
+            ContentResolver.SCHEME_ANDROID_RESOURCE +
+                "://" + getResources().getResourcePackageName(R.drawable.cat)
+                + '/' + getResources().getResourceTypeName(R.drawable.cat)
+                + '/' + getResources().getResourceEntryName(R.drawable.cat) );
+
         val testCats = arrayListOf(
-            CatData("Simka"),
-            CatData("Masik"),
-            CatData("Uta"),
-            CatData("Sherya"),
-            CatData("Sema"),
-            CatData("Philya"),
-            CatData("Ganya")
+            CatData("Simka", testUri),
+            CatData("Masik", testUri),
+            CatData("Uta", testUri),
+            CatData("Sherya", testUri),
+            CatData("Sema", testUri),
+            CatData("Philya", testUri),
+            CatData("Ganya", testUri)
         )
 
         val initState =
@@ -56,8 +71,10 @@ class MainActivity : AppCompatActivity() {
         val itemMargin = 16
 
         val listener = object : CatsListAdapter.OnClickListener {
-            override fun onClick(catData: CatData, sharedElement: View, sharedElementTransitionName: String) {
-                goToPurringAnimated(catData, sharedElement, sharedElementTransitionName)
+            override fun onClick(position: Int, sharedElement: View, sharedElementTransitionName: String) {
+                val data = catsListAdapter.getItems().get(position)
+                catId = position
+                goToPurringAnimated(data, sharedElement, sharedElementTransitionName)
             }
         }
 
@@ -94,7 +111,7 @@ class MainActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        outState.putParcelableArrayList(CATS_LIST_KEY, catsListAdapter.getItemsCopy())
+        outState.putParcelableArrayList(CATS_LIST_KEY, catsListAdapter.getItems())
         outState.putParcelable(LAYOUT_MANAGER_STATE_KEY, recycler_view.layoutManager?.onSaveInstanceState())
     }
 
@@ -106,6 +123,44 @@ class MainActivity : AppCompatActivity() {
         val layoutManagerState : Parcelable? = savedInstanceState?.getParcelable(LAYOUT_MANAGER_STATE_KEY)
 
         return InstanceState(catsList, layoutManagerState)
+    }
+
+    override fun onActivityReenter(resultCode: Int, data: Intent?) {
+        super.onActivityReenter(resultCode, data)
+
+        if(resultCode != RESULT_OK || data == null)
+            return
+
+        val catData = Singleton.catData
+//        val catData = data?.getParcelableExtra(Constants.CAT_DATA_INTENT_KEY) as CatData?
+
+        if(catData == null)
+            return
+
+        window.sharedElementExitTransition.addListener(object : TransitionListener {
+            override fun onTransitionStart(transition: Transition?) {}
+            override fun onTransitionPause(transition: Transition?) {}
+            override fun onTransitionResume(transition: Transition?) {}
+            override fun onTransitionEnd(transition: Transition?) {
+                window.sharedElementExitTransition.removeListener(this)
+                updateList()
+            }
+
+            override fun onTransitionCancel(transition: Transition?) {
+                window.sharedElementExitTransition.removeListener(this)
+                updateList()
+            }
+
+            private fun updateList() {
+                val catsCopy = ArrayList<CatData>()
+                catsCopy.addAll(catsListAdapter.getItems())
+
+                catId?.let { catsCopy.set(it, catData) }
+
+                catsListAdapter.clearItems()
+                catsListAdapter.addItems(catsCopy)
+            }
+        })
     }
 
     companion object {

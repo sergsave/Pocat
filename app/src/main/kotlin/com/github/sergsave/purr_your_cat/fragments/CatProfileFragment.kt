@@ -5,11 +5,10 @@ import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
+import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,14 +16,21 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.getSystemService
-import com.google.android.material.transition.MaterialFadeThrough
-import kotlinx.android.synthetic.main.fragment_cat_profile.*
-import kotlinx.android.synthetic.main.form_profile.view.*
+import androidx.fragment.app.Fragment
 import com.github.sergsave.purr_your_cat.R
+import com.github.sergsave.purr_your_cat.Singleton
+import com.github.sergsave.purr_your_cat.extensions.setOnSizeReadyListener
 import com.github.sergsave.purr_your_cat.helpers.*
 import com.github.sergsave.purr_your_cat.models.CatData
-import com.github.sergsave.purr_your_cat.extensions.*
+import com.google.android.material.transition.MaterialFadeThrough
+import kotlinx.android.synthetic.main.form_profile.view.*
+import kotlinx.android.synthetic.main.fragment_cat_profile.*
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.nio.channels.FileChannel
+import java.text.SimpleDateFormat
+import java.util.*
 
 class CatProfileFragment : Fragment() {
 
@@ -49,7 +55,8 @@ class CatProfileFragment : Fragment() {
             enterTransition = MaterialFadeThrough.create(requireContext())
 
         arguments?.let {
-            catData = it.getParcelable(ARG_CAT_DATA) as CatData?
+            Singleton.catData = it.getParcelable(ARG_CAT_DATA) as CatData?
+            catData = Singleton.catData
         }
 
         cameraImageUri = savedInstanceState?.getParcelable(CAMERA_IMAGE_URI_BUNDLE_KEY)
@@ -76,9 +83,7 @@ class CatProfileFragment : Fragment() {
         photo_image.setOnClickListener{ addPhoto() }
 
         // Restore photo
-        photo_image.setOnSizeReadyListener{ width, height ->
-            setPhotoImage(catData?.photoUri, width, height)
-        }
+        photo_image.setOnSizeReadyListener { _, _ -> setPhotoImage(catData?.photoUri) }
 
         form_layout.name_edit_text.setImeOptions(EditorInfo.IME_ACTION_DONE)
         form_layout.name_edit_text.setOnEditorActionListener { v, actionId, _ ->
@@ -208,8 +213,8 @@ class CatProfileFragment : Fragment() {
             IMAGE_PICK_CODE -> {
                 // Null data - image from camera
                 val uri = data?.data ?: cameraImageUri
-                setPhotoImage(uri, photo_image.width, photo_image.height)
-                catData?.photoUri = uri
+                setPhotoImage(uri)
+                catData?.photoUri = saveFileOnInternal(uri)
             }
             AUDIO_PICK_CODE -> {
                 val uri = data?.data
@@ -219,16 +224,66 @@ class CatProfileFragment : Fragment() {
         }
     }
 
-    private fun setPhotoImage(uri: Uri?, width: Int, height: Int) {
-        if(uri == null || context == null)
+    private fun setPhotoImage(uri: Uri?) {
+        if (uri == null || context == null)
             return
 
-        val bm = ImageUtils.getScaledBitmapFromUri(requireContext(), uri, width, height)
+        val bm = ImageUtils.getScaledBitmapFromUri(requireContext(), uri,
+            photo_image.width, photo_image.height)
 
-        if(bm != null) {
+        if (bm != null) {
             val imageView = photo_image as ImageView
             imageView.setImageBitmap(bm)
         }
+    }
+
+    private fun saveFileOnInternal(uri: Uri?) : Uri? {
+        if(uri == null)
+            return null
+
+        val path = getRealPathFromURI(uri)
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+
+        if(context == null || path == null)
+            return null
+
+//        val name = "PHOTO_${timeStamp}.jpg"
+        val name = "PHOTO_DEBUG.jpg"
+
+        val file = File(requireContext().filesDir, name)
+        copyFile(File(path), file)
+        return Uri.fromFile(file)
+    }
+
+    private fun copyFile(sourceFile: File, destFile: File) {
+        if (!sourceFile.exists()) {
+            return
+        }
+        var source: FileChannel?
+        var destination: FileChannel?
+        source = FileInputStream(sourceFile).getChannel()
+        destination = FileOutputStream(destFile).getChannel()
+        if (destination != null && source != null) {
+            destination.transferFrom(source, 0, source.size())
+        }
+        if (source != null) {
+            source.close()
+        }
+        if (destination != null) {
+            destination.close()
+        }
+    }
+
+    fun getRealPathFromURI(contentUri: Uri): String? {
+        var res: String? = null
+        val proj = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor = requireContext().getContentResolver().query(contentUri, proj, null, null, null)
+        if (cursor != null && cursor.moveToFirst()) {
+            val column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+            res = cursor.getString(column_index)
+        }
+        cursor?.close()
+        return res
     }
 
     private fun hideKeyboard() {

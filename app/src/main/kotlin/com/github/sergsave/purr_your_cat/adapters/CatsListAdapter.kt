@@ -10,12 +10,14 @@ import com.github.sergsave.purr_your_cat.R
 import kotlinx.android.synthetic.main.view_cat_item.*
 import kotlinx.android.synthetic.main.view_cat_item.view.*
 import com.github.sergsave.purr_your_cat.models.CatData
+import com.github.sergsave.purr_your_cat.extensions.*
+import com.github.sergsave.purr_your_cat.helpers.ImageUtils
 
 class CatsListAdapter(private val onClickListener: OnClickListener):
     RecyclerView.Adapter<CatsListAdapter.ViewHolder>() {
 
     interface OnClickListener {
-        fun onClick(catData: CatData, sharedElement: View, sharedElementTransitionName: String)
+        fun onClick(position: Int, sharedElement: View, sharedElementTransitionName: String)
     }
 
     private var cats = arrayListOf<CatData>()
@@ -25,12 +27,22 @@ class CatsListAdapter(private val onClickListener: OnClickListener):
 
         fun bind(cat: CatData, onClickListener: OnClickListener, position: Int) {
             name_text.text = cat.name
-            photo_image.setImageURI(cat.photoUri)
+
+            val updatePhoto = {
+                val bm = ImageUtils.getScaledBitmapFromUri(photo_image.context, cat.photoUri,
+                    photo_image.width, photo_image.height)
+                photo_image.setImageBitmap(bm)
+            }
+
+            if(photo_image.width != 0 && photo_image.height != 0)
+                updatePhoto()
+            else
+                photo_image.setOnSizeReadyListener{ _,_ -> updatePhoto() }
 
             val view = containerView.photo_image
             val transitionName = "photo_image" + position
             ViewCompat.setTransitionName(view, transitionName)
-            containerView.setOnClickListener{ onClickListener.onClick(cat, view, transitionName) }
+            containerView.setOnClickListener{ onClickListener.onClick(position, view, transitionName) }
         }
     }
 
@@ -44,10 +56,8 @@ class CatsListAdapter(private val onClickListener: OnClickListener):
         notifyDataSetChanged()
     }
 
-    fun getItemsCopy() : ArrayList<CatData> {
-        val catsCopy = arrayListOf<CatData>()
-        catsCopy.addAll(cats)
-        return catsCopy
+    fun getItems() : ArrayList<CatData> {
+        return cats
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

@@ -7,6 +7,9 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialFadeThrough
 import kotlinx.android.synthetic.main.fragment_purring.*
 import com.github.sergsave.purr_your_cat.R
+import com.github.sergsave.purr_your_cat.Singleton
+import com.github.sergsave.purr_your_cat.extensions.*
+import com.github.sergsave.purr_your_cat.helpers.*
 
 class PurringFragment : Fragment() {
 
@@ -50,6 +53,11 @@ class PurringFragment : Fragment() {
         }
 
         setHasOptionsMenu(true)
+
+        photo_image.setOnSizeReadyListener { width, height ->
+            val bm = ImageUtils.getScaledBitmapFromUri(context, Singleton.catData?.photoUri, width, height )
+            photo_image.setImageBitmap(bm)
+        }
 
         // Shared element transition
         photo_image.setTransitionName(transitionName)
