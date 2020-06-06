@@ -21,6 +21,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+<!--            TODO: Adjust scaling mode and size-->
             <ImageView
                 android:id="@+id/photo_image"
                 android:layout_width="match_parent"
