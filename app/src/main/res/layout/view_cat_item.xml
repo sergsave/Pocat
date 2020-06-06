@@ -22,27 +22,32 @@
                 android:id="@+id/photo_image"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:scaleType="fitXY"
-                app:layout_constraintDimensionRatio="0.75"
+                android:scaleType="centerCrop"
+                app:layout_constraintBottom_toTopOf="@+id/name_text"
+                app:layout_constraintDimensionRatio="1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/cat" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <TextView
-            android:id="@+id/name_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:background="#99000000"
-            android:backgroundTint="?attr/colorPrimaryVariant"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:padding="15dp"
-            android:text="Cat name"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-            android:textColor="?attr/colorOnSurface" />
+            <TextView
+                android:id="@+id/name_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:background="#99000000"
+                android:backgroundTint="?attr/colorPrimary"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:padding="15dp"
+                android:text="Cat name"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                android:textColor="?attr/colorOnSurface"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/photo_image" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
 </FrameLayout>
