@@ -19,7 +19,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.github.sergsave.purr_your_cat.R
 import com.github.sergsave.purr_your_cat.Singleton
-import com.github.sergsave.purr_your_cat.extensions.setOnSizeReadyListener
 import com.github.sergsave.purr_your_cat.helpers.*
 import com.github.sergsave.purr_your_cat.models.CatData
 import com.google.android.material.transition.MaterialFadeThrough
@@ -29,7 +28,6 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.nio.channels.FileChannel
-import java.text.SimpleDateFormat
 import java.util.*
 
 class CatProfileFragment : Fragment() {
@@ -83,7 +81,7 @@ class CatProfileFragment : Fragment() {
         photo_image.setOnClickListener{ addPhoto() }
 
         // Restore photo
-        photo_image.setOnSizeReadyListener { _, _ -> setPhotoImage(catData?.photoUri) }
+        ImageUtils.loadInto(context, catData?.photoUri, photo_image as ImageView)
 
         form_layout.name_edit_text.setImeOptions(EditorInfo.IME_ACTION_DONE)
         form_layout.name_edit_text.setOnEditorActionListener { v, actionId, _ ->
@@ -213,8 +211,8 @@ class CatProfileFragment : Fragment() {
             IMAGE_PICK_CODE -> {
                 // Null data - image from camera
                 val uri = data?.data ?: cameraImageUri
-                setPhotoImage(uri)
                 catData?.photoUri = saveFileOnInternal(uri)
+                ImageUtils.loadInto(context, catData?.photoUri, photo_image as ImageView)
             }
             AUDIO_PICK_CODE -> {
                 val uri = data?.data
@@ -224,31 +222,16 @@ class CatProfileFragment : Fragment() {
         }
     }
 
-    private fun setPhotoImage(uri: Uri?) {
-        if (uri == null || context == null)
-            return
-
-        val bm = ImageUtils.getScaledBitmapFromUri(requireContext(), uri,
-            photo_image.width, photo_image.height)
-
-        if (bm != null) {
-            val imageView = photo_image as ImageView
-            imageView.setImageBitmap(bm)
-        }
-    }
-
     private fun saveFileOnInternal(uri: Uri?) : Uri? {
         if(uri == null)
             return null
 
         val path = getRealPathFromURI(uri)
-        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
 
         if(context == null || path == null)
             return null
 
-//        val name = "PHOTO_${timeStamp}.jpg"
-        val name = "PHOTO_DEBUG.jpg"
+        val name = path.substring(path.lastIndexOf("/") + 1)
 
         val file = File(requireContext().filesDir, name)
         copyFile(File(path), file)

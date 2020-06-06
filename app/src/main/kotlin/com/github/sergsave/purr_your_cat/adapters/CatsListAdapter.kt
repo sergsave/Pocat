@@ -10,7 +10,6 @@ import com.github.sergsave.purr_your_cat.R
 import kotlinx.android.synthetic.main.view_cat_item.*
 import kotlinx.android.synthetic.main.view_cat_item.view.*
 import com.github.sergsave.purr_your_cat.models.CatData
-import com.github.sergsave.purr_your_cat.extensions.*
 import com.github.sergsave.purr_your_cat.helpers.ImageUtils
 
 class CatsListAdapter(private val onClickListener: OnClickListener):
@@ -28,18 +27,9 @@ class CatsListAdapter(private val onClickListener: OnClickListener):
         fun bind(cat: CatData, onClickListener: OnClickListener, position: Int) {
             name_text.text = cat.name
 
-            val updatePhoto = {
-                val bm = ImageUtils.getScaledBitmapFromUri(photo_image.context, cat.photoUri,
-                    photo_image.width, photo_image.height)
-                photo_image.setImageBitmap(bm)
-            }
+            ImageUtils.loadInto(photo_image.context, cat.photoUri, photo_image)
 
-            if(photo_image.width != 0 && photo_image.height != 0)
-                updatePhoto()
-            else
-                photo_image.setOnSizeReadyListener{ _,_ -> updatePhoto() }
-
-            val view = containerView.photo_image
+            val view = photo_image
             val transitionName = "photo_image" + position
             ViewCompat.setTransitionName(view, transitionName)
             containerView.setOnClickListener{ onClickListener.onClick(position, view, transitionName) }

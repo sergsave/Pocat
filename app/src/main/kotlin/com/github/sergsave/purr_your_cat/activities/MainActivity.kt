@@ -5,9 +5,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.View
 import android.transition.Transition
 import android.transition.Transition.TransitionListener
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import com.github.sergsave.purr_your_cat.R
@@ -88,6 +88,9 @@ class MainActivity : AppCompatActivity() {
 
         val itemDecoration = MarginItemDecoration(itemMargin, { viewManager.spanCount })
 
+        // For the shared element transition to work correctly when returning to this screen
+        catsListAdapter?.setHasStableIds(true)
+
         recycler_view.apply {
             setHasFixedSize(true)
 
@@ -137,30 +140,13 @@ class MainActivity : AppCompatActivity() {
         if(catData == null)
             return
 
-        window.sharedElementExitTransition.addListener(object : TransitionListener {
-            override fun onTransitionStart(transition: Transition?) {}
-            override fun onTransitionPause(transition: Transition?) {}
-            override fun onTransitionResume(transition: Transition?) {}
-            override fun onTransitionEnd(transition: Transition?) {
-                window.sharedElementExitTransition.removeListener(this)
-                updateList()
-            }
+        val catsCopy = ArrayList<CatData>()
+        catsCopy.addAll(catsListAdapter.getItems())
 
-            override fun onTransitionCancel(transition: Transition?) {
-                window.sharedElementExitTransition.removeListener(this)
-                updateList()
-            }
+        catId?.let { catsCopy.set(it, catData) }
 
-            private fun updateList() {
-                val catsCopy = ArrayList<CatData>()
-                catsCopy.addAll(catsListAdapter.getItems())
-
-                catId?.let { catsCopy.set(it, catData) }
-
-                catsListAdapter.clearItems()
-                catsListAdapter.addItems(catsCopy)
-            }
-        })
+        catsListAdapter.clearItems()
+        catsListAdapter.addItems(catsCopy)
     }
 
     companion object {
