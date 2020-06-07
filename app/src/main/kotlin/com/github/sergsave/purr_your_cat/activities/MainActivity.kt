@@ -1,12 +1,10 @@
 package com.github.sergsave.purr_your_cat.activities
 
 import android.content.ContentResolver
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Parcelable
-import android.transition.Transition
-import android.transition.Transition.TransitionListener
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
@@ -17,6 +15,12 @@ import com.github.sergsave.purr_your_cat.helpers.AutoFitGridLayoutManager
 import com.github.sergsave.purr_your_cat.helpers.Constants
 import com.github.sergsave.purr_your_cat.helpers.MarginItemDecoration
 import com.github.sergsave.purr_your_cat.models.CatData
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.TypeAdapter
+import com.google.gson.reflect.TypeToken
+import com.google.gson.stream.JsonReader
+import com.google.gson.stream.JsonWriter
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -29,6 +33,48 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
+    // TODO: DATABASE storage
+    class UriAdapter : TypeAdapter<Uri?>() {
+
+        override fun write(out: JsonWriter?, value: Uri?) {
+            out?.value(value?.toString())
+        }
+
+        override fun read(`in`: JsonReader?): Uri? {
+            return `in`?.nextString()?.let { Uri.parse(it) }
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        val json = GsonBuilder()
+            .registerTypeAdapter(Uri::class.java, UriAdapter())
+            .create()
+            .toJson(catsListAdapter.getItems())
+
+        val preferences = getPreferences(Context.MODE_PRIVATE)
+        with (preferences.edit()) {
+            putString(CATS_LIST_KEY, json)
+            commit()
+        }
+    }
+
+    private fun loadCatsFromSettings(): ArrayList<CatData>? {
+        val preferences = getPreferences(Context.MODE_PRIVATE)
+
+        val json = preferences.getString(CATS_LIST_KEY, null)
+        if(json == null)
+            return null
+
+        val catsType = object : TypeToken<ArrayList<CatData>>() {}.type
+
+        return GsonBuilder()
+            .registerTypeAdapter(Uri::class.java, UriAdapter())
+            .create()
+            .fromJson<ArrayList<CatData>>(json, catsType)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -37,7 +83,7 @@ class MainActivity : AppCompatActivity() {
             ContentResolver.SCHEME_ANDROID_RESOURCE +
                 "://" + getResources().getResourcePackageName(R.drawable.cat)
                 + '/' + getResources().getResourceTypeName(R.drawable.cat)
-                + '/' + getResources().getResourceEntryName(R.drawable.cat) );
+                + '/' + getResources().getResourceEntryName(R.drawable.cat))
 
         val testCats = arrayListOf(
             CatData("Simka", testUri),
@@ -49,13 +95,7 @@ class MainActivity : AppCompatActivity() {
             CatData("Ganya", testUri)
         )
 
-        val initState =
-            if(savedInstanceState != null)
-                restoreInstanceState(savedInstanceState)
-            else
-                InstanceState(testCats, null)
-
-        setupCatsList(initState)
+        setupCatsList(loadCatsFromSettings() ?: testCats)
 
         fab.setOnClickListener {
             val intent = Intent(this, CatCardActivity::class.java)
@@ -65,7 +105,7 @@ class MainActivity : AppCompatActivity() {
         fab_clickable_layout.setOnClickListener { fab.performClick() }
     }
 
-    private fun setupCatsList(initState: InstanceState) {
+    private fun setupCatsList(cats: ArrayList<CatData>?) {
         // TODO: remove hardcode
         val columnWidth = 180
         val itemMargin = 16
@@ -79,17 +119,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         catsListAdapter = CatsListAdapter(listener)
-        if(initState.catsList != null)
-            catsListAdapter.addItems(initState.catsList)
+        if(cats != null)
+            catsListAdapter.addItems(cats)
 
         val viewManager = AutoFitGridLayoutManager(this, columnWidth)
-        if(initState.layoutManagerState != null)
-            viewManager.onRestoreInstanceState(initState.layoutManagerState)
-
         val itemDecoration = MarginItemDecoration(itemMargin, { viewManager.spanCount })
 
         // For the shared element transition to work correctly when returning to this screen
-        catsListAdapter?.setHasStableIds(true)
+        catsListAdapter.setHasStableIds(true)
 
         recycler_view.apply {
             setHasFixedSize(true)
@@ -113,19 +150,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-
-        outState.putParcelableArrayList(CATS_LIST_KEY, catsListAdapter.getItems())
-        outState.putParcelable(LAYOUT_MANAGER_STATE_KEY, recycler_view.layoutManager?.onSaveInstanceState())
-    }
-
-    data class InstanceState(val catsList: ArrayList<CatData>?, val layoutManagerState: Parcelable? )
-
-    private fun restoreInstanceState(savedInstanceState: Bundle?) : InstanceState {
-
-        val catsList: ArrayList<CatData>? = savedInstanceState?.getParcelableArrayList(CATS_LIST_KEY)
-        val layoutManagerState : Parcelable? = savedInstanceState?.getParcelable(LAYOUT_MANAGER_STATE_KEY)
-
-        return InstanceState(catsList, layoutManagerState)
     }
 
     override fun onActivityReenter(resultCode: Int, data: Intent?) {
@@ -151,6 +175,5 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private val CATS_LIST_KEY = "CatsList"
-        private val LAYOUT_MANAGER_STATE_KEY = "LayoutManager"
     }
 }
