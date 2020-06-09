@@ -8,6 +8,7 @@ import com.bumptech.glide.Glide
 class ImageUtils {
     companion object {
         fun loadInto(context: Context?, uri: Uri?, imageView: ImageView) {
+
             if(context == null)
                 return
 

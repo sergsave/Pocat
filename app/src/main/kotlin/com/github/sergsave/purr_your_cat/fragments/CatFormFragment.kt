@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -22,15 +21,14 @@ import com.github.sergsave.purr_your_cat.Singleton
 import com.github.sergsave.purr_your_cat.helpers.*
 import com.github.sergsave.purr_your_cat.models.CatData
 import com.google.android.material.transition.MaterialFadeThrough
-import kotlinx.android.synthetic.main.form_profile.view.*
-import kotlinx.android.synthetic.main.fragment_cat_profile.*
+import kotlinx.android.synthetic.main.view_cat_form_fields.view.*
+import kotlinx.android.synthetic.main.fragment_cat_form.*
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.nio.channels.FileChannel
-import java.util.*
 
-class CatProfileFragment : Fragment() {
+class CatFormFragment : Fragment() {
 
     interface OnApplyListener {
         fun onApply()
@@ -46,6 +44,10 @@ class CatProfileFragment : Fragment() {
         super.onDestroy()
     }
 
+    fun getCatData(): CatData? {
+        return catData
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -53,7 +55,6 @@ class CatProfileFragment : Fragment() {
             enterTransition = MaterialFadeThrough.create(requireContext())
 
         arguments?.let {
-            Singleton.catData = it.getParcelable(ARG_CAT_DATA) as CatData?
             catData = Singleton.catData
         }
 
@@ -65,7 +66,7 @@ class CatProfileFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_cat_profile, container, false)
+        return inflater.inflate(R.layout.fragment_cat_form, container, false)
     }
 
     // TODO? or in onViewCreate
@@ -291,7 +292,7 @@ class CatProfileFragment : Fragment() {
 
         @JvmStatic
         fun newInstance(catData: CatData?) =
-            CatProfileFragment().apply {
+            CatFormFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(ARG_CAT_DATA, catData)
                 }

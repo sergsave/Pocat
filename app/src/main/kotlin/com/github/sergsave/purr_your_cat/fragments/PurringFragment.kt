@@ -26,7 +26,8 @@ class PurringFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        enterTransition = MaterialFadeThrough.create(requireContext())
+//        enterTransition = MaterialFadeThrough.create(requireContext())
+        postponeEnterTransition()
 
         arguments?.let {
             transitionName = it.getString(ARG_TRANSITION_NAME)
@@ -57,6 +58,7 @@ class PurringFragment : Fragment() {
 
         // Shared element transition
         photo_image.setTransitionName(transitionName)
+
         photo_image.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
             override fun onPreDraw(): Boolean {
                 photo_image.viewTreeObserver.removeOnPreDrawListener(this)

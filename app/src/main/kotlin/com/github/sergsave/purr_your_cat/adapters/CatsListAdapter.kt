@@ -16,7 +16,7 @@ class CatsListAdapter(private val onClickListener: OnClickListener):
     RecyclerView.Adapter<CatsListAdapter.ViewHolder>() {
 
     interface OnClickListener {
-        fun onClick(position: Int, sharedElement: View, sharedElementTransitionName: String)
+        fun onClick(position: Int, sharedView: View, sharedElementTransitionName: String)
     }
 
     private var cats = arrayListOf<CatData>()
@@ -29,10 +29,9 @@ class CatsListAdapter(private val onClickListener: OnClickListener):
 
             ImageUtils.loadInto(photo_image.context, cat.photoUri, photo_image)
 
-            val view = photo_image
             val transitionName = "photo_image" + position
-            ViewCompat.setTransitionName(view, transitionName)
-            containerView.setOnClickListener{ onClickListener.onClick(position, view, transitionName) }
+            ViewCompat.setTransitionName(photo_image, transitionName)
+            containerView.setOnClickListener{ onClickListener.onClick(position, photo_image, transitionName) }
         }
     }
 
