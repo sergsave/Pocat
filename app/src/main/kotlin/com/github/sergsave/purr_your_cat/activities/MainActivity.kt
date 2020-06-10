@@ -1,187 +1,179 @@
 package com.github.sergsave.purr_your_cat.activities
 
-import android.app.Activity
+import android.content.ContentResolver
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.transition.ChangeBounds
-import android.transition.ChangeClipBounds
-import android.transition.ChangeTransform
-import android.transition.ChangeImageTransform
-import android.transition.TransitionSet
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
+import androidx.core.app.ActivityOptionsCompat
 import com.github.sergsave.purr_your_cat.R
-import com.github.sergsave.purr_your_cat.fragments.CatsListFragment
-import com.github.sergsave.purr_your_cat.fragments.CatFormFragment
-import com.github.sergsave.purr_your_cat.fragments.PurringFragment
-import com.github.sergsave.purr_your_cat.helpers.Constants
-import com.github.sergsave.purr_your_cat.models.CatData
 import com.github.sergsave.purr_your_cat.Singleton
+import com.github.sergsave.purr_your_cat.adapters.CatsListAdapter
+import com.github.sergsave.purr_your_cat.helpers.AutoFitGridLayoutManager
+import com.github.sergsave.purr_your_cat.helpers.Constants
+import com.github.sergsave.purr_your_cat.helpers.MarginItemDecoration
+import com.github.sergsave.purr_your_cat.models.CatData
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.TypeAdapter
+import com.google.gson.reflect.TypeToken
+import com.google.gson.stream.JsonReader
+import com.google.gson.stream.JsonWriter
 import kotlinx.android.synthetic.main.activity_main.*
+
 
 class MainActivity : AppCompatActivity() {
 
-    private sealed class PageType(val fragmentTag: String) {
-        private enum class Tag { LIST, CREATE, EDIT, PURRING }
-
-        class List() : PageType(Tag.LIST.name)
-        class Create() : PageType(Tag.CREATE.name)
-        class Edit() : PageType(Tag.EDIT.name)
-        class Purring(val sharedView: View? = null,
-                      val sharedElementTransitionName : String? = null) : PageType(Tag.PURRING.name)
-
-        companion object {
-            // Return default constructed object
-            fun makeFromTag(tag: String?) : PageType? {
-                return when(tag) {
-                    Tag.LIST.name -> List()
-                    Tag.CREATE.name -> Create()
-                    Tag.EDIT.name -> Edit()
-                    Tag.PURRING.name -> Purring()
-                    else -> null
-                }
-            }
-        }
-    }
-
-    private var currentPage : PageType? = null
+    private lateinit var catsListAdapter : CatsListAdapter
+    private var catId : Int? = null
 
     override fun onDestroy() {
         super.onDestroy()
+    }
+
+    // TODO: DATABASE storage
+    class UriAdapter : TypeAdapter<Uri?>() {
+
+        override fun write(out: JsonWriter?, value: Uri?) {
+            out?.value(value?.toString())
+        }
+
+        override fun read(`in`: JsonReader?): Uri? {
+            return `in`?.nextString()?.let { Uri.parse(it) }
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        val json = GsonBuilder()
+            .registerTypeAdapter(Uri::class.java, UriAdapter())
+            .create()
+            .toJson(catsListAdapter.getItems())
+
+        val preferences = getPreferences(Context.MODE_PRIVATE)
+        with (preferences.edit()) {
+            putString(CATS_LIST_KEY, json)
+            commit()
+        }
+    }
+
+    private fun loadCatsFromSettings(): ArrayList<CatData>? {
+        val preferences = getPreferences(Context.MODE_PRIVATE)
+
+        val json = preferences.getString(CATS_LIST_KEY, null)
+        if(json == null)
+            return null
+
+        val catsType = object : TypeToken<ArrayList<CatData>>() {}.type
+
+        return GsonBuilder()
+            .registerTypeAdapter(Uri::class.java, UriAdapter())
+            .create()
+            .fromJson<ArrayList<CatData>>(json, catsType)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Use common toolbar for pages to avoid transition blinking
-        setSupportActionBar(toolbar)
-        toolbar.setNavigationOnClickListener { onBackPressed() }
-        
-        if(savedInstanceState == null) {
-            switchToPage(PageType.List())
+        val testUri = Uri.parse(
+            ContentResolver.SCHEME_ANDROID_RESOURCE +
+                "://" + getResources().getResourcePackageName(R.drawable.cat)
+                + '/' + getResources().getResourceTypeName(R.drawable.cat)
+                + '/' + getResources().getResourceEntryName(R.drawable.cat))
+
+        val testCats = arrayListOf(
+            CatData("Simka", testUri),
+            CatData("Masik", testUri),
+            CatData("Uta", testUri),
+            CatData("Sherya", testUri),
+            CatData("Sema", testUri),
+            CatData("Philya", testUri),
+            CatData("Ganya", testUri)
+        )
+
+        setupCatsList(loadCatsFromSettings() ?: testCats)
+
+        fab.setOnClickListener {
+            val intent = Intent(this, CatCardActivity::class.java)
+            startActivity(intent)
         }
-        else {
-            val tag = savedInstanceState.getString(TAG_BUNDLE_KEY)
-            PageType.makeFromTag(tag)?.let { switchToPage(it) }
-        }
+
+        fab_clickable_layout.setOnClickListener { fab.performClick() }
     }
 
-    private fun makeReplaceTransaction(fragment: Fragment, tag: String) : FragmentTransaction?
-    {
-        if(supportFragmentManager.findFragmentByTag(tag) != null)
-            return null
+    private fun setupCatsList(cats: ArrayList<CatData>?) {
+        // TODO: remove hardcode
+        val columnWidth = 180
+        val itemMargin = 16
 
-        return supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.container, fragment, tag)
-    }
-
-    private fun switchToPage(page: PageType) {
-        val existingFragment = supportFragmentManager.findFragmentByTag(page.fragmentTag)
-
-        val transaction : FragmentTransaction? = when(page) {
-            is PageType.List -> {
-                val fragment = existingFragment as CatsListFragment?
-                    ?: CatsListFragment()
-
-                initFragment(fragment)
-                makeReplaceTransaction(fragment, page.fragmentTag)
-            }
-            // Use same fragment, but different tags
-            is PageType.Create, is PageType.Edit -> {
-                val fragment = existingFragment as CatFormFragment?
-                    ?: CatFormFragment.newInstance(Singleton.catData)
-
-                initFragment(fragment)
-                makeReplaceTransaction(fragment, page.fragmentTag)
-            }
-            is PageType.Purring -> {
-                val fragment = existingFragment as PurringFragment?
-                    ?: PurringFragment.newInstance(page.sharedElementTransitionName)
-
-                initFragment(fragment)
-
-                val view = page.sharedView
-                val name = page.sharedElementTransitionName
-
-                supportFragmentManager
-                    .beginTransaction()
-//                    .setReorderingAllowed(true)
-                    .addSharedElement(view!!, name!!)
-                    .replace(R.id.container, fragment, page.fragmentTag)
-                    .addToBackStack(null)
-//                makeReplaceTransaction(fragment, page.fragmentTag)?.apply {
-//                    addToBackStack(null)
-//                    if(view != null && name != null)
-//                        addSharedElement(view, name)
-//                }
+        val listener = object : CatsListAdapter.OnClickListener {
+            override fun onClick(position: Int, sharedElement: View, sharedElementTransitionName: String) {
+                val data = catsListAdapter.getItems().get(position)
+                catId = position
+                goToPurringAnimated(data, sharedElement, sharedElementTransitionName)
             }
         }
 
-        transaction?.commit()
-        currentPage = page
-    }
+        catsListAdapter = CatsListAdapter(listener)
+        if(cats != null)
+            catsListAdapter.addItems(cats)
 
-    private fun initFragment(fragment: CatsListFragment) {
-        val listener = object: CatsListFragment.OnItemClickListener {
-            override fun onItemClick(cat: CatData?, view: View?, sharedElementTransitionName: String?) {
-                Singleton.catData = cat
-                switchToPage(PageType.Purring(view, sharedElementTransitionName))
-            }
-        }
+        val viewManager = AutoFitGridLayoutManager(this, columnWidth)
+        val itemDecoration = MarginItemDecoration(itemMargin, { viewManager.spanCount })
 
-        fragment.apply {
-//            setSharedElementReturnTransition(ChangeBounds())
-//            setExitTransition(null)
-            setOnItemClickListener(listener)
-        }
-    }
+        // For the shared element transition to work correctly when returning to this screen
+        catsListAdapter.setHasStableIds(true)
 
-    private fun initFragment(fragment: CatFormFragment) {
-        fragment.apply {
-            setOnApplyListener(object: CatFormFragment.OnApplyListener {
-                override fun onApply() = switchToPage(PageType.Purring())
-            })
+        recycler_view.apply {
+            setHasFixedSize(true)
+
+            layoutManager = viewManager
+            adapter = catsListAdapter
+            addItemDecoration(itemDecoration)
         }
     }
 
-    private fun initFragment(fragment: PurringFragment) {
-        fragment.apply {
+    private fun goToPurringAnimated(cat: CatData, sharedElement: View, transitionName: String) {
+        val intent = Intent(this, CatCardActivity::class.java)
+        intent.putExtra(Constants.CAT_DATA_INTENT_KEY, cat)
+        intent.putExtra(Constants.SHARED_TRANSITION_NAME_INTENT_KEY, transitionName)
 
-            val transition = TransitionSet().apply {
-                ordering = TransitionSet.ORDERING_TOGETHER
-                addTransition(ChangeClipBounds())
-                addTransition(ChangeTransform())
-                addTransition(ChangeBounds())
-//                addTransition(ChangeImageTransform())
-            }
-            setSharedElementEnterTransition(transition)
-            setSharedElementReturnTransition(transition)
-//            setEnterTransition(null)
-            setOnEditRequestedListener(object: PurringFragment.OnEditRequestedListener {
-                override fun onEditRequested() = switchToPage(PageType.Edit())
-            })
-        }
-    }
+        val transitionOption = ActivityOptionsCompat.makeSceneTransitionAnimation(
+            this, sharedElement, transitionName)
 
-    override fun onBackPressed() {
-        if (currentPage is PageType.Create) {
-            switchToPage(PageType.Purring())
-        }
-        else
-            super.onBackPressed()
+        startActivity(intent, transitionOption.toBundle())
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(TAG_BUNDLE_KEY, currentPage?.fragmentTag)
+    }
+
+    override fun onActivityReenter(resultCode: Int, data: Intent?) {
+        super.onActivityReenter(resultCode, data)
+
+        if(resultCode != RESULT_OK || data == null)
+            return
+
+        val catData = Singleton.catData
+//        val catData = data?.getParcelableExtra(Constants.CAT_DATA_INTENT_KEY) as CatData?
+
+        if(catData == null)
+            return
+
+        val catsCopy = ArrayList<CatData>()
+        catsCopy.addAll(catsListAdapter.getItems())
+
+        catId?.let { catsCopy.set(it, catData) }
+
+        catsListAdapter.clearItems()
+        catsListAdapter.addItems(catsCopy)
     }
 
     companion object {
-        private val TAG_BUNDLE_KEY = "CurrentTag"
+        private val CATS_LIST_KEY = "CatsList"
     }
 }
