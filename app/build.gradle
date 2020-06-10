@@ -15,7 +15,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.github.sergsave.purr_your_cat"
+        applicationId "com.sergsave.purryourcat"
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 1

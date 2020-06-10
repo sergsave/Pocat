@@ -1,11 +1,10 @@
-package com.github.sergsave.purr_your_cat.fragments
+package com.sergsave.purryourcat.fragments
 
 import android.Manifest
 import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -17,20 +16,19 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.github.sergsave.purr_your_cat.R
-import com.github.sergsave.purr_your_cat.Singleton
-import com.github.sergsave.purr_your_cat.helpers.*
-import com.github.sergsave.purr_your_cat.models.CatData
+import com.sergsave.purryourcat.R
+import com.sergsave.purryourcat.Singleton
+import com.sergsave.purryourcat.helpers.*
+import com.sergsave.purryourcat.models.CatData
 import com.google.android.material.transition.MaterialFadeThrough
-import kotlinx.android.synthetic.main.form_profile.view.*
-import kotlinx.android.synthetic.main.fragment_cat_profile.*
+import kotlinx.android.synthetic.main.view_form_fields.view.*
+import kotlinx.android.synthetic.main.fragment_cat_form.*
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.nio.channels.FileChannel
-import java.util.*
 
-class CatProfileFragment : Fragment() {
+class CatFormFragment : Fragment() {
 
     interface OnApplyListener {
         fun onApply()
@@ -65,7 +63,7 @@ class CatProfileFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_cat_profile, container, false)
+        return inflater.inflate(R.layout.fragment_cat_form, container, false)
     }
 
     // TODO? or in onViewCreate
@@ -291,7 +289,7 @@ class CatProfileFragment : Fragment() {
 
         @JvmStatic
         fun newInstance(catData: CatData?) =
-            CatProfileFragment().apply {
+            CatFormFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(ARG_CAT_DATA, catData)
                 }

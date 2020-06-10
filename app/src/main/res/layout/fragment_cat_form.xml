@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:orientation="vertical"
-    tools:context=".CatProfileActivity" >
+    android:orientation="vertical">
 
     <ScrollView
     android:layout_width="match_parent"
@@ -47,7 +46,7 @@
 
             <include
                 android:id="@+id/form_layout"
-                layout="@layout/form_profile"
+                layout="@layout/view_form_fields"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginLeft="20dp"

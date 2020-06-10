@@ -1,4 +1,4 @@
-package com.github.sergsave.purr_your_cat.activities
+package com.sergsave.purryourcat.activities
 
 import android.content.ContentResolver
 import android.content.Context
@@ -8,13 +8,13 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
-import com.github.sergsave.purr_your_cat.R
-import com.github.sergsave.purr_your_cat.Singleton
-import com.github.sergsave.purr_your_cat.adapters.CatsListAdapter
-import com.github.sergsave.purr_your_cat.helpers.AutoFitGridLayoutManager
-import com.github.sergsave.purr_your_cat.helpers.Constants
-import com.github.sergsave.purr_your_cat.helpers.MarginItemDecoration
-import com.github.sergsave.purr_your_cat.models.CatData
+import com.sergsave.purryourcat.R
+import com.sergsave.purryourcat.Singleton
+import com.sergsave.purryourcat.adapters.CatsListAdapter
+import com.sergsave.purryourcat.helpers.AutoFitGridLayoutManager
+import com.sergsave.purryourcat.helpers.Constants
+import com.sergsave.purryourcat.helpers.MarginItemDecoration
+import com.sergsave.purryourcat.models.CatData
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.TypeAdapter

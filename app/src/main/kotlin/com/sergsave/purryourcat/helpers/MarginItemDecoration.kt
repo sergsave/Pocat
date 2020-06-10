@@ -1,4 +1,4 @@
-package com.github.sergsave.purr_your_cat.helpers
+package com.sergsave.purryourcat.helpers
 
 import android.graphics.Rect
 import android.view.View

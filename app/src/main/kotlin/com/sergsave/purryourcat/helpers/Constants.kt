@@ -1,4 +1,4 @@
-package com.github.sergsave.purr_your_cat.helpers
+package com.sergsave.purryourcat.helpers
 
 object Constants {
     const val CAT_DATA_INTENT_KEY = "CatDataIntent"
