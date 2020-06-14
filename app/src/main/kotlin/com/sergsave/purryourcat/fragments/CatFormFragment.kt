@@ -23,12 +23,9 @@ import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.activities.CatDataViewModel
 import com.sergsave.purryourcat.helpers.*
 import com.sergsave.purryourcat.models.CatData
-import kotlinx.android.synthetic.main.view_form_fields.view.*
 import kotlinx.android.synthetic.main.fragment_cat_form.*
+import kotlinx.android.synthetic.main.view_form_fields.view.*
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.nio.channels.FileChannel
 
 class CatFormFragment : Fragment() {
 
@@ -79,8 +76,17 @@ class CatFormFragment : Fragment() {
 
         // TODO. TOP 5 errors with model view !!
         model.data.observe(this, Observer<CatData> { cat ->
-            ImageUtils.loadInto(context, cat?.photoUri, photo_image as ImageView)
-            form_layout.sound_edit_text.setText(cat?.purrAudioUri?.getLastPathSegment())
+            val context = context
+            if(context != null) {
+                ImageUtils.loadInto(context, cat?.photoUri, photo_image as ImageView)
+
+                cat?.purrAudioUri?.let {
+                    form_layout.sound_edit_text.setText(FileUtils.getContentFileName(context, it))
+                }
+                cat?.name?.let {
+                    form_layout.name_edit_text.setText(it)
+                }
+            }
         })
 
         setupToolbar(mode)
@@ -97,6 +103,15 @@ class CatFormFragment : Fragment() {
                 hideKeyboard()
             }
             false
+        }
+        //TODO: Save text always
+        form_layout.name_edit_text.setOnFocusChangeListener { _, hasFocus ->
+            if(hasFocus == false) {
+                model.data.value?.let {
+                    it.name = form_layout.name_edit_text.text.toString()
+                    model.change(it)
+                }
+            }
         }
 
         form_layout.sound_edit_text.setOnClickListener { addAudio() }
@@ -218,63 +233,31 @@ class CatFormFragment : Fragment() {
             IMAGE_PICK_CODE -> {
                 // Null data - image from camera
                 val uri = data?.data ?: cameraImageUri
-                catData.photoUri = saveFileOnInternal(uri)
+                catData.photoUri = saveFileOnInternal(context, uri)
             }
             AUDIO_PICK_CODE -> {
                 val uri = data?.data
-                catData.purrAudioUri = uri
+                catData.purrAudioUri = saveFileOnInternal(context, uri)
             }
         }
 
         model.change(catData)
     }
 
-    // TODO: Filesystem utils
-    private fun saveFileOnInternal(uri: Uri?) : Uri? {
-        if(uri == null)
+    private fun saveFileOnInternal(context: Context?, uri: Uri?) : Uri? {
+        if(uri == null || context == null)
             return null
 
-        val path = getRealPathFromURI(uri)
+        val inputStream = context.contentResolver.openInputStream(uri)
+        val fileName = FileUtils.getContentFileName(context, uri)
 
-        if(context == null || path == null)
+        if(inputStream == null || fileName == null)
             return null
 
-        val name = path.substring(path.lastIndexOf("/") + 1)
+        val file = File(context.filesDir, fileName)
 
-        val file = File(requireContext().filesDir, name)
-        copyFile(File(path), file)
+        FileUtils.copyStreamToFile(inputStream, file)
         return Uri.fromFile(file)
-    }
-
-    private fun copyFile(sourceFile: File, destFile: File) {
-        if (!sourceFile.exists()) {
-            return
-        }
-        var source: FileChannel?
-        var destination: FileChannel?
-        source = FileInputStream(sourceFile).getChannel()
-        destination = FileOutputStream(destFile).getChannel()
-        if (destination != null && source != null) {
-            destination.transferFrom(source, 0, source.size())
-        }
-        if (source != null) {
-            source.close()
-        }
-        if (destination != null) {
-            destination.close()
-        }
-    }
-
-    fun getRealPathFromURI(contentUri: Uri): String? {
-        var res: String? = null
-        val proj = arrayOf(MediaStore.Images.Media.DATA)
-        val cursor = requireContext().getContentResolver().query(contentUri, proj, null, null, null)
-        if (cursor != null && cursor.moveToFirst()) {
-            val column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-            res = cursor.getString(column_index)
-        }
-        cursor?.close()
-        return res
     }
 
     private fun hideKeyboard() {

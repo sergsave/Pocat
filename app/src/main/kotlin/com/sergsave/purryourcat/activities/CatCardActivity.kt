@@ -30,7 +30,7 @@ class CatDataViewModel(catRepoId: String? = null) : ViewModel() {
         }
 
         this.catRepoId = catRepoId ?: repo.add(CatData())
-        _data.value = repo.read().value?.get(catRepoId)
+        _data.value = repo.read().value?.get(this.catRepoId)
     }
 
     val data : LiveData<CatData>
