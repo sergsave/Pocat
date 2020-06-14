@@ -16,11 +16,13 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
+import com.google.android.material.transition.MaterialFadeThrough
 import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.Singleton
+import com.sergsave.purryourcat.activities.CatDataViewModel
 import com.sergsave.purryourcat.helpers.*
 import com.sergsave.purryourcat.models.CatData
-import com.google.android.material.transition.MaterialFadeThrough
 import kotlinx.android.synthetic.main.view_form_fields.view.*
 import kotlinx.android.synthetic.main.fragment_cat_form.*
 import java.io.File
@@ -34,9 +36,14 @@ class CatFormFragment : Fragment() {
         fun onApply()
     }
 
-    private var catData: CatData? = null
+    enum class Mode {
+        CREATE, EDIT
+    }
+
+    private val model: CatDataViewModel by activityViewModels()
     private var cameraImageUri: Uri? = null
     private var onApplyListener: OnApplyListener? = null
+    private lateinit var mode: Mode
 
     override fun onDestroy() {
         // TODO? Save keyboard visible after orientation change
@@ -50,12 +57,12 @@ class CatFormFragment : Fragment() {
         if(context != null)
             enterTransition = MaterialFadeThrough.create(requireContext())
 
-        arguments?.let {
-            Singleton.catData = it.getParcelable(ARG_CAT_DATA) as CatData?
-            catData = Singleton.catData
-        }
-
         cameraImageUri = savedInstanceState?.getParcelable(CAMERA_IMAGE_URI_BUNDLE_KEY)
+
+        arguments?.let {
+            val ordinal = it.getInt(ARG_MODE)
+            mode = Mode.values().get(ordinal)
+        }
     }
 
     override fun onCreateView(
@@ -70,16 +77,18 @@ class CatFormFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val mode = if(catData == null) Mode.CREATE else Mode.EDIT
+        // TODO. TOP 5 errors with model view !!
+        model.data.observe(this, Observer<CatData> { cat ->
+            ImageUtils.loadInto(context, cat?.photoUri, photo_image as ImageView)
+            form_layout.sound_edit_text.setText(cat?.purrAudioUri?.getLastPathSegment())
+        })
+
         setupToolbar(mode)
 
         setHasOptionsMenu(true)
 
         fab.setOnClickListener{ addPhoto() }
         photo_image.setOnClickListener{ addPhoto() }
-
-        // Restore photo
-        ImageUtils.loadInto(context, catData?.photoUri, photo_image as ImageView)
 
         form_layout.name_edit_text.setImeOptions(EditorInfo.IME_ACTION_DONE)
         form_layout.name_edit_text.setOnEditorActionListener { v, actionId, _ ->
@@ -96,10 +105,6 @@ class CatFormFragment : Fragment() {
 
     fun setOnApplyListener(listener: OnApplyListener) {
         onApplyListener = listener
-    }
-
-    private enum class Mode {
-        CREATE, EDIT
     }
 
     private fun setupToolbar(mode: Mode) {
@@ -205,21 +210,26 @@ class CatFormFragment : Fragment() {
         if (resultCode != Activity.RESULT_OK)
             return
 
+        val catData = model.data.value
+        if(catData == null)
+            return
+
         when(requestCode) {
             IMAGE_PICK_CODE -> {
                 // Null data - image from camera
                 val uri = data?.data ?: cameraImageUri
-                catData?.photoUri = saveFileOnInternal(uri)
-                ImageUtils.loadInto(context, catData?.photoUri, photo_image as ImageView)
+                catData.photoUri = saveFileOnInternal(uri)
             }
             AUDIO_PICK_CODE -> {
                 val uri = data?.data
-                form_layout.sound_edit_text.setText(uri?.getLastPathSegment())
-                catData?.purrAudioUri = uri
+                catData.purrAudioUri = uri
             }
         }
+
+        model.change(catData)
     }
 
+    // TODO: Filesystem utils
     private fun saveFileOnInternal(uri: Uri?) : Uri? {
         if(uri == null)
             return null
@@ -278,8 +288,6 @@ class CatFormFragment : Fragment() {
     }
 
     companion object {
-        private val ARG_CAT_DATA = "CatData"
-
         private val CAMERA_IMAGE_URI_BUNDLE_KEY = "CameraImageUri"
 
         private val IMAGE_PERMISSIONS_CODE = 1000
@@ -287,11 +295,13 @@ class CatFormFragment : Fragment() {
         private val IMAGE_PICK_CODE = 1002
         private val AUDIO_PICK_CODE = 1003
 
+        private val ARG_MODE = "Mode"
+
         @JvmStatic
-        fun newInstance(catData: CatData?) =
+        fun newInstance(mode: Mode) =
             CatFormFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(ARG_CAT_DATA, catData)
+                    putInt(ARG_MODE, mode.ordinal)
                 }
             }
     }

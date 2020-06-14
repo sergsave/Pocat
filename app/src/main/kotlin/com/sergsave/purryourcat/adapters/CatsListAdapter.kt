@@ -16,10 +16,20 @@ class CatsListAdapter(private val onClickListener: OnClickListener):
     RecyclerView.Adapter<CatsListAdapter.ViewHolder>() {
 
     interface OnClickListener {
-        fun onClick(position: Int, sharedElement: View, sharedElementTransitionName: String)
+        fun onClick(catWithId: Pair<Long, CatData>,
+                        sharedElement: View, sharedElementTransitionName: String)
     }
 
-    private var cats = arrayListOf<CatData>()
+    private var cats = listOf<Pair<Long, CatData>>()
+
+    init {
+        // For the shared element transition to work correctly
+        setHasStableIds(true)
+    }
+
+    override fun getItemId(position: Int): Long {
+        return cats.get(position).first
+    }
 
     class ViewHolder(override val containerView: View) :
         RecyclerView.ViewHolder(containerView), LayoutContainer {
@@ -32,21 +42,18 @@ class CatsListAdapter(private val onClickListener: OnClickListener):
             val view = photo_image
             val transitionName = "photo_image" + position
             ViewCompat.setTransitionName(view, transitionName)
-            containerView.setOnClickListener{ onClickListener.onClick(position, view, transitionName) }
+            containerView.setOnClickListener{
+                onClickListener.onClick(Pair(itemId, cat), view, transitionName)
+            }
         }
     }
 
-    fun addItems(cats: ArrayList<CatData>) {
-        this.cats.addAll(cats)
+    fun setItems(catsWithId: List<Pair<Long, CatData>>) {
+        this.cats = catsWithId
         notifyDataSetChanged()
     }
 
-    fun clearItems() {
-        cats.clear()
-        notifyDataSetChanged()
-    }
-
-    fun getItems() : ArrayList<CatData> {
+    fun getItems() : List<Pair<Long, CatData>> {
         return cats
     }
 
@@ -58,7 +65,7 @@ class CatsListAdapter(private val onClickListener: OnClickListener):
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(cats.get(position), onClickListener, position)
+        holder.bind(cats.get(position).second, onClickListener, position)
     }
 
     override fun getItemCount() = cats.size

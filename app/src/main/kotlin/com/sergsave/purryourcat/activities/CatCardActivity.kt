@@ -1,17 +1,50 @@
 package com.sergsave.purryourcat.activities
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.sergsave.purryourcat.R
+import com.sergsave.purryourcat.data.CatDataRepo
 import com.sergsave.purryourcat.fragments.CatFormFragment
 import com.sergsave.purryourcat.fragments.PurringFragment
 import com.sergsave.purryourcat.helpers.Constants
 import com.sergsave.purryourcat.models.CatData
-import com.sergsave.purryourcat.Singleton
 import kotlinx.android.synthetic.main.activity_cat_card.*
+
+class CatDataViewModel(catRepoId: String? = null) : ViewModel() {
+    private val _data = MutableLiveData<CatData>()
+    private lateinit var repo: CatDataRepo
+    private val catRepoId: String
+
+    init {
+        CatDataRepo.instance?.let {
+            repo = it
+        } ?: run {
+            assert(false) { "Must be init" }
+        }
+
+        this.catRepoId = catRepoId ?: repo.add(CatData())
+        _data.value = repo.read().value?.get(catRepoId)
+    }
+
+    val data : LiveData<CatData>
+        get() = _data
+
+    fun change(cat: CatData) {
+        _data.value = cat
+        repo.update(catRepoId, cat)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+    }
+}
 
 class CatCardActivity : AppCompatActivity() {
 
@@ -21,7 +54,7 @@ class CatCardActivity : AppCompatActivity() {
         PURRING("Purring")
     }
 
-    private var currentPage : PageType? = null
+    private lateinit var currentPage : PageType
 
     override fun onDestroy() {
         super.onDestroy()
@@ -34,36 +67,46 @@ class CatCardActivity : AppCompatActivity() {
         // Use common toolbar for pages to avoid transition blinking
         setSupportActionBar(toolbar)
         toolbar.setNavigationOnClickListener { onBackPressed() }
-        
+
         if(savedInstanceState == null) {
-            if(getSharedElementTransitionName() != null)
+            if(getTransitionName(intent) != null)
                 postponeEnterTransition()
 
-            if(getCatData() == null)
+            val catId = getCatId(intent)
+            initViewModel(catId)
+
+            if(catId == null)
                 switchToPage(PageType.ADD_NEW)
             else
                 switchToPage(PageType.PURRING)
+
+            return
         }
-        else {
-            val page = savedInstanceState.getString(CURRENT_PAGE_BUNDLE_KEY)
-            if(page != null)
-                switchToPage(PageType.valueOf(page))
-        }
+
+        val page = savedInstanceState.getString(CURRENT_PAGE_BUNDLE_KEY)
+        if(page != null)
+            switchToPage(PageType.valueOf(page))
     }
 
-    // TODO? Save to bundle
-    private fun getSharedElementTransitionName() : String? {
+    private fun initViewModel(catId: String?) {
+        // Get instance for creation
+        ViewModelProvider(this, CatDataViewModelFactory(catId))
+            .get(CatDataViewModel::class.java)
+    }
+
+    private fun getTransitionName(intent: Intent) : String? {
         return intent.getStringExtra(Constants.SHARED_TRANSITION_NAME_INTENT_KEY)
     }
 
-    // TODO? ModelView or singleton with LiveData
-    private fun getCatData() : CatData? {
-        Singleton.catData = intent.getParcelableExtra(Constants.CAT_DATA_INTENT_KEY) as CatData?
-        return Singleton.catData
+    private fun getCatId(intent: Intent) : String? {
+        return intent.getStringExtra(Constants.CAT_ID_INTENT_KEY)
     }
 
     private fun setCurrentFragment(fragment: Fragment, tag: String? = null)
     {
+        if(supportFragmentManager.findFragmentByTag(tag) != null)
+            return
+
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.container, fragment, tag)
@@ -71,57 +114,65 @@ class CatCardActivity : AppCompatActivity() {
     }
 
     private fun switchToPage(type: PageType) {
-
         val existingFragment = supportFragmentManager.findFragmentByTag(type.fragmentTag)
 
         val fragment : Fragment = when(type) {
-            // Use same fragment, but different tags
             PageType.ADD_NEW, PageType.EDIT -> {
-                val fg = existingFragment as CatFormFragment?
-                    ?: CatFormFragment.newInstance(Singleton.catData)
-                fg.setOnApplyListener(object: CatFormFragment.OnApplyListener {
-                    override fun onApply() = switchToPage(PageType.PURRING)
-                })
-                fg
+                val mode =
+                    if(type == PageType.ADD_NEW) CatFormFragment.Mode.CREATE
+                    else CatFormFragment.Mode.EDIT
+
+                val _fragment = existingFragment as CatFormFragment?
+                    ?: CatFormFragment.newInstance(mode)
+
+                _fragment.apply {
+                    setOnApplyListener(object : CatFormFragment.OnApplyListener {
+                        override fun onApply() = switchToPage(PageType.PURRING)
+                    })
+                }
             }
             PageType.PURRING -> {
-                val fg = existingFragment as PurringFragment?
-                    ?: PurringFragment.newInstance(getSharedElementTransitionName())
-                fg.setOnEditRequestedListener(object: PurringFragment.OnEditRequestedListener {
-                    override fun onEditRequested() = switchToPage(PageType.EDIT)
-                })
-                fg
+                val transition = getTransitionName(intent)
+
+                val _fragment = existingFragment as PurringFragment?
+                    ?: PurringFragment.newInstance(transition)
+
+                _fragment.apply {
+                    setOnEditRequestedListener(object : PurringFragment.OnEditRequestedListener {
+                        override fun onEditRequested() = switchToPage(PageType.EDIT)
+                    })
+                    setOnImageLoadedListener(object : PurringFragment.OnImageLoadedListener {
+                        override fun onImageLoaded() = supportStartPostponedEnterTransition()
+                    })
+                }
             }
         }
 
-        // Just add listeners for existing
-        if(existingFragment == null)
-            setCurrentFragment(fragment, type.fragmentTag)
-
+        setCurrentFragment(fragment, type.fragmentTag)
         currentPage = type
     }
 
     override fun onBackPressed() {
-        val editPageFragment = supportFragmentManager.findFragmentByTag(PageType.EDIT.fragmentTag)
-
-        if (editPageFragment != null && editPageFragment.isVisible()) {
+        if (currentPage == PageType.EDIT) {
             switchToPage(PageType.PURRING)
         }
         else
             super.onBackPressed()
     }
 
-    override fun finishAfterTransition() {
-        val intent = Intent()
-        intent.putExtra(Constants.CAT_DATA_INTENT_KEY, Singleton.catData)
-        setResult(Activity.RESULT_OK, intent)
-
-        super.finishAfterTransition()
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(CURRENT_PAGE_BUNDLE_KEY, currentPage.toString())
+    }
+
+    class CatDataViewModelFactory(private val catRepoId: String?): ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return if (modelClass.isAssignableFrom(CatDataViewModel::class.java)) {
+                CatDataViewModel(catRepoId) as T
+            } else {
+                throw IllegalArgumentException("ViewModel Not Found")
+            }
+        }
     }
 
     companion object {

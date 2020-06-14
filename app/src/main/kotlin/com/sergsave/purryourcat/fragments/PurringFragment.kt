@@ -4,11 +4,14 @@ import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import com.google.android.material.transition.MaterialFadeThrough
 import kotlinx.android.synthetic.main.fragment_purring.*
 import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.Singleton
+import com.sergsave.purryourcat.activities.CatDataViewModel
 import com.sergsave.purryourcat.helpers.*
+import com.sergsave.purryourcat.models.CatData
 
 class PurringFragment : Fragment() {
 
@@ -16,8 +19,13 @@ class PurringFragment : Fragment() {
         fun onEditRequested()
     }
 
+    interface OnImageLoadedListener {
+        fun onImageLoaded()
+    }
+
     private var transitionName: String? = null
     private var onEditListener: OnEditRequestedListener? = null
+    private var onLoadListener: OnImageLoadedListener? = null
 
     override fun onDestroy() {
         super.onDestroy()
@@ -27,7 +35,6 @@ class PurringFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         enterTransition = MaterialFadeThrough.create(requireContext())
-
         arguments?.let {
             transitionName = it.getString(ARG_TRANSITION_NAME)
         }
@@ -53,21 +60,23 @@ class PurringFragment : Fragment() {
 
         setHasOptionsMenu(true)
 
-        ImageUtils.loadInto(context, Singleton.catData?.photoUri, photo_image)
-
         // Shared element transition
         photo_image.setTransitionName(transitionName)
-        photo_image.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
-            override fun onPreDraw(): Boolean {
-                photo_image.viewTreeObserver.removeOnPreDrawListener(this)
-                activity?.startPostponedEnterTransition()
-                return true;
-            }
+
+        val model: CatDataViewModel by activityViewModels()
+        model.data.observe(this, Observer<CatData> { cat ->
+            ImageUtils.loadInto(context, cat?.photoUri, photo_image, {
+                onLoadListener?.onImageLoaded()
+            })
         })
     }
 
     fun setOnEditRequestedListener(listener: OnEditRequestedListener) {
         onEditListener = listener
+    }
+
+    fun setOnImageLoadedListener(listener: OnImageLoadedListener) {
+        onLoadListener = listener
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -89,10 +98,10 @@ class PurringFragment : Fragment() {
         private val ARG_TRANSITION_NAME = "TransitionName"
 
         @JvmStatic
-        fun newInstance(transitionName: String?) =
+        fun newInstance(sharedElementTransitionName: String?) =
             PurringFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_TRANSITION_NAME, transitionName)
+                    putString(ARG_TRANSITION_NAME, sharedElementTransitionName)
                 }
             }
     }

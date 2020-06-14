@@ -3,99 +3,71 @@ package com.sergsave.purryourcat.activities
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import androidx.lifecycle.Observer
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.Singleton
 import com.sergsave.purryourcat.adapters.CatsListAdapter
 import com.sergsave.purryourcat.helpers.AutoFitGridLayoutManager
 import com.sergsave.purryourcat.helpers.Constants
 import com.sergsave.purryourcat.helpers.MarginItemDecoration
 import com.sergsave.purryourcat.models.CatData
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.TypeAdapter
-import com.google.gson.reflect.TypeToken
-import com.google.gson.stream.JsonReader
-import com.google.gson.stream.JsonWriter
+import com.sergsave.purryourcat.data.CatDataRepo
+import com.sergsave.purryourcat.data.ICatStorage
+import com.sergsave.purryourcat.data.SharedPreferencesCatStorage
 import kotlinx.android.synthetic.main.activity_main.*
-
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var catsListAdapter : CatsListAdapter
-    private var catId : Int? = null
+    private var recyclerItemIds2catIds = mapOf<Long, String>()
 
     override fun onDestroy() {
         super.onDestroy()
     }
 
-    // TODO: DATABASE storage
-    class UriAdapter : TypeAdapter<Uri?>() {
-
-        override fun write(out: JsonWriter?, value: Uri?) {
-            out?.value(value?.toString())
+    class TestCatStorage(val context: Context) : ICatStorage {
+        val storage = SharedPreferencesCatStorage(context)
+        override fun save(cats: List<CatData>?) {
+            storage.save(cats)
         }
 
-        override fun read(`in`: JsonReader?): Uri? {
-            return `in`?.nextString()?.let { Uri.parse(it) }
+        override fun load(): List<CatData>? {
+
+            val testUri = Uri.parse(
+                ContentResolver.SCHEME_ANDROID_RESOURCE +
+                        "://" + context.getResources().getResourcePackageName(R.drawable.cat)
+                        + '/' + context.getResources().getResourceTypeName(R.drawable.cat)
+                        + '/' + context.getResources().getResourceEntryName(R.drawable.cat))
+
+            val testCats = arrayListOf(
+                CatData("Simka", testUri),
+                CatData("Masik", testUri),
+                CatData("Uta", testUri),
+                CatData("Sherya", testUri),
+                CatData("Sema", testUri),
+                CatData("Philya", testUri),
+                CatData("Ganya", testUri)
+            )
+            return storage.load() ?: testCats
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-        val json = GsonBuilder()
-            .registerTypeAdapter(Uri::class.java, UriAdapter())
-            .create()
-            .toJson(catsListAdapter.getItems())
-
-        val preferences = getPreferences(Context.MODE_PRIVATE)
-        with (preferences.edit()) {
-            putString(CATS_LIST_KEY, json)
-            commit()
-        }
-    }
-
-    private fun loadCatsFromSettings(): ArrayList<CatData>? {
-        val preferences = getPreferences(Context.MODE_PRIVATE)
-
-        val json = preferences.getString(CATS_LIST_KEY, null)
-        if(json == null)
-            return null
-
-        val catsType = object : TypeToken<ArrayList<CatData>>() {}.type
-
-        return GsonBuilder()
-            .registerTypeAdapter(Uri::class.java, UriAdapter())
-            .create()
-            .fromJson<ArrayList<CatData>>(json, catsType)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val testUri = Uri.parse(
-            ContentResolver.SCHEME_ANDROID_RESOURCE +
-                "://" + getResources().getResourcePackageName(R.drawable.cat)
-                + '/' + getResources().getResourceTypeName(R.drawable.cat)
-                + '/' + getResources().getResourceEntryName(R.drawable.cat))
+        CatDataRepo.init(TestCatStorage(applicationContext))
+//        CatDataRepo.init(SharedPreferencesCatStorage(applicationContext))
+        setupCatsList()
 
-        val testCats = arrayListOf(
-            CatData("Simka", testUri),
-            CatData("Masik", testUri),
-            CatData("Uta", testUri),
-            CatData("Sherya", testUri),
-            CatData("Sema", testUri),
-            CatData("Philya", testUri),
-            CatData("Ganya", testUri)
-        )
-
-        setupCatsList(loadCatsFromSettings() ?: testCats)
+        val observer = Observer<Map<String, CatData>> { cats ->
+            updateCatsList(cats)
+        }
+        CatDataRepo.instance?.read()?.observe(this, observer)
 
         fab.setOnClickListener {
             val intent = Intent(this, CatCardActivity::class.java)
@@ -105,28 +77,28 @@ class MainActivity : AppCompatActivity() {
         fab_clickable_layout.setOnClickListener { fab.performClick() }
     }
 
-    private fun setupCatsList(cats: ArrayList<CatData>?) {
+    private fun setupCatsList() {
         // TODO: remove hardcode
         val columnWidth = 180
         val itemMargin = 16
 
         val listener = object : CatsListAdapter.OnClickListener {
-            override fun onClick(position: Int, sharedElement: View, sharedElementTransitionName: String) {
-                val data = catsListAdapter.getItems().get(position)
-                catId = position
-                goToPurringAnimated(data, sharedElement, sharedElementTransitionName)
+            override fun onClick(
+                catWithId: Pair<Long, CatData>,
+                sharedElement: View,
+                sharedElementTransitionName: String
+            ) {
+                val id = recyclerItemIds2catIds.get(catWithId.first)
+                if(id != null)
+                    goToPurringAnimated(id, sharedElement, sharedElementTransitionName)
             }
+
         }
 
         catsListAdapter = CatsListAdapter(listener)
-        if(cats != null)
-            catsListAdapter.addItems(cats)
 
         val viewManager = AutoFitGridLayoutManager(this, columnWidth)
         val itemDecoration = MarginItemDecoration(itemMargin, { viewManager.spanCount })
-
-        // For the shared element transition to work correctly when returning to this screen
-        catsListAdapter.setHasStableIds(true)
 
         recycler_view.apply {
             setHasFixedSize(true)
@@ -137,9 +109,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun goToPurringAnimated(cat: CatData, sharedElement: View, transitionName: String) {
+    private fun updateCatsList(cats: Map<String, CatData>) {
+        val itemIdFromCatId = { catId: String -> catId.hashCode().toLong() }
+        val catsList = cats.mapKeys { (k, _) -> itemIdFromCatId(k) }.toList()
+
+        recyclerItemIds2catIds = cats.map { (k, _) -> Pair(itemIdFromCatId(k), k) }.toMap()
+
+        catsListAdapter.setItems(catsList)
+    }
+
+    private fun goToPurringAnimated(catId: String, sharedElement: View, transitionName: String) {
         val intent = Intent(this, CatCardActivity::class.java)
-        intent.putExtra(Constants.CAT_DATA_INTENT_KEY, cat)
+        intent.putExtra(Constants.CAT_ID_INTENT_KEY, catId)
         intent.putExtra(Constants.SHARED_TRANSITION_NAME_INTENT_KEY, transitionName)
 
         val transitionOption = ActivityOptionsCompat.makeSceneTransitionAnimation(
@@ -150,27 +131,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-    }
-
-    override fun onActivityReenter(resultCode: Int, data: Intent?) {
-        super.onActivityReenter(resultCode, data)
-
-        if(resultCode != RESULT_OK || data == null)
-            return
-
-        val catData = Singleton.catData
-//        val catData = data?.getParcelableExtra(Constants.CAT_DATA_INTENT_KEY) as CatData?
-
-        if(catData == null)
-            return
-
-        val catsCopy = ArrayList<CatData>()
-        catsCopy.addAll(catsListAdapter.getItems())
-
-        catId?.let { catsCopy.set(it, catData) }
-
-        catsListAdapter.clearItems()
-        catsListAdapter.addItems(catsCopy)
     }
 
     companion object {
