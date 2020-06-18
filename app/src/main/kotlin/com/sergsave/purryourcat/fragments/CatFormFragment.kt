@@ -267,6 +267,7 @@ class CatFormFragment : Fragment() {
     }
 
     private fun saveFileOnInternal(context: Context?, uri: Uri?) : Uri? {
+        // TODO: File size limits
         if(uri == null || context == null)
             return null
 

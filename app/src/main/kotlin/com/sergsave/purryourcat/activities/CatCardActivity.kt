@@ -103,7 +103,7 @@ class CatCardActivity : AppCompatActivity() {
                 val transition = getTransitionName(intent)
 
                 val _fragment = existingFragment as PurringFragment?
-                    ?: PurringFragment.newInstance(transition)
+                    ?: PurringFragment.newInstance(transition, viewModel.data.value ?: CatData())
 
                 _fragment.apply { initFragment(this) }
             }
