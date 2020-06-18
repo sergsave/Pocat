@@ -20,6 +20,11 @@ import com.sergsave.purryourcat.data.ICatStorage
 import com.sergsave.purryourcat.data.SharedPreferencesCatStorage
 import kotlinx.android.synthetic.main.activity_main.*
 
+// Global TODO
+// TODO: Check sdk version of all function
+// TODO: Check Leaks of fragment, activity, viewmodel. And local variable without reference (like visualizer)
+// TODO: Names of constants (XX_BUNDLE_KEY or BUNDLE_KEY_XX)
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var catsListAdapter : CatsListAdapter
@@ -60,6 +65,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // TODO? init in App
         CatDataRepo.init(TestCatStorage(applicationContext))
 //        CatDataRepo.init(SharedPreferencesCatStorage(applicationContext))
         setupCatsList()
