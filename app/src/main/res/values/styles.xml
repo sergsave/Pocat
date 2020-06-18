@@ -16,7 +16,7 @@
         <!--text fields.-->
         <item name="android:colorBackground">@color/background</item>
         <item name="android:windowBackground">@color/background</item>
-        <item name="colorSurface">#ffffe5</item>
+        <item name="colorSurface">@color/background</item>
         <item name="colorError">#f44336</item>
         <!--"On" colors define how text, icons and strokes are colored in relation to the surface-->
         <!--on which they appear.-->
@@ -30,11 +30,11 @@
         <!--Material shape attributes. Empty for now-->
 
         <!--Component styles-->
-        <item name="materialAlertDialogTheme">@style/ThemeOverlay.MaterialComponents.Dialog.Alert</item>
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.MaterialComponents.BottomSheetDialog</item>
         <item name="navigationViewStyle">@style/Widget.MaterialComponents.NavigationView</item>
         <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar.PrimarySurface</item>
         <item name="floatingActionButtonStyle">@style/Widget.MyTheme.FloatingActionButton</item>
+        <item name="materialAlertDialogTheme">@style/MyThemeOverlay.MaterialComponents.MaterialAlertDialog</item>
 
         <!--Android base-->
         <item name="android:statusBarColor" tools:ignore="NewApi">?attr/colorPrimaryVariant</item>
@@ -49,6 +49,16 @@
     <!-- Ripple doesn't work after update to 1.2.0-alpha05 :( -->
     <style name="Widget.MyTheme.FloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
         <item name="rippleColor">?attr/colorOnSecondary</item>
+    </style>
+
+    <!-- Customize Alert Dialog -->
+    <style name="MyThemeOverlay.MaterialComponents.MaterialAlertDialog" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="buttonBarPositiveButtonStyle">@style/AlertDialogButtonStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/AlertDialogButtonStyle</item>
+    </style>
+
+    <style name="AlertDialogButtonStyle" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">?attr/colorOnBackground</item>
     </style>
 
     <color name="background">#ffffe5</color>

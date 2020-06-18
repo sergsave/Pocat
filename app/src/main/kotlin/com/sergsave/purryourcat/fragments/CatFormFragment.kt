@@ -8,6 +8,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,11 +18,10 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.MutableLiveData
 import com.google.android.material.transition.MaterialFadeThrough
 import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.activities.CatDataViewModel
 import com.sergsave.purryourcat.helpers.*
 import com.sergsave.purryourcat.models.CatData
 import kotlinx.android.synthetic.main.fragment_cat_form.*
@@ -37,10 +38,15 @@ class CatFormFragment : Fragment() {
         CREATE, EDIT
     }
 
-    private val model: CatDataViewModel by activityViewModels()
+    class CatDataChange(val from: CatData?, val to: CatData?)
+    val catDataChange : CatDataChange
+        get() = CatDataChange(originalCatData, catLiveData.value)
+
     private var cameraImageUri: Uri? = null
     private var onApplyListener: OnApplyListener? = null
-    private lateinit var mode: Mode
+    private var mode = Mode.CREATE
+    private var originalCatData: CatData? = null
+    private val catLiveData = MutableLiveData<CatData>()
 
     override fun onDestroy() {
         // TODO? Save keyboard visible after orientation change
@@ -54,11 +60,20 @@ class CatFormFragment : Fragment() {
         if(context != null)
             enterTransition = MaterialFadeThrough.create(requireContext())
 
-        cameraImageUri = savedInstanceState?.getParcelable(CAMERA_IMAGE_URI_BUNDLE_KEY)
+        savedInstanceState?.let {
+            cameraImageUri = it.getParcelable(BUNDLE_KEY_CAMERA_IMAGE_URI)
+            catLiveData.value = it.getParcelable(BUNDLE_KEY_CAT_DATA)
+        }
 
         arguments?.let {
             val ordinal = it.getInt(ARG_MODE)
             mode = Mode.values().get(ordinal)
+
+            val catData = it.getParcelable<CatData>(ARG_CAT_DATA)
+            originalCatData = catData
+
+            if(savedInstanceState == null)
+                catLiveData.value = catData
         }
     }
 
@@ -75,16 +90,16 @@ class CatFormFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // TODO. TOP 5 errors with model view !!
-        model.data.observe(this, Observer<CatData> { cat ->
+        catLiveData.observe(this, Observer<CatData> { cat ->
             val context = context
-            if(context != null) {
+            if (context != null) {
                 ImageUtils.loadInto(context, cat?.photoUri, photo_image as ImageView)
 
                 cat?.purrAudioUri?.let {
                     form_layout.sound_edit_text.setText(FileUtils.getContentFileName(context, it))
                 }
                 cat?.name?.let {
-                    form_layout.name_edit_text.setText(it)
+                    form_layout.name_edit_text.apply { if (isFocused.not()) setText(it) }
                 }
             }
         })
@@ -93,8 +108,8 @@ class CatFormFragment : Fragment() {
 
         setHasOptionsMenu(true)
 
-        fab.setOnClickListener{ addPhoto() }
-        photo_image.setOnClickListener{ addPhoto() }
+        fab.setOnClickListener { addPhoto() }
+        photo_image.setOnClickListener { addPhoto() }
 
         form_layout.name_edit_text.setImeOptions(EditorInfo.IME_ACTION_DONE)
         form_layout.name_edit_text.setOnEditorActionListener { v, actionId, _ ->
@@ -104,18 +119,28 @@ class CatFormFragment : Fragment() {
             }
             false
         }
-        //TODO: Save text always
-        form_layout.name_edit_text.setOnFocusChangeListener { _, hasFocus ->
-            if(hasFocus == false) {
-                model.data.value?.let {
-                    it.name = form_layout.name_edit_text.text.toString()
-                    model.change(it)
-                }
+
+        form_layout.name_edit_text.addTextChangedListener(object : TextWatcher {
+            private var prevText: String? = null
+
+            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                prevText = s.toString()
             }
-        }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val text = s.toString()
+                if(text == prevText)
+                    return
+
+                val name: String? = if(text.isNotEmpty()) text else null
+                catLiveData.value = catLiveData.value?.copy(name = name)
+            }
+        })
 
         form_layout.sound_edit_text.setOnClickListener { addAudio() }
-        form_layout.apply_button.setOnClickListener { onApplyListener?.onApply() }
+        form_layout.apply_button.setOnClickListener {
+            onApplyListener?.onApply()
+        }
     }
 
     fun setOnApplyListener(listener: OnApplyListener) {
@@ -124,8 +149,8 @@ class CatFormFragment : Fragment() {
 
     private fun setupToolbar(mode: Mode) {
         val title = when (mode) {
-            Mode.CREATE -> getResources().getString(R.string.add_new_cat)
-            Mode.EDIT -> getResources().getString(R.string.edit_cat)
+            Mode.CREATE -> resources.getString(R.string.add_new_cat)
+            Mode.EDIT -> resources.getString(R.string.edit_cat)
         }
 
         val activity = getActivity() as AppCompatActivity?
@@ -144,7 +169,7 @@ class CatFormFragment : Fragment() {
             Manifest.permission.CAMERA)
 
         if(permissions.any { !PermissionUtils.checkPermission(requireContext(), it) })
-            PermissionUtils.requestPermissions(this, permissions, IMAGE_PERMISSIONS_CODE)
+            PermissionUtils.requestPermissions(this, permissions, PERMISSIONS_IMAGE_CODE)
         else
             sendPhotoIntent()
     }
@@ -157,7 +182,7 @@ class CatFormFragment : Fragment() {
             Manifest.permission.RECORD_AUDIO)
 
         if(permissions.any { !PermissionUtils.checkPermission(requireContext(), it) })
-            PermissionUtils.requestPermissions(this, permissions, AUDIO_PERMISSIONS_CODE)
+            PermissionUtils.requestPermissions(this, permissions, PERMISSIONS_AUDIO_CODE)
         else
             sendAudioIntent()
     }
@@ -173,8 +198,8 @@ class CatFormFragment : Fragment() {
             return
 
         when(requestCode){
-            IMAGE_PERMISSIONS_CODE -> sendPhotoIntent()
-            AUDIO_PERMISSIONS_CODE -> sendAudioIntent()
+            PERMISSIONS_IMAGE_CODE -> sendPhotoIntent()
+            PERMISSIONS_AUDIO_CODE -> sendAudioIntent()
         }
     }
 
@@ -194,10 +219,10 @@ class CatFormFragment : Fragment() {
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraImageUri)
 
-        val title = getResources().getString(R.string.add_photo_with)
+        val title = resources.getString(R.string.add_photo_with)
         val chooser = Intent.createChooser(pickIntent, title)
         chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(cameraIntent))
-        startActivityForResult(chooser, IMAGE_PICK_CODE)
+        startActivityForResult(chooser, PICK_IMAGE_CODE)
     }
 
     private fun sendAudioIntent() {
@@ -215,33 +240,30 @@ class CatFormFragment : Fragment() {
         val recorderIntent = Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION)
         recorderIntent.putExtra(MediaStore.EXTRA_OUTPUT, recorderAudioUri)
 
-        val title = getResources().getString(R.string.add_audio_with)
+        val title = resources.getString(R.string.add_audio_with)
         val chooser = Intent.createChooser(pickIntent, title)
         chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(recorderIntent))
-        startActivityForResult(chooser, AUDIO_PICK_CODE)
+        startActivityForResult(chooser, PICK_AUDIO_CODE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode != Activity.RESULT_OK)
             return
 
-        val catData = model.data.value
-        if(catData == null)
-            return
-
-        when(requestCode) {
-            IMAGE_PICK_CODE -> {
+        var catDataCopy = when(requestCode) {
+            PICK_IMAGE_CODE -> {
                 // Null data - image from camera
                 val uri = data?.data ?: cameraImageUri
-                catData.photoUri = saveFileOnInternal(context, uri)
+                catLiveData.value?.copy(photoUri = saveFileOnInternal(context, uri))
             }
-            AUDIO_PICK_CODE -> {
+            PICK_AUDIO_CODE -> {
                 val uri = data?.data
-                catData.purrAudioUri = saveFileOnInternal(context, uri)
+                catLiveData.value?.copy(purrAudioUri = saveFileOnInternal(context, uri))
             }
+            else -> catLiveData.value
         }
 
-        model.change(catData)
+        catLiveData.value = catDataCopy
     }
 
     private fun saveFileOnInternal(context: Context?, uri: Uri?) : Uri? {
@@ -267,24 +289,28 @@ class CatFormFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable(CAMERA_IMAGE_URI_BUNDLE_KEY, cameraImageUri)
+        outState.putParcelable(BUNDLE_KEY_CAMERA_IMAGE_URI, cameraImageUri)
+        outState.putParcelable(BUNDLE_KEY_CAT_DATA, catLiveData.value)
     }
 
     companion object {
-        private val CAMERA_IMAGE_URI_BUNDLE_KEY = "CameraImageUri"
+        private val BUNDLE_KEY_CAMERA_IMAGE_URI = "BundleCameraImageUri"
+        private val BUNDLE_KEY_CAT_DATA = "BundleCatData"
 
-        private val IMAGE_PERMISSIONS_CODE = 1000
-        private val AUDIO_PERMISSIONS_CODE = 1001
-        private val IMAGE_PICK_CODE = 1002
-        private val AUDIO_PICK_CODE = 1003
+        private val PERMISSIONS_IMAGE_CODE = 1000
+        private val PERMISSIONS_AUDIO_CODE = 1001
+        private val PICK_IMAGE_CODE = 1002
+        private val PICK_AUDIO_CODE = 1003
 
-        private val ARG_MODE = "Mode"
+        private val ARG_MODE = "ArgMode"
+        private val ARG_CAT_DATA = "ArgCatData"
 
         @JvmStatic
-        fun newInstance(mode: Mode) =
+        fun newInstance(mode: Mode, catData: CatData) =
             CatFormFragment().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_MODE, mode.ordinal)
+                    putParcelable(ARG_CAT_DATA, catData)
                 }
             }
     }

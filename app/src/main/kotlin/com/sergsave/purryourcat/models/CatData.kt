@@ -6,7 +6,7 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class CatData(
-    var name: String? = null,
-    var photoUri: Uri? = null,
-    var purrAudioUri: Uri? = null
+    val name: String? = null,
+    val photoUri: Uri? = null,
+    val purrAudioUri: Uri? = null
 ) : Parcelable

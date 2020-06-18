@@ -8,4 +8,9 @@
     <string name="edit_cat">Edit a cat card</string>
     <string name="add_photo_with">Add photo with...</string>
     <string name="add_audio_with">Add audio with...</string>
+    <string name="ok">Ok</string>
+    <string name="_continue">Continue editing</string>
+    <string name="discard">Discard</string>
+    <string name="changes_not_saved">Changes not saved.\nDiscard them?</string>
+    <string name="fill_the_form">Please choose a photo\nand fill in all fields.</string>
 </resources>

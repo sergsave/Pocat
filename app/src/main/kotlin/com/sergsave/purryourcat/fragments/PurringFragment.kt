@@ -9,7 +9,7 @@ import androidx.lifecycle.Observer
 import com.google.android.material.transition.MaterialFadeThrough
 import kotlinx.android.synthetic.main.fragment_purring.*
 import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.activities.CatDataViewModel
+import com.sergsave.purryourcat.viewmodels.CatDataViewModel
 import com.sergsave.purryourcat.helpers.*
 import com.sergsave.purryourcat.models.CatData
 
