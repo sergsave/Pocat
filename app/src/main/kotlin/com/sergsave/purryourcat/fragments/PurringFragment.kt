@@ -37,19 +37,19 @@ class PurringFragment : Fragment() {
     private var catData: CatData? = null
     private var onEditListener: OnEditRequestedListener? = null
     private var onLoadListener: OnImageLoadedListener? = null
-    private lateinit var mediaPlayer: MediaPlayer
+    private var mediaPlayer: MediaPlayer? = null
     private var playerTimeoutTimer: Timer? = null
 
-    private lateinit var visualizer: Visualizer
+    private var visualizer: Visualizer? = null
 
     override fun onDestroy() {
         super.onDestroy()
     }
 
     override fun onStop() {
-        visualizer.setEnabled(false)
+        visualizer?.setEnabled(false)
         // TODO: save media player state on orientation change
-        if(mediaPlayer.isPlaying) mediaPlayer.pause()
+        if(mediaPlayer?.isPlaying ?:false) mediaPlayer?.pause()
         super.onStop()
     }
 
@@ -65,12 +65,16 @@ class PurringFragment : Fragment() {
         // TODO: rollback on destroy?
         activity?.setVolumeControlStream(AudioManager.STREAM_MUSIC)
 
-        mediaPlayer = MediaPlayer.create(requireContext(), catData?.purrAudioUri).apply {
-            setLooping(true)
+        catData?.purrAudioUri?.let {
+            mediaPlayer = MediaPlayer.create(requireContext(), it).apply { setLooping(true) }
         }
 
         // TODO: Separated class or service
-        visualizer = Visualizer(mediaPlayer.getAudioSessionId())
+        val sessionId = mediaPlayer?.getAudioSessionId()
+        if(sessionId == null)
+            return
+
+        visualizer = Visualizer(sessionId)
         val listener = object: Visualizer.OnDataCaptureListener {
             override fun onWaveFormDataCapture(visualizer: Visualizer?, waveform: ByteArray?,
                                                samplingRate: Int)
@@ -90,7 +94,7 @@ class PurringFragment : Fragment() {
                                           samplingRate: Int) {}
         }
 
-        visualizer.apply {
+        visualizer?.apply {
             setDataCaptureListener(listener, Visualizer.getMaxCaptureRate(), true, false)
             val captureSize = 256
             setCaptureSize(captureSize)
@@ -168,12 +172,14 @@ class PurringFragment : Fragment() {
     }
 
     private fun playAudio() {
-        mediaPlayer.start()
+        if(mediaPlayer == null)
+            return
+        mediaPlayer?.start()
 
         playerTimeoutTimer?.cancel()
         playerTimeoutTimer?.purge()
         playerTimeoutTimer = Timer("AudioTimeout", false)
-        playerTimeoutTimer?.schedule(AUDIO_TIMEOUT.toLong()) { mediaPlayer.pause() }
+        playerTimeoutTimer?.schedule(AUDIO_TIMEOUT.toLong()) { mediaPlayer?.pause() }
     }
 
     companion object {
