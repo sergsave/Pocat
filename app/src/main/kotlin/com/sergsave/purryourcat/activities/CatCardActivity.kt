@@ -57,6 +57,8 @@ class CatCardActivity : AppCompatActivity() {
         val page = savedInstanceState.getString(BUNDLE_KEY_CURRENT_PAGE)
         if(page != null)
             switchToPage(PageType.valueOf(page))
+
+        restoreAlertDialogsState()
     }
 
     private fun initViewModel(catId: String?) {
@@ -138,13 +140,6 @@ class CatCardActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        val finalize = {
-            if (currentPage == PageType.EDIT)
-                switchToPage(PageType.PURRING)
-            else
-                super.onBackPressed()
-        }
-
         val formFragment = supportFragmentManager.findFragmentById(R.id.container) as?
                 CatFormFragment
 
@@ -152,9 +147,16 @@ class CatCardActivity : AppCompatActivity() {
         val change = formFragment?.catDataChange
 
         if(isFormActive && change?.to != change?.from)
-            showBackAlertDialog({ finalize() })
+            showBackAlertDialog({ finalizeBackPress() })
         else
-            finalize()
+            finalizeBackPress()
+    }
+
+    private fun finalizeBackPress() {
+        if (currentPage == PageType.EDIT)
+            switchToPage(PageType.PURRING)
+        else
+            super.onBackPressed()
     }
 
     private fun CatData.isValid() = name != null && purrAudioUri != null && photoUri != null
@@ -168,23 +170,30 @@ class CatCardActivity : AppCompatActivity() {
             SimpleAlertDialog.Button.POSITIVE to positiveText,
             SimpleAlertDialog.Button.NEGATIVE to negativeText)
 
-        val dialog = SimpleAlertDialog(this, message, buttons)
-
-        dialog.listener = object: SimpleAlertDialog.Listener {
-            override fun onDialogNegativeClick(dialog: DialogFragment?) { }
-            override fun onDialogPositiveClick(dialog: DialogFragment?) {
-                finishCallback()
-            }
-        }
-
+        val dialog = SimpleAlertDialog.newInstance(message, buttons)
+        setDialogPositiveListener(dialog, finishCallback)
         dialog.show(supportFragmentManager, DIALOG_ID_BACK)
     }
 
     private fun showApplyAlertDialog() {
-        val dialog = SimpleAlertDialog(this, resources.getString(R.string.fill_the_form),
+        val dialog = SimpleAlertDialog.newInstance(resources.getString(R.string.fill_the_form),
             mapOf(SimpleAlertDialog.Button.POSITIVE to resources.getString(R.string.ok)))
 
         dialog.show(supportFragmentManager, DIALOG_ID_APPLY)
+    }
+
+    private fun setDialogPositiveListener(dialog: SimpleAlertDialog, listener: () -> Unit) {
+        dialog.listener = object: SimpleAlertDialog.Listener {
+            override fun onDialogNegativeClick(dialog: DialogFragment?) { }
+            override fun onDialogPositiveClick(dialog: DialogFragment?) {
+                listener()
+            }
+        }
+    }
+
+    private fun restoreAlertDialogsState() {
+        val backDialog = supportFragmentManager.findFragmentByTag(DIALOG_ID_BACK) as? SimpleAlertDialog
+        backDialog?.let { setDialogPositiveListener(it, { finalizeBackPress() })}
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
