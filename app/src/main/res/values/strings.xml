@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">PurrYourCat</string>
+    <string name="shared_file_extension">zip</string>
     <string name="add_new_cat">Add a new cat</string>
     <string name="name">Name</string>
     <string name="go_to_purr">Apply</string>
@@ -13,4 +14,6 @@
     <string name="discard">Discard</string>
     <string name="changes_not_saved">Changes not saved.\nDiscard them?</string>
     <string name="fill_the_form">Please choose a photo\nand fill in all fields.</string>
+    <string name="close">Close</string>
+    <string name="save_snackbar_message_text">Cat successfully added to your collection</string>
 </resources>

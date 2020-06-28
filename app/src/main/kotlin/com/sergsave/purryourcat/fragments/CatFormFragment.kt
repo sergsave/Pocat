@@ -26,7 +26,6 @@ import com.sergsave.purryourcat.helpers.*
 import com.sergsave.purryourcat.models.CatData
 import kotlinx.android.synthetic.main.fragment_cat_form.*
 import kotlinx.android.synthetic.main.view_form_fields.view.*
-import java.io.File
 
 class CatFormFragment : Fragment() {
 
@@ -254,33 +253,16 @@ class CatFormFragment : Fragment() {
             PICK_IMAGE_CODE -> {
                 // Null data - image from camera
                 val uri = data?.data ?: cameraImageUri
-                catLiveData.value?.copy(photoUri = saveFileOnInternal(context, uri))
+                catLiveData.value?.copy(photoUri = uri)
             }
             PICK_AUDIO_CODE -> {
                 val uri = data?.data
-                catLiveData.value?.copy(purrAudioUri = saveFileOnInternal(context, uri))
+                catLiveData.value?.copy(purrAudioUri = uri)
             }
             else -> catLiveData.value
         }
 
         catLiveData.value = catDataCopy
-    }
-
-    private fun saveFileOnInternal(context: Context?, uri: Uri?) : Uri? {
-        // TODO: File size limits
-        if(uri == null || context == null)
-            return null
-
-        val inputStream = context.contentResolver.openInputStream(uri)
-        val fileName = FileUtils.getContentFileName(context, uri)
-
-        if(inputStream == null || fileName == null)
-            return null
-
-        val file = File(context.filesDir, fileName)
-
-        FileUtils.copyStreamToFile(inputStream, file)
-        return Uri.fromFile(file)
     }
 
     private fun hideKeyboard() {

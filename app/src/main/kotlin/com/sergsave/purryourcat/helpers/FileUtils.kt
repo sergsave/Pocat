@@ -3,9 +3,10 @@ package com.sergsave.purryourcat.helpers
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
+import java.io.*
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
+import java.util.zip.ZipOutputStream
 
 object FileUtils {
     // https://stackoverflow.com/questions/10854211/android-store-inputstream-in-file
@@ -45,5 +46,75 @@ object FileUtils {
             }
         }
         return result
+    }
+
+    // https://stackoverflow.com/questions/25562262/how-to-compress-files-into-zip-folder-in-android
+    fun zip(files: Array<String>, zipFileName: String) {
+        val bufferSize = 80000
+        try {
+            var origin: BufferedInputStream?
+            val dest = FileOutputStream(zipFileName)
+            val out = ZipOutputStream(
+                BufferedOutputStream(
+                    dest
+                )
+            )
+            val data = ByteArray(bufferSize)
+            for (i in files.indices) {
+                val fi = FileInputStream(files[i])
+                origin = BufferedInputStream(fi, bufferSize)
+                val entry =
+                    ZipEntry(files[i].substring(files[i].lastIndexOf("/") + 1))
+                out.putNextEntry(entry)
+                var count = 0
+                while (origin.read(data, 0, bufferSize).also({ count = it }) != -1) {
+                    out.write(data, 0, count)
+                }
+                origin.close()
+            }
+            out.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    // https://stackoverflow.com/questions/4504291/how-to-speed-up-unzipping-time-in-java-android
+    fun unzip(input: InputStream, targetLocation: String) {
+
+        val dirChecker = { dir: String ->
+            val f = File(dir)
+            if (f.isDirectory().not()) {
+                f.mkdirs();
+            }
+        }
+
+        //create target location folder if not exist
+        dirChecker(targetLocation)
+        try {
+            val zin = ZipInputStream(input)
+            var ze: ZipEntry? = null
+            while (zin.getNextEntry().also({ ze = it }) != null) {
+
+                //create dir if required while unzipping
+                if (ze!!.isDirectory) {
+                    dirChecker(ze!!.name)
+                } else {
+                    val fout = FileOutputStream(targetLocation + "/" + ze!!.name)
+                    val bufout = BufferedOutputStream(fout)
+                    val buffer = ByteArray(1024)
+                    var read = 0
+                    while (zin.read(buffer).also({ read = it }) != -1) {
+                        bufout.write(buffer, 0, read)
+                    }
+
+                    zin.closeEntry()
+                    bufout.close()
+                    fout.close()
+                }
+            }
+            zin.close()
+        } catch (e: java.lang.Exception) {
+            println(e)
+        }
     }
 }

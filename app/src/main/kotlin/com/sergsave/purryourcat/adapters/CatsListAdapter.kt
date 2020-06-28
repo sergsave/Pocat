@@ -12,13 +12,21 @@ import kotlinx.android.synthetic.main.view_cat_item.view.*
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.helpers.ImageUtils
 
-class CatsListAdapter(private val onClickListener: OnClickListener):
+class CatsListAdapter():
     RecyclerView.Adapter<CatsListAdapter.ViewHolder>() {
 
     interface OnClickListener {
         fun onClick(catWithId: Pair<Long, CatData>,
+                    sharedElement: View, sharedElementTransitionName: String)
+    }
+
+    interface OnLongClickListener {
+        fun onLongClick(catWithId: Pair<Long, CatData>,
                         sharedElement: View, sharedElementTransitionName: String)
     }
+
+    var onClickListener: OnClickListener? = null
+    var onLongClickListener: OnLongClickListener? = null
 
     private var cats = listOf<Pair<Long, CatData>>()
 
@@ -34,7 +42,8 @@ class CatsListAdapter(private val onClickListener: OnClickListener):
     class ViewHolder(override val containerView: View) :
         RecyclerView.ViewHolder(containerView), LayoutContainer {
 
-        fun bind(cat: CatData, onClickListener: OnClickListener, position: Int) {
+        fun bind(cat: CatData, position: Int,
+                 onClickListener: OnClickListener?, onLongClickListener: OnLongClickListener?) {
             name_text.text = cat.name
 
             ImageUtils.loadInto(photo_image.context, cat.photoUri, photo_image)
@@ -43,7 +52,11 @@ class CatsListAdapter(private val onClickListener: OnClickListener):
             val transitionName = "photo_image" + position
             ViewCompat.setTransitionName(view, transitionName)
             containerView.setOnClickListener{
-                onClickListener.onClick(Pair(itemId, cat), view, transitionName)
+                onClickListener?.onClick(Pair(itemId, cat), view, transitionName)
+            }
+            containerView.setOnLongClickListener{
+                onLongClickListener?.onLongClick(Pair(itemId, cat), view, transitionName)
+                true
             }
         }
     }
@@ -65,7 +78,7 @@ class CatsListAdapter(private val onClickListener: OnClickListener):
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(cats.get(position).second, onClickListener, position)
+        holder.bind(cats.get(position).second, position, onClickListener, onLongClickListener)
     }
 
     override fun getItemCount() = cats.size

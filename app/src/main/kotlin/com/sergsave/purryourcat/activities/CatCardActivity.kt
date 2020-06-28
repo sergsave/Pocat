@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.snackbar.Snackbar
 import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.fragments.CatFormFragment
 import com.sergsave.purryourcat.fragments.PurringFragment
@@ -25,7 +26,7 @@ class CatCardActivity : AppCompatActivity() {
     }
 
     private lateinit var currentPage : PageType
-    private lateinit var viewModel : CatDataViewModel
+    private lateinit var viewModel : CatCardViewModel
 
     override fun onDestroy() {
         super.onDestroy()
@@ -40,16 +41,17 @@ class CatCardActivity : AppCompatActivity() {
         toolbar.setNavigationOnClickListener { onBackPressed() }
 
         val catId = getCatId(intent)
-        initViewModel(catId)
+        val catData = getCatData(intent)
+        initViewModel(catId, catData)
 
         if(savedInstanceState == null) {
             if(getTransitionName(intent) != null)
                 postponeEnterTransition()
 
-            if(catId == null)
-                switchToPage(PageType.ADD_NEW)
-            else
+            if(catId != null || catData != null)
                 switchToPage(PageType.PURRING)
+            else
+                switchToPage(PageType.ADD_NEW)
 
             return
         }
@@ -61,9 +63,12 @@ class CatCardActivity : AppCompatActivity() {
         restoreAlertDialogsState()
     }
 
-    private fun initViewModel(catId: String?) {
-        viewModel = ViewModelProvider(this, CatDataViewModelFactory(catId))
-            .get(CatDataViewModel::class.java)
+    private fun initViewModel(catId: String?, catData: CatData?) {
+        val factory =
+            if(catData != null) CatCardViewModelFactory(catData)
+            else if (catId != null) CatCardViewModelFactory(catId)
+            else CatCardViewModelFactory()
+        viewModel = ViewModelProvider(this, factory).get(CatCardViewModel::class.java)
     }
 
     private fun getTransitionName(intent: Intent) : String? {
@@ -72,6 +77,10 @@ class CatCardActivity : AppCompatActivity() {
 
     private fun getCatId(intent: Intent) : String? {
         return intent.getStringExtra(Constants.CAT_ID_INTENT_KEY)
+    }
+
+    private fun getCatData(intent: Intent) : CatData? {
+        return intent.getParcelableExtra(Constants.CAT_DATA_INTENT_KEY)
     }
 
     private fun setCurrentFragment(fragment: Fragment, tag: String? = null)
@@ -102,8 +111,9 @@ class CatCardActivity : AppCompatActivity() {
             PageType.PURRING -> {
                 val transition = getTransitionName(intent)
 
+                val data = viewModel.data.value ?: CatData()
                 val _fragment = existingFragment as PurringFragment?
-                    ?: PurringFragment.newInstance(transition, viewModel.data.value ?: CatData())
+                    ?: PurringFragment.newInstance(transition, data)
 
                 _fragment.apply { initFragment(this) }
             }
@@ -118,12 +128,14 @@ class CatCardActivity : AppCompatActivity() {
             override fun onApply() {
                 val data = catForm.catDataChange.to
 
-                if (data != null && data.isValid()) {
-                    viewModel.change(data)
-                    switchToPage(PageType.PURRING)
-                }
-                else
+                if (data == null || data.isValid().not()) {
                     showApplyAlertDialog()
+                    return
+                }
+
+                viewModel.change(data)
+                viewModel.syncDataWithRepo()
+                switchToPage(PageType.PURRING)
             }
         }
 
@@ -131,8 +143,21 @@ class CatCardActivity : AppCompatActivity() {
     }
 
     private fun initFragment(purring: PurringFragment) {
-        purring.setOnEditRequestedListener(object : PurringFragment.OnEditRequestedListener {
-            override fun onEditRequested() = switchToPage(PageType.EDIT)
+        purring.actionType =
+            if(viewModel.isDataSyncWithRepo()) PurringFragment.ActionType.EDIT
+            else PurringFragment.ActionType.SAVE
+
+        purring.setOnActionClickedListener(object : PurringFragment.OnActionClickedListener {
+            override fun onActionClicked(type: PurringFragment.ActionType) {
+                when(type) {
+                    PurringFragment.ActionType.EDIT -> switchToPage(PageType.EDIT)
+                    PurringFragment.ActionType.SAVE -> {
+                        purring.actionType = PurringFragment.ActionType.EDIT
+                        viewModel.syncDataWithRepo()
+                        showSaveSnackbar()
+                    }
+                }
+            }
         })
         purring.setOnImageLoadedListener(object : PurringFragment.OnImageLoadedListener {
             override fun onImageLoaded() = supportStartPostponedEnterTransition()
@@ -160,6 +185,16 @@ class CatCardActivity : AppCompatActivity() {
     }
 
     private fun CatData.isValid() = name != null && purrAudioUri != null && photoUri != null
+
+    private fun showSaveSnackbar(){
+        Snackbar.make(
+            container,
+            R.string.save_snackbar_message_text,
+            Snackbar.LENGTH_LONG
+        )
+            .setAction(R.string.close) { }
+            .show()
+    }
 
     private fun showBackAlertDialog(finishCallback: () -> Unit) {
         val positiveText = resources.getString(R.string.discard)

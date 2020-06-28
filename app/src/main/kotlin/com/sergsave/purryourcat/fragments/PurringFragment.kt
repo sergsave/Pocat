@@ -23,10 +23,18 @@ import com.sergsave.purryourcat.models.CatData
 import java.util.Timer
 import kotlin.concurrent.schedule
 
+// TODO: crash if clear user settings when app works
+// TODO: Check permission on Purring Activity
+
 class PurringFragment : Fragment() {
 
-    interface OnEditRequestedListener {
-        fun onEditRequested()
+    enum class ActionType {
+        SAVE,
+        EDIT
+    }
+
+    interface OnActionClickedListener {
+        fun onActionClicked(type: ActionType)
     }
 
     interface OnImageLoadedListener {
@@ -35,12 +43,18 @@ class PurringFragment : Fragment() {
 
     private var transitionName: String? = null
     private var catData: CatData? = null
-    private var onEditListener: OnEditRequestedListener? = null
+    private var onActionListener: OnActionClickedListener? = null
     private var onLoadListener: OnImageLoadedListener? = null
     private var mediaPlayer: MediaPlayer? = null
     private var playerTimeoutTimer: Timer? = null
 
     private var visualizer: Visualizer? = null
+
+    var actionType = ActionType.EDIT
+        set(value) {
+            field = value
+            activity?.invalidateOptionsMenu()
+        }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -60,6 +74,10 @@ class PurringFragment : Fragment() {
         arguments?.let {
             transitionName = it.getString(ARG_TRANSITION_NAME)
             catData = it.getParcelable<CatData>(ARG_CAT_DATA)
+        }
+
+        savedInstanceState?.let {
+            actionType = ActionType.values().get(it.getInt(BUNDLE_KEY_ACTION_TYPE))
         }
 
         // TODO: rollback on destroy?
@@ -148,8 +166,8 @@ class PurringFragment : Fragment() {
         })
     }
 
-    fun setOnEditRequestedListener(listener: OnEditRequestedListener) {
-        onEditListener = listener
+    fun setOnActionClickedListener(listener: OnActionClickedListener) {
+        onActionListener = listener
     }
 
     fun setOnImageLoadedListener(listener: OnImageLoadedListener) {
@@ -158,12 +176,18 @@ class PurringFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_purring, menu)
+        val edit = menu.findItem(R.id.action_edit).apply{ setVisible(false) }
+        val save = menu.findItem(R.id.action_save).apply{ setVisible(false) }
+        when(actionType) {
+            ActionType.EDIT -> edit.setVisible(true)
+            ActionType.SAVE -> save.setVisible(true)
+        }
         super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.action_edit -> {
-            onEditListener?.onEditRequested()
+        R.id.action_edit, R.id.action_save -> {
+            onActionListener?.onActionClicked(actionType)
             true
         }
         else -> {
@@ -182,11 +206,18 @@ class PurringFragment : Fragment() {
         playerTimeoutTimer?.schedule(AUDIO_TIMEOUT.toLong()) { mediaPlayer?.pause() }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(BUNDLE_KEY_ACTION_TYPE, actionType.ordinal)
+    }
+
     companion object {
         private val AUDIO_TIMEOUT = 2000
 
         private val ARG_TRANSITION_NAME = "TransitionName"
         private val ARG_CAT_DATA = "CatData"
+
+        private val BUNDLE_KEY_ACTION_TYPE = "ActionType"
 
         @JvmStatic
         fun newInstance(sharedElementTransitionName: String?, catData: CatData) =

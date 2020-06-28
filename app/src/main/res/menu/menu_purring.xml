@@ -4,5 +4,11 @@
     <item
         android:id="@+id/action_edit"
         android:icon="@drawable/ic_mode_edit_black_24dp"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_save"
+        android:icon="@drawable/ic_save_black_24dp"
+        android:visible="false"
         app:showAsAction="ifRoom"/>
 </menu>
