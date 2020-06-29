@@ -26,6 +26,7 @@
                 <category android:name="android.intent.category.DEFAULT"/>
 
                 <data android:mimeType="application/zip"/>
+                <data android:mimeType="application/octet-stream"/>
             </intent-filter>
         </activity>
         <activity android:name=".activities.MainActivity">

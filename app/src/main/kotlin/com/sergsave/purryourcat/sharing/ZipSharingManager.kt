@@ -78,7 +78,9 @@ class ZipSharingManager(private val context: Context,
             if (bundle.version > BUNDLE_ACTUAL_VERSION)
                 return null
 
-            return bundle.data.withUpdatedContent { Uri.fromFile(File(dir(), it.toString())) }
+            return bundle.data.withUpdatedContent { uri ->
+                uri?.let { Uri.fromFile(File(dir(), it.toString())) }
+            }
         }
         catch(e: Exception) {
             return null

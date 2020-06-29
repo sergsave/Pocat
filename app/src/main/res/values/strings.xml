@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">PurrYourCat</string>
     <string name="shared_file_extension">zip</string>
+    <string name="sharing_text">Check out my cat in PurrYourCat App!\n\nDownload here: ... </string>
     <string name="add_new_cat">Add a new cat</string>
     <string name="name">Name</string>
     <string name="go_to_purr">Apply</string>

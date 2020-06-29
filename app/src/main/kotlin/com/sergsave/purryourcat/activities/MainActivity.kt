@@ -25,6 +25,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 // TODO: File size limits
 // TODO: Code inspect
 
+//TODO: watsapp text send!
+
 private fun addTestCats(context: Context) {
     val testUri = Uri.parse(
         ContentResolver.SCHEME_ANDROID_RESOURCE +
@@ -139,8 +141,10 @@ class MainActivity : AppCompatActivity() {
 
                 val sharingIntent = Intent(Intent.ACTION_SEND)
                 sharingIntent.apply {
+                    putExtra(Intent.EXTRA_TEXT, resources.getString(R.string.sharing_text))
                     putExtra(Intent.EXTRA_STREAM, sharingUri)
                     setType(sharingManager.mimeType())
+
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     startActivity(this)
                 }
