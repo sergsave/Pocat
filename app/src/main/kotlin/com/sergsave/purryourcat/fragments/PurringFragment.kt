@@ -1,30 +1,24 @@
 package com.sergsave.purryourcat.fragments
 
+import android.Manifest
 import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
-import android.media.audiofx.Visualizer
-import android.os.Build.VERSION
-import android.os.Build.VERSION_CODES
 import android.os.Bundle
-import android.os.VibrationEffect
-import android.os.Vibrator
 import android.view.*
 import android.view.MotionEvent.ACTION_MOVE
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import com.google.android.material.transition.MaterialFadeThrough
 import kotlinx.android.synthetic.main.fragment_purring.*
 import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.helpers.*
 import com.sergsave.purryourcat.models.CatData
+import com.sergsave.purryourcat.vibration.*
 import java.util.Timer
 import kotlin.concurrent.schedule
 
-// TODO: crash if clear user settings when app works
-// TODO: Check permission on Purring Activity
+// TODO: Implement sound listener version without permission.
 
 class PurringFragment : Fragment() {
 
@@ -47,8 +41,7 @@ class PurringFragment : Fragment() {
     private var onLoadListener: OnImageLoadedListener? = null
     private var mediaPlayer: MediaPlayer? = null
     private var playerTimeoutTimer: Timer? = null
-
-    private var visualizer: Visualizer? = null
+    private var vibrator: RythmOfSoundVibrator? = null
 
     var actionType = ActionType.EDIT
         set(value) {
@@ -58,13 +51,6 @@ class PurringFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-    }
-
-    override fun onStop() {
-        visualizer?.setEnabled(false)
-        // TODO: save media player state on orientation change
-        if(mediaPlayer?.isPlaying ?:false) mediaPlayer?.pause()
-        super.onStop()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,57 +65,31 @@ class PurringFragment : Fragment() {
         savedInstanceState?.let {
             actionType = ActionType.values().get(it.getInt(BUNDLE_KEY_ACTION_TYPE))
         }
-
-        // TODO: rollback on destroy?
-        activity?.setVolumeControlStream(AudioManager.STREAM_MUSIC)
-
-        catData?.purrAudioUri?.let {
-            mediaPlayer = MediaPlayer.create(requireContext(), it).apply { setLooping(true) }
-        }
-
-        // TODO: Separated class or service
-        val sessionId = mediaPlayer?.getAudioSessionId()
-        if(sessionId == null)
-            return
-
-        visualizer = Visualizer(sessionId)
-        val listener = object: Visualizer.OnDataCaptureListener {
-            override fun onWaveFormDataCapture(visualizer: Visualizer?, waveform: ByteArray?,
-                                               samplingRate: Int)
-            {
-                if(visualizer == null || visualizer.enabled.not())
-                    return
-
-                var measurement = Visualizer.MeasurementPeakRms()
-                visualizer.getMeasurementPeakRms(measurement)
-                val threshold = -4500
-
-                if(measurement.mRms > threshold)
-                    vibrate(20)
-            }
-
-            override fun onFftDataCapture(visualizer: Visualizer?, fft: ByteArray?,
-                                          samplingRate: Int) {}
-        }
-
-        visualizer?.apply {
-            setDataCaptureListener(listener, Visualizer.getMaxCaptureRate(), true, false)
-            val captureSize = 256
-            setCaptureSize(captureSize)
-            setMeasurementMode(Visualizer.MEASUREMENT_MODE_PEAK_RMS)
-            setEnabled(true)
-        }
     }
 
-    private fun vibrate(durationMs: Long) {
-        val vibrator = activity?.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator?
-        val pattern : LongArray = longArrayOf(0, durationMs)
-        if (vibrator?.hasVibrator() ?: false) {
-            if (VERSION.SDK_INT >= VERSION_CODES.O) {
-                vibrator?.vibrate(VibrationEffect.createWaveform(pattern, -1))
-            } else {
-                vibrator?.vibrate(pattern, -1)
-            }
+    override fun onStop() {
+        val player = mediaPlayer
+        mediaPlayer = null
+
+        player?.release()
+        vibrator?.release()
+
+        activity?.setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE)
+        super.onStop()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val audioUri = catData?.purrAudioUri
+        if(audioUri == null || context == null)
+            return
+
+        activity?.setVolumeControlStream(AudioManager.STREAM_MUSIC)
+        mediaPlayer = MediaPlayer.create(requireContext(), audioUri)?.apply { setLooping(true) }
+
+        prepareBeatDetectorAsync{ detector ->
+            if(detector != null && context != null)
+                vibrator = RythmOfSoundVibrator(requireContext(), detector)
         }
     }
 
@@ -195,15 +155,54 @@ class PurringFragment : Fragment() {
         }
     }
 
+    private fun prepareBeatDetectorAsync(callback: (ISoundBeatDetector?)->Unit ) {
+        val sessionId = mediaPlayer?.getAudioSessionId()
+        if(sessionId == null || context == null) {
+            callback(null)
+            return
+        }
+
+        val make = { context?.let { AndroidVisualizerBeatDetector(it, sessionId) } }
+        val permission = Manifest.permission.RECORD_AUDIO
+        if(PermissionUtils.checkPermission(requireContext(), permission))
+            callback(make())
+        else {
+            PermissionUtils.requestPermissions(this, arrayOf(permission), PERMISSION_RECORD_AUDIO_CODE)
+            onPermissionResultCallback = { res -> callback(if(res) make() else null) }
+        }
+    }
+
+    private var onPermissionResultCallback: ((Boolean)->Unit)? = null
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if(requestCode == PERMISSION_RECORD_AUDIO_CODE &&
+            PermissionUtils.checkRequestResult(grantResults))
+            onPermissionResultCallback?.invoke(true)
+        else
+            onPermissionResultCallback?.invoke(false)
+
+        onPermissionResultCallback = null
+    }
+
     private fun playAudio() {
         if(mediaPlayer == null)
             return
         mediaPlayer?.start()
+        vibrator?.start()
 
         playerTimeoutTimer?.cancel()
         playerTimeoutTimer?.purge()
         playerTimeoutTimer = Timer("AudioTimeout", false)
-        playerTimeoutTimer?.schedule(AUDIO_TIMEOUT.toLong()) { mediaPlayer?.pause() }
+        playerTimeoutTimer?.schedule(AUDIO_TIMEOUT.toLong()) {
+            mediaPlayer?.pause()
+            vibrator?.stop()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -213,6 +212,8 @@ class PurringFragment : Fragment() {
 
     companion object {
         private val AUDIO_TIMEOUT = 2000
+        // TODO: TO activity??
+        private val PERMISSION_RECORD_AUDIO_CODE = 1000
 
         private val ARG_TRANSITION_NAME = "TransitionName"
         private val ARG_CAT_DATA = "CatData"
