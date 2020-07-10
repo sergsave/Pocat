@@ -8,12 +8,17 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import com.google.android.material.snackbar.Snackbar
 import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.adapters.CatsListAdapter
 import com.sergsave.purryourcat.data.*
 import com.sergsave.purryourcat.helpers.*
 import com.sergsave.purryourcat.content.*
+import com.sergsave.purryourcat.fragments.BaseSharingFragment
+import com.sergsave.purryourcat.fragments.GiveSharingFragment
+import com.sergsave.purryourcat.fragments.TakeSharingFragment
 import com.sergsave.purryourcat.sharing.*
 import com.sergsave.purryourcat.models.*
 import kotlinx.android.synthetic.main.activity_main.*
@@ -24,6 +29,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 // TODO: Names of constants (XX_BUNDLE_KEY or BUNDLE_KEY_XX)
 // TODO: File size limits
 // TODO: Code inspect
+// TODO: Подвисание на Светином телефоне
 
 //TODO: watsapp text send!
 
@@ -55,11 +61,16 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var catRepo: CatDataRepo
     private lateinit var contentRepo: ContentRepo
-    private lateinit var sharingManager: ISharingManager
-    private lateinit var catsListAdapter : CatsListAdapter
+    private lateinit var catsListAdapter: CatsListAdapter
     private var recyclerItemIds2catIds = mapOf<Long, String>()
 
+    private var takeSharingFragment: TakeSharingFragment? = null
+    private var giveSharingFragment: GiveSharingFragment? = null
+
     override fun onDestroy() {
+        // To avoid memory leakage (sharing fragments work async)
+        takeSharingFragment?.onFinishedListener = null
+        giveSharingFragment?.onFinishedListener = null
         super.onDestroy()
     }
 
@@ -67,15 +78,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // TODO? init and cleanup in App
-        catRepo = CatDataRepo.init(SharedPreferencesCatDataStorage(applicationContext))
-        contentRepo = ContentRepo.init(InternalFilesDirContentStorage(applicationContext))
-        cleanUpUnusedContent()
+        assert(CatDataRepo.instance == null || ContentRepo.instance == null) { "Must be inited!" }
+        catRepo = CatDataRepo.instance!!
+        contentRepo = ContentRepo.instance!!
 
-        addTestCats(applicationContext)
-
-        sharingManager = ZipSharingManager(applicationContext,
-            resources.getString(R.string.shared_file_extension))
+        addTestCats(this)
         setupCatsList()
 
         val observer = Observer<Map<String, CatData>> { cats ->
@@ -90,28 +97,86 @@ class MainActivity : AppCompatActivity() {
 
         fab_clickable_layout.setOnClickListener { fab.performClick() }
 
-        if(savedInstanceState == null)
-            addCatFromIntent(intent)
+        if(savedInstanceState == null) {
+            startExtractSharingData(intent)
+            return
+        }
+
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.recycler_layout)
+        takeSharingFragment = (currentFragment as? TakeSharingFragment)?.also { init(it) }
+        giveSharingFragment = (currentFragment as? GiveSharingFragment)?.also { init(it) }
     }
 
-    private fun cleanUpUnusedContent() {
-        val usedContent = ArrayList<Uri>()
-        catRepo.read().value?.forEach{(_, cat) -> usedContent.addAll(cat.extractContent())}
-        val allContent = contentRepo.read().value
-        allContent?.let { all -> (all - usedContent).forEach{ contentRepo.remove(it) }}
+    private fun init(fragment: TakeSharingFragment) {
+        fragment.onFinishedListener =
+            object: BaseSharingFragment.OnFinishedListener<Intent> {
+                override fun onFinished(data: Intent?) {
+                    supportFragmentManager.popBackStack()
+                    data?.let{ startActivity(it) }
+                }
+
+                override fun onFailed(error: String?) {
+                    supportFragmentManager.popBackStack()
+                    showFailedSnackBar(error)
+                }
+            }
     }
 
-    private fun addCatFromIntent(intent: Intent?) {
-        val extracted = sharingManager.extractFromSharingUri(intent?.data)
-        if(extracted == null)
+    private fun init(fragment: GiveSharingFragment) {
+        fragment.onFinishedListener =
+            object: BaseSharingFragment.OnFinishedListener<Pack> {
+                override fun onFinished(data: Pack?) {
+                    supportFragmentManager.popBackStack()
+                    if(data == null)
+                        return
+
+                    val updated = data.cat.withUpdatedContent { uri -> contentRepo.add(uri) }
+
+                    val intent = Intent(this@MainActivity, CatCardActivity::class.java)
+                    intent.putExtra(Constants.CAT_DATA_INTENT_KEY, updated)
+                    startActivity(intent)
+                }
+
+                override fun onFailed(error: String?) {
+                    supportFragmentManager.popBackStack()
+                    showFailedSnackBar(error)
+                }
+            }
+    }
+
+    private fun startExtractSharingData(intent: Intent) {
+        giveSharingFragment = GiveSharingFragment.newInstance(intent).also { fragment ->
+            init(fragment)
+            showSharingFragment(fragment, null)
+        }
+    }
+
+    private fun startPrepareSharingData(pack: Pack) {
+        takeSharingFragment = TakeSharingFragment.newInstance(pack).also { fragment ->
+            init(fragment)
+            showSharingFragment(fragment, null)
+        }
+    }
+
+    private fun showSharingFragment(fragment: Fragment, tag: String?) {
+        supportFragmentManager
+            .beginTransaction()
+            .add(R.id.recycler_layout, fragment, tag)
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun showFailedSnackBar(errorText: String?) {
+        if(errorText == null)
             return
 
-        val updated = extracted.withUpdatedContent { uri -> contentRepo.add(uri) }
-
-        Intent(this, CatCardActivity::class.java).apply {
-            putExtra(Constants.CAT_DATA_INTENT_KEY, updated)
-            startActivity(this)
-        }
+        Snackbar.make(
+                recycler_layout,
+                errorText,
+                Snackbar.LENGTH_LONG
+            )
+            .setAction(R.string.close) { }
+            .show()
     }
 
     private fun setupCatsList() {
@@ -135,19 +200,7 @@ class MainActivity : AppCompatActivity() {
                 sharedElement: View,
                 sharedElementTransitionName: String
             ) {
-                val sharingUri = sharingManager.prepareSharingUri(catWithId.second)
-                if(sharingUri == null)
-                    return
-
-                val sharingIntent = Intent(Intent.ACTION_SEND)
-                sharingIntent.apply {
-                    putExtra(Intent.EXTRA_TEXT, resources.getString(R.string.sharing_text))
-                    putExtra(Intent.EXTRA_STREAM, sharingUri)
-                    setType(sharingManager.mimeType())
-
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    startActivity(this)
-                }
+                startPrepareSharingData(Pack(catWithId.second))
             }
         }
 

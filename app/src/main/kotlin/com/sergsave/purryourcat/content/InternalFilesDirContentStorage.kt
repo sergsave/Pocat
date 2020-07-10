@@ -8,7 +8,7 @@ import java.util.UUID
 
 class InternalFilesDirContentStorage(private val context: Context): IContentStorage {
 
-    override fun store(sourceContent: Uri, outputName: String): Uri? {
+    override fun store(sourceContent: Uri, fileName: String): Uri? {
         val inputStream = context.contentResolver.openInputStream(sourceContent)
         if(inputStream == null)
             return null
@@ -16,7 +16,7 @@ class InternalFilesDirContentStorage(private val context: Context): IContentStor
         val dir = createUniqueDir()
         dir.mkdirs()
 
-        val file = File(dir, outputName)
+        val file = File(dir, fileName)
         FileUtils.copyStreamToFile(inputStream, file)
         inputStream.close()
         return Uri.fromFile(file)

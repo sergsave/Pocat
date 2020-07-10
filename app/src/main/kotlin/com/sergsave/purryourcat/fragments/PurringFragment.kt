@@ -212,7 +212,6 @@ class PurringFragment : Fragment() {
 
     companion object {
         private val AUDIO_TIMEOUT = 2000
-        // TODO: TO activity??
         private val PERMISSION_RECORD_AUDIO_CODE = 1000
 
         private val ARG_TRANSITION_NAME = "TransitionName"

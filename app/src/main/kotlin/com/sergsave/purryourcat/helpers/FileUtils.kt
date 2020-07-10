@@ -79,7 +79,7 @@ object FileUtils {
     }
 
     // https://stackoverflow.com/questions/4504291/how-to-speed-up-unzipping-time-in-java-android
-    fun unzip(input: InputStream, targetLocation: String) {
+    fun unzip(zipPath: String, targetLocation: String) {
 
         val dirChecker = { dir: String ->
             val f = File(dir)
@@ -91,7 +91,8 @@ object FileUtils {
         //create target location folder if not exist
         dirChecker(targetLocation)
         try {
-            val zin = ZipInputStream(input)
+            val fin = FileInputStream(zipPath)
+            val zin = ZipInputStream(fin)
             var ze: ZipEntry? = null
             while (zin.getNextEntry().also({ ze = it }) != null) {
 

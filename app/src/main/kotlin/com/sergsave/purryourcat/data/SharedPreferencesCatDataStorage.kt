@@ -6,6 +6,8 @@ import android.net.Uri
 import kotlinx.serialization.json.*
 import kotlinx.serialization.*
 
+// TODO: USE bundle utils
+
 @Serializable
 private data class Bundle(val version: Int, val map: Map<String,CatData>)
 
