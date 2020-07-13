@@ -3,17 +3,20 @@ package com.sergsave.purryourcat.sharing
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.AsyncTask
 import androidx.core.content.FileProvider
 import com.estmob.android.sendanywhere.sdk.ReceiveTask
 import com.estmob.android.sendanywhere.sdk.SendTask
 import com.estmob.android.sendanywhere.sdk.Task
-import com.sergsave.purryourcat.helpers.ImageUtils
 import com.sergsave.purryourcat.BuildConfig
-import com.sergsave.purryourcat.helpers.NetworkUtils
 import com.sergsave.purryourcat.R
+import com.sergsave.purryourcat.helpers.ImageUtils
+import com.sergsave.purryourcat.helpers.NetworkUtils
 import java.io.File
+import java.net.URL
 import java.util.*
 import kotlin.concurrent.schedule
+
 
 object MyTimeLogger {
     var time =  System.currentTimeMillis()
@@ -54,8 +57,12 @@ private class WebPrepareTask(private val context: Context,
         MyTimeLogger.reset()
         val files = arrayOf(packer.pack(pack))
         MyTimeLogger.log("packed")
-        sendTask = SendTask(context, files, true).also { init(it) }
-        sendTask?.start()
+//        sendTask = SendTask(context, files, true).also { init(it) }
+//        sendTask?.start()
+//        val task = SendspaceUploadTask()
+//        task.execute(files.firstOrNull())
+        val task = SendspaceDownloadTask(cacheDir(context))
+        task.execute(URL("https://www.sendspace.com/file/jbksks"))
     }
 
     private fun init(task: SendTask) {
@@ -208,7 +215,8 @@ class WebSharingManager(private val context: Context, cleanCacheOnCreate: Boolea
     }
 
     override fun makePrepareTask(pack: Pack): ISharingTask<Intent>? {
-        return ConnectionCheckerDecorator<Intent>(context, WebPrepareTask(context, pack, packer))
+//        return ConnectionCheckerDecorator<Intent>(context, WebPrepareTask(context, pack, packer))
+        return WebPrepareTask(context, pack, packer)
     }
 
     override fun makeExtractTask(intent: Intent): ISharingTask<Pack>? {

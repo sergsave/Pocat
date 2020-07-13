@@ -32,6 +32,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 // TODO: Подвисание на Светином телефоне
 
 //TODO: watsapp text send!
+//TODO: ЭТО ВАЩЕ норма, что при закрытии приложения с телефона дебаггер не прекращается??
+//TODO: Утечки экранов смотри через профайлер
 
 private fun addTestCats(context: Context) {
     val testUri = Uri.parse(
