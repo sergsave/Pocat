@@ -1,5 +1,6 @@
 package com.sergsave.purryourcat.sharing
 
+import android.content.Context
 import android.net.Uri
 import com.sergsave.purryourcat.BuildConfig
 import com.sergsave.purryourcat.helpers.BundleUtils
@@ -9,7 +10,7 @@ import com.sergsave.purryourcat.models.extractContent
 import com.sergsave.purryourcat.models.withUpdatedContent
 import java.io.File
 
-class ZipDataPacker(private val workDir: File): IDataPacker {
+class ZipDataPacker(private val context: Context, private val workDir: File): IDataPacker {
 
     override fun pack(pack: Pack): File? {
         ensureWorkDir()
@@ -17,16 +18,17 @@ class ZipDataPacker(private val workDir: File): IDataPacker {
         val name = pack.cat.name ?: "Cat"
         val zipPath = workDir.path + "/$name.zip"
 
-        val contentPaths = pack.cat.extractContent().mapNotNull { it.path }
-        val withFixedPaths = pack.cat.withUpdatedContent { uri ->
-            uri?.lastPathSegment?.let { Uri.parse(it) }
+        val contentUris = pack.cat.extractContent().mapNotNull { it }
+        val withFixedUris = pack.cat.withUpdatedContent { uri ->
+            val _name = uri?.let { FileUtils.getContentFileName(context, it) }
+            _name?.let { Uri.parse(it) }
         }
 
-        val bundle = Bundle(BUNDLE_ACTUAL_VERSION, Pack(withFixedPaths))
-        val bundleFilePath = BundleUtils.toJsonFile(bundle, workDir).path
-        val paths = contentPaths + bundleFilePath
+        val bundle = Bundle(Bundle.ACTUAL_VERSION, Pack(withFixedUris))
+        val bundleFile = BundleUtils.toJsonFile(bundle, workDir)
+        val zipped = contentUris + Uri.fromFile(bundleFile)
 
-        FileUtils.zip(paths.toTypedArray(), zipPath)
+        FileUtils.zip(context, zipped.toTypedArray(), zipPath)
         return File(zipPath)
     }
 
@@ -37,18 +39,14 @@ class ZipDataPacker(private val workDir: File): IDataPacker {
         val bundleFile = File(workDir, BundleUtils.JSON_FILE_NAME)
         val bundle = BundleUtils.fromJsonFile<Bundle>(bundleFile)
 
-        if (bundle == null || bundle.version > BUNDLE_ACTUAL_VERSION)
+        if (bundle == null || bundle.version > Bundle.ACTUAL_VERSION)
             return null
 
-        val withFixedPath = bundle.pack.cat.withUpdatedContent { uri ->
+        val withFixedUris = bundle.pack.cat.withUpdatedContent { uri ->
             uri?.let { Uri.fromFile(File(workDir, it.toString())) }
         }
-        return Pack(withFixedPath)
+        return Pack(withFixedUris)
     }
 
     private fun ensureWorkDir() { if(workDir.exists().not()) workDir.mkdirs() }
-
-    companion object {
-        private val BUNDLE_ACTUAL_VERSION = 1
-    }
 }

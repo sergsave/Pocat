@@ -31,21 +31,25 @@ object NetworkUtils {
     }
 
     @Throws(IOException::class)
-    fun sendGetRequest(url: URL, streamConsumer: (InputStream?)->Unit) {
+    fun sendGetRequest(url: URL): String {
         var connection: HttpURLConnection? = null
-        try {
+        return try {
             connection = (url.openConnection() as? HttpURLConnection)
-            connection?.run {
+            if(connection == null) {
+                throw IOException("Non http url")
+            }
+
+            connection.run {
                 requestMethod = "GET"
                 doInput = true
                 connect()
                 if (responseCode != HttpURLConnection.HTTP_OK) {
                     throw IOException("HTTP error code: $responseCode")
                 }
-                streamConsumer(inputStream)
+
+                inputStream.bufferedReader().use(BufferedReader::readText)
             }
         } finally {
-            connection?.inputStream?.close()
             connection?.disconnect()
         }
     }
@@ -69,17 +73,23 @@ object NetworkUtils {
 
         // creates a unique boundary based on time stamp
         private val boundary: String = "===" + System.currentTimeMillis() + "==="
-        private val httpConnection: HttpURLConnection = url.openConnection() as HttpURLConnection
+        private val httpConnection: HttpURLConnection
         private val outputStream: OutputStream
         private val writer: PrintWriter
 
         init {
-            httpConnection.setRequestProperty("User-Agent", "CodeJava Agent")
-            httpConnection.setRequestProperty("Test", "Bonjour")
-            httpConnection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary)
-            httpConnection.doInput = true
-            httpConnection.doOutput = true    // indicates POST method
-            httpConnection.useCaches = false
+            val connection = url.openConnection() as? HttpURLConnection
+            if (connection == null) {
+                throw IOException("Not http url")
+            }
+            httpConnection = connection.apply {
+                setRequestProperty("User-Agent", "CodeJava Agent")
+                setRequestProperty("Test", "Bonjour")
+                setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary)
+                doInput = true
+                doOutput = true    // indicates POST method
+                useCaches = false
+            }
             outputStream = httpConnection.outputStream
             writer = PrintWriter(OutputStreamWriter(outputStream, charset), true)
         }
@@ -156,19 +166,18 @@ object NetworkUtils {
          * @throws IOException
          */
         @Throws(IOException::class)
-        fun finish(streamConsumer: (InputStream?)->Unit) {
+        fun finish(): String {
             writer.append(LINE_FEED).flush()
             writer.append("--").append(boundary).append("--")
                 .append(LINE_FEED)
             writer.close()
 
-            try {
+            return try {
                 if (httpConnection.responseCode != HttpURLConnection.HTTP_OK) {
                     throw IOException("HTTP error code: ${httpConnection.responseCode}")
                 }
-                streamConsumer(httpConnection.inputStream)
+                httpConnection.inputStream.bufferedReader().use(BufferedReader::readText)
             } finally {
-                httpConnection.inputStream?.close()
                 httpConnection.disconnect()
             }
         }

@@ -49,7 +49,7 @@ object FileUtils {
     }
 
     // https://stackoverflow.com/questions/25562262/how-to-compress-files-into-zip-folder-in-android
-    fun zip(files: Array<String>, zipFileName: String) {
+    fun zip(context: Context, content: Array<Uri>, zipFileName: String) {
         val bufferSize = 80000
         try {
             var origin: BufferedInputStream?
@@ -60,17 +60,16 @@ object FileUtils {
                 )
             )
             val data = ByteArray(bufferSize)
-            for (i in files.indices) {
-                val fi = FileInputStream(files[i])
-                origin = BufferedInputStream(fi, bufferSize)
-                val entry =
-                    ZipEntry(files[i].substring(files[i].lastIndexOf("/") + 1))
+            content.forEach { uri ->
+                val input = context.contentResolver.openInputStream(uri)
+                origin = BufferedInputStream(input, bufferSize)
+                val entry = ZipEntry(getContentFileName(context, uri))
                 out.putNextEntry(entry)
                 var count = 0
-                while (origin.read(data, 0, bufferSize).also({ count = it }) != -1) {
+                while (origin?.read(data, 0, bufferSize)?.also({ count = it }) != -1) {
                     out.write(data, 0, count)
                 }
-                origin.close()
+                origin?.close()
             }
             out.close()
         } catch (e: Exception) {

@@ -8,7 +8,8 @@ import com.sergsave.purryourcat.data.CatDataRepo
 import com.sergsave.purryourcat.data.SharedPreferencesCatDataStorage
 import com.sergsave.purryourcat.models.extractContent
 import com.sergsave.purryourcat.sharing.SharingManager
-import com.sergsave.purryourcat.sharing.WebSharingManager
+import com.sergsave.purryourcat.sharing.WebSharingStrategy
+import com.sergsave.purryourcat.sharing.SendAnywhereNetworkService
 
 class App : Application() {
 
@@ -17,7 +18,11 @@ class App : Application() {
 
         CatDataRepo.init(SharedPreferencesCatDataStorage(this))
         ContentRepo.init(InternalFilesDirContentStorage(this))
-        SharingManager.init(WebSharingManager(context = this, cleanCacheOnCreate = true))
+        val sharingImpl = WebSharingStrategy(
+            context = this,
+            service = SendAnywhereNetworkService(this), // TODO: Firebase impl?
+            cleanCacheOnCreate = true)
+        SharingManager.init(sharingImpl)
 
         cleanUpUnusedContent()
     }
