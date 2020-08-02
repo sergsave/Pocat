@@ -9,7 +9,7 @@ import com.sergsave.purryourcat.models.combineContent
 import com.sergsave.purryourcat.content.ContentRepo
 import com.sergsave.purryourcat.models.CatData
 
-class CatCardViewModel(catData: CatData? = null, private var catRepoId: String? = null) : ViewModel() {
+class CatCardViewModel(private var catRepoId: String? = null) : ViewModel() {
     private val _data = MutableLiveData<CatData>()
     private lateinit var repo: CatDataRepo
 
@@ -19,12 +19,8 @@ class CatCardViewModel(catData: CatData? = null, private var catRepoId: String? 
         } ?: run {
             assert(false) { "Must be init" }
         }
-        if(catData != null && catRepoId != null) assert(false) { "Wrong init" }
 
-        if(catData != null)
-            _data.value = catData
-        else
-            _data.value = repo.read().value?.get(catRepoId)
+        catRepoId?.let { _data.value = repo.read().value?.get(it) }
     }
 
     val data : LiveData<CatData>
@@ -62,22 +58,10 @@ class CatCardViewModel(catData: CatData? = null, private var catRepoId: String? 
     }
 }
 
-class CatCardViewModelFactory(): Factory {
-
-    private var catData: CatData? = null
-    private var id: String? = null
-
-    constructor(catData: CatData) : this() {
-        this.catData = catData
-    }
-
-    constructor(catRepoId: String) : this() {
-        id = catRepoId
-    }
-
+class CatCardViewModelFactory(private val catRepoId: String?): Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return if (modelClass.isAssignableFrom(CatCardViewModel::class.java)) {
-            CatCardViewModel(catData, id) as T
+            CatCardViewModel(catRepoId) as T
         } else {
             throw IllegalArgumentException("ViewModel Not Found")
         }

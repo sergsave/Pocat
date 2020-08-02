@@ -20,7 +20,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.MutableLiveData
-import com.google.android.material.transition.MaterialFadeThrough
 import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.helpers.*
 import com.sergsave.purryourcat.models.CatData
@@ -33,17 +32,13 @@ class CatFormFragment : Fragment() {
         fun onApply()
     }
 
-    enum class Mode {
-        CREATE, EDIT
-    }
+    var onApplyListener: OnApplyListener? = null
 
     class CatDataChange(val from: CatData?, val to: CatData?)
     val catDataChange : CatDataChange
         get() = CatDataChange(originalCatData, catLiveData.value)
 
     private var cameraImageUri: Uri? = null
-    private var onApplyListener: OnApplyListener? = null
-    private var mode = Mode.CREATE
     private var originalCatData: CatData? = null
     private val catLiveData = MutableLiveData<CatData>()
 
@@ -56,18 +51,12 @@ class CatFormFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if(context != null)
-            enterTransition = MaterialFadeThrough.create(requireContext())
-
         savedInstanceState?.let {
             cameraImageUri = it.getParcelable(BUNDLE_KEY_CAMERA_IMAGE_URI)
             catLiveData.value = it.getParcelable(BUNDLE_KEY_CAT_DATA)
         }
 
         arguments?.let {
-            val ordinal = it.getInt(ARG_MODE)
-            mode = Mode.values().get(ordinal)
-
             val catData = it.getParcelable<CatData>(ARG_CAT_DATA)
             originalCatData = catData
 
@@ -103,10 +92,6 @@ class CatFormFragment : Fragment() {
             }
         })
 
-        setupToolbar(mode)
-
-        setHasOptionsMenu(true)
-
         fab.setOnClickListener { addPhoto() }
         photo_image.setOnClickListener { addPhoto() }
 
@@ -139,24 +124,6 @@ class CatFormFragment : Fragment() {
         form_layout.sound_edit_text.setOnClickListener { addAudio() }
         form_layout.apply_button.setOnClickListener {
             onApplyListener?.onApply()
-        }
-    }
-
-    fun setOnApplyListener(listener: OnApplyListener) {
-        onApplyListener = listener
-    }
-
-    private fun setupToolbar(mode: Mode) {
-        val title = when (mode) {
-            Mode.CREATE -> resources.getString(R.string.add_new_cat)
-            Mode.EDIT -> resources.getString(R.string.edit_cat)
-        }
-
-        val activity = getActivity() as AppCompatActivity?
-        activity?.getSupportActionBar()?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setDisplayShowHomeEnabled(true)
-            setTitle(title)
         }
     }
 
@@ -285,14 +252,12 @@ class CatFormFragment : Fragment() {
         private val PICK_IMAGE_CODE = 1002
         private val PICK_AUDIO_CODE = 1003
 
-        private val ARG_MODE = "ArgMode"
         private val ARG_CAT_DATA = "ArgCatData"
 
         @JvmStatic
-        fun newInstance(mode: Mode, catData: CatData) =
+        fun newInstance(catData: CatData) =
             CatFormFragment().apply {
                 arguments = Bundle().apply {
-                    putInt(ARG_MODE, mode.ordinal)
                     putParcelable(ARG_CAT_DATA, catData)
                 }
             }

@@ -1,53 +1,36 @@
 package com.sergsave.purryourcat.fragments
 
 import android.Manifest
-import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.*
 import android.view.MotionEvent.ACTION_MOVE
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.google.android.material.transition.MaterialFadeThrough
-import kotlinx.android.synthetic.main.fragment_purring.*
 import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.helpers.*
+import com.sergsave.purryourcat.helpers.ImageUtils
+import com.sergsave.purryourcat.helpers.PermissionUtils
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.vibration.*
-import java.util.Timer
+import kotlinx.android.synthetic.main.fragment_purring.*
+import java.util.*
 import kotlin.concurrent.schedule
 
 // TODO: Implement sound listener version without permission.
 
 class PurringFragment : Fragment() {
 
-    enum class ActionType {
-        SAVE,
-        EDIT
-    }
-
-    interface OnActionClickedListener {
-        fun onActionClicked(type: ActionType)
-    }
-
     interface OnImageLoadedListener {
         fun onImageLoaded()
     }
 
+    var onImageLoadedListener: OnImageLoadedListener? = null
+
     private var transitionName: String? = null
     private var catData: CatData? = null
-    private var onActionListener: OnActionClickedListener? = null
-    private var onLoadListener: OnImageLoadedListener? = null
     private var mediaPlayer: MediaPlayer? = null
     private var playerTimeoutTimer: Timer? = null
     private var vibrator: RythmOfSoundVibrator? = null
-
-    var actionType = ActionType.EDIT
-        set(value) {
-            field = value
-            activity?.invalidateOptionsMenu()
-        }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -56,14 +39,9 @@ class PurringFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        enterTransition = MaterialFadeThrough.create(requireContext())
         arguments?.let {
             transitionName = it.getString(ARG_TRANSITION_NAME)
             catData = it.getParcelable<CatData>(ARG_CAT_DATA)
-        }
-
-        savedInstanceState?.let {
-            actionType = ActionType.values().get(it.getInt(BUNDLE_KEY_ACTION_TYPE))
         }
     }
 
@@ -75,6 +53,7 @@ class PurringFragment : Fragment() {
         vibrator?.release()
 
         activity?.setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE)
+
         super.onStop()
     }
 
@@ -104,15 +83,6 @@ class PurringFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val activity = getActivity() as AppCompatActivity?
-        activity?.getSupportActionBar()?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setDisplayShowHomeEnabled(true)
-            setTitle(getResources().getString(R.string.purring_title))
-        }
-
-        setHasOptionsMenu(true)
-
         // Shared element transition
         photo_image.setTransitionName(transitionName)
         photo_image.setOnTouchListener { _, event ->
@@ -122,37 +92,8 @@ class PurringFragment : Fragment() {
         }
 
         ImageUtils.loadInto(context, catData?.photoUri, photo_image, {
-            onLoadListener?.onImageLoaded()
+            onImageLoadedListener?.onImageLoaded()
         })
-    }
-
-    fun setOnActionClickedListener(listener: OnActionClickedListener) {
-        onActionListener = listener
-    }
-
-    fun setOnImageLoadedListener(listener: OnImageLoadedListener) {
-        onLoadListener = listener
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_purring, menu)
-        val edit = menu.findItem(R.id.action_edit).apply{ setVisible(false) }
-        val save = menu.findItem(R.id.action_save).apply{ setVisible(false) }
-        when(actionType) {
-            ActionType.EDIT -> edit.setVisible(true)
-            ActionType.SAVE -> save.setVisible(true)
-        }
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.action_edit, R.id.action_save -> {
-            onActionListener?.onActionClicked(actionType)
-            true
-        }
-        else -> {
-            super.onOptionsItemSelected(item)
-        }
     }
 
     private fun prepareBeatDetectorAsync(callback: (ISoundBeatDetector?)->Unit ) {
@@ -205,19 +146,12 @@ class PurringFragment : Fragment() {
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putInt(BUNDLE_KEY_ACTION_TYPE, actionType.ordinal)
-    }
-
     companion object {
         private val AUDIO_TIMEOUT = 2000
         private val PERMISSION_RECORD_AUDIO_CODE = 1000
 
         private val ARG_TRANSITION_NAME = "TransitionName"
         private val ARG_CAT_DATA = "CatData"
-
-        private val BUNDLE_KEY_ACTION_TYPE = "ActionType"
 
         @JvmStatic
         fun newInstance(sharedElementTransitionName: String?, catData: CatData) =

@@ -17,10 +17,6 @@ import com.sergsave.purryourcat.adapters.CatsListAdapter
 import com.sergsave.purryourcat.data.*
 import com.sergsave.purryourcat.helpers.*
 import com.sergsave.purryourcat.content.*
-import com.sergsave.purryourcat.fragments.BaseSharingFragment
-import com.sergsave.purryourcat.fragments.GiveSharingFragment
-import com.sergsave.purryourcat.fragments.TakeSharingFragment
-import com.sergsave.purryourcat.sharing.*
 import com.sergsave.purryourcat.models.*
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -63,12 +59,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var catRepo: CatDataRepo
     private lateinit var contentRepo: ContentRepo
     private lateinit var catsListAdapter: CatsListAdapter
-    private lateinit var sharingHelper: SharingHelper
     private var recyclerItemIds2catIds = mapOf<Long, String>()
 
     override fun onDestroy() {
-        // To avoid memory leakage (sharing fragments work async)
-        sharingHelper.release()
         super.onDestroy()
     }
 
@@ -95,12 +88,10 @@ class MainActivity : AppCompatActivity() {
 
         fab_clickable_layout.setOnClickListener { fab.performClick() }
 
-        initSharingHelper()
-
-        if(savedInstanceState == null) {
-            sharingHelper.extractSharingData(intent)
+        if(savedInstanceState != null)
             return
-        }
+
+        checkInputSharingIntent()
     }
 
     private fun setupCatsList() {
@@ -124,7 +115,7 @@ class MainActivity : AppCompatActivity() {
                 sharedElement: View,
                 sharedElementTransitionName: String
             ) {
-                sharingHelper.prepareSharingData(Pack(catWithId.second))
+                // Remove cat from list
             }
         }
 
@@ -164,120 +155,19 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent, transitionOption.toBundle())
     }
 
-    private fun initSharingHelper() {
-        val onFailedListener = { error: String? -> showFailedSnackBar(error) }
-        val onPreparedListener = { intent: Intent -> startActivity(intent) }
-        val onExtractedListener = { pack: Pack ->
-            val updated = pack.cat.withUpdatedContent { uri -> contentRepo.add(uri) }
-
-            val intent = Intent(this@MainActivity, CatCardActivity::class.java)
-            intent.putExtra(Constants.CAT_DATA_INTENT_KEY, updated)
-            startActivity(intent)
-        }
-
-        sharingHelper = SharingHelper(this, R.id.recycler_layout,
-            onExtractedListener,
-            onPreparedListener,
-            onFailedListener)
-    }
-
-    private fun showFailedSnackBar(errorText: String?) {
-        if(errorText == null)
+    private fun checkInputSharingIntent() {
+        val isForwarded = intent?.getBooleanExtra(Constants.IS_FORWARDED_INTENT_KEY, false) ?: false
+        if(isForwarded.not())
             return
 
-        Snackbar.make(
-            recycler_layout,
-            errorText,
-            Snackbar.LENGTH_LONG
-        )
-            .setAction(R.string.close) { }
-            .show()
+        // Forward further
+        val intent = Intent(this, CatCardActivity::class.java)
+        intent.putExtra(Constants.SHARING_INPUT_INTENT_KEY, this.intent)
+
+        startActivity(intent)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-    }
-}
-
-private class SharingHelper(private val activity: FragmentActivity,
-                    private val fragmentContainerViewId: Int,
-                    private val onExtractResultListener: (Pack) -> Unit,
-                    private val onPrepareResultListener: (Intent) -> Unit,
-                    private val onFailedListener: (String?) -> Unit) {
-
-    private var takeSharingFragment: TakeSharingFragment? = null
-    private var giveSharingFragment: GiveSharingFragment? = null
-
-    init {
-        val currentFragment = activity.supportFragmentManager
-            .findFragmentById(fragmentContainerViewId)
-        takeSharingFragment = (currentFragment as? TakeSharingFragment)?.also { init(it) }
-        giveSharingFragment = (currentFragment as? GiveSharingFragment)?.also { init(it) }
-    }
-
-    fun extractSharingData(intent: Intent) {
-        giveSharingFragment = GiveSharingFragment.newInstance(intent).also { fragment ->
-            init(fragment)
-            showFragment(fragment, null)
-        }
-    }
-
-    fun prepareSharingData(pack: Pack) {
-        takeSharingFragment = TakeSharingFragment.newInstance(pack).also { fragment ->
-            init(fragment)
-            showFragment(fragment, null)
-        }
-    }
-
-    fun release() {
-        deinit(takeSharingFragment)
-        deinit(giveSharingFragment)
-    }
-
-    private fun init(fragment: TakeSharingFragment) {
-        init(fragment, onPrepareResultListener, onFailedListener)
-    }
-
-    private fun init(fragment: GiveSharingFragment) {
-        init(fragment, onExtractResultListener, onFailedListener)
-    }
-
-    private fun <T> init(fragment: BaseSharingFragment<T>,
-                         onSuccess: (T) -> Unit,
-                         onFailed: (String?) -> Unit) {
-        val close = { activity.supportFragmentManager.popBackStack() }
-
-        fragment.onSuccessListener = object: BaseSharingFragment.OnSuccessListener<T> {
-            override fun onSuccess(data: T) {
-                close()
-                onSuccess(data)
-            }
-        }
-
-        fragment.onErrorListener = object: BaseSharingFragment.OnErrorListener {
-            override fun onError(error: String?) {
-                close()
-                onFailed(error)
-            }
-        }
-
-        fragment.onStartFailedListener = object: BaseSharingFragment.OnStartFailedListener {
-            override fun onStartFailed() = close()
-        }
-    }
-
-    private fun <T> deinit(fragment: BaseSharingFragment<T>?) {
-        fragment?.onStartFailedListener = null
-        fragment?.onSuccessListener = null
-        fragment?.onErrorListener = null
-    }
-
-    private fun showFragment(fragment: Fragment, tag: String?) {
-        activity
-            .supportFragmentManager
-            .beginTransaction()
-            .add(fragmentContainerViewId, fragment, tag)
-            .addToBackStack(null)
-            .commit()
     }
 }

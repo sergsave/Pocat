@@ -1,11 +1,12 @@
 <resources>
     <string name="app_name">PurrYourCat</string>
-    <string name="sharing_text">Check out my cat in PurrYourCat App!\nCat link: %1$s\n\nDownload app here: ... </string>
+    <string name="sharing_text">Check out my cat in PurrYourCat App!\n\n%1$s\n\nDownload app here: ... </string>
     <string name="add_new_cat">Add a new cat</string>
     <string name="name">Name</string>
     <string name="go_to_purr">Apply</string>
     <string name="choose_sound">Add a purring sound</string>
     <string name="purring_title">Touch for a purr</string>
+    <string name="wait">Data loading</string>
     <string name="edit_cat">Edit a cat card</string>
     <string name="add_photo_with">Add photo with...</string>
     <string name="add_audio_with">Add audio with...</string>

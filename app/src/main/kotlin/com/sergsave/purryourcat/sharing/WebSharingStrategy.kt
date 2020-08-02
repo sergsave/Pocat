@@ -14,6 +14,7 @@ import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.Singles
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.io.File
+import java.io.IOException
 import java.net.URL
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -21,6 +22,9 @@ import java.util.function.Function
 
 private fun cacheDir(context: Context) =
     File(context.cacheDir, "sharing").also { if(it.exists().not()) it.mkdirs() }
+
+private fun errorThrowable(context: Context)
+        = IOException(context.getString(R.string.connection_error))
 
 class WebSharingStrategy(private val context: Context,
                         private val service: INetworkService,
@@ -36,8 +40,9 @@ class WebSharingStrategy(private val context: Context,
         }
     }
 
-    override fun makePrepareObservable(pack: Pack): Single<Intent>? {
+    override fun makeTakeObservable(pack: Pack): Single<Intent>? {
         val previewSingle = makePreview(pack)
+        val throwable = errorThrowable(context)
 
         val uploadSingle = Single.fromCallable { packer.pack(pack)!! } // rxJava doesn't support null
             .subscribeOn(Schedulers.io())
@@ -47,6 +52,7 @@ class WebSharingStrategy(private val context: Context,
         return Singles.zip(previewSingle, uploadSingle, { preview, link ->
             makeIntent(link, preview)
         })
+            .onErrorResumeNext { Single.error(throwable) }
     }
 
     private fun makeIntent(url: URL, previewUri: Uri): Intent {
@@ -76,13 +82,15 @@ class WebSharingStrategy(private val context: Context,
         }
     }
 
-    override fun makeExtractObservable(intent: Intent): Single<Pack>? {
+    override fun makeGiveObservable(intent: Intent): Single<Pack>? {
         val uri = intent.data
         if(uri == null)
             return null
 
+        val throwable = errorThrowable(context)
         return service
             .makeDownloadObservable(URL(uri.toString()), cacheDir(context))
             .map { file -> packer.unpack(file)!! }  // rxJava doesn't support null
+            .onErrorResumeNext { Single.error(throwable) }
     }
 }

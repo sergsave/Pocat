@@ -1,6 +1,7 @@
 package com.sergsave.purryourcat.sharing
 
 import android.content.Context
+import android.util.Log
 import com.sergsave.purryourcat.helpers.NetworkUtils
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import java.io.*
@@ -10,6 +11,10 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import com.estmob.android.sendanywhere.sdk.ReceiveTask
 import com.estmob.android.sendanywhere.sdk.SendTask
 import com.estmob.android.sendanywhere.sdk.Task
+
+private val DEBUG_TAG = "SendAnywhereService"
+private fun logProgress(fileState: Task.FileState?) =
+    fileState?.let{ Log.d(DEBUG_TAG, "progress: " + it.transferSize * 100 / it.totalSize) }
 
 class SendAnywhereNetworkService(private val context: Context): INetworkService {
 
@@ -46,11 +51,13 @@ class SendAnywhereNetworkService(private val context: Context): INetworkService 
         task.setOnTaskListener { state, detailedState, obj ->
             when (state) {
                 Task.State.PREPARING -> {
+                    Log.d(DEBUG_TAG, "preparing")
                     val key = obj as? String
                     if (detailedState == SendTask.DetailedState.PREPARING_UPDATED_KEY && key != null)
                         (task.getValue(Task.Value.LINK_URL) as? String)?.let { link = URL(it) }
                 }
                 Task.State.TRANSFERRING -> {
+                    logProgress(obj as? Task.FileState)
                     // Progress not supported
                 }
                 Task.State.FINISHED -> {
@@ -93,6 +100,8 @@ class SendAnywhereNetworkService(private val context: Context): INetworkService 
                     val fileState = obj as? Task.FileState
                     if (fileState != null)
                         file = fileState.file.path?.let { File(it) }
+
+                    logProgress(fileState)
                 }
                 Task.State.FINISHED -> {
                     when (detailedState) {

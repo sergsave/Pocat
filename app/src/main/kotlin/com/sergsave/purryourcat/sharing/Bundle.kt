@@ -1,10 +1,13 @@
 package com.sergsave.purryourcat.sharing
 
 import com.sergsave.purryourcat.models.*
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 import kotlinx.serialization.*
 
 @Serializable
-data class Pack(val cat: CatData)
+@Parcelize
+data class Pack(val cat: CatData): Parcelable
 
 @Serializable
 data class Bundle(val version: Int, val pack: Pack) {

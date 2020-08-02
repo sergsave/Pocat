@@ -5,6 +5,6 @@ import android.net.Uri
 import io.reactivex.rxjava3.core.Single
 
 interface ISharingStrategy {
-    fun makePrepareObservable(pack: Pack): Single<Intent>?
-    fun makeExtractObservable(intent: Intent): Single<Pack>?
+    fun makeTakeObservable(pack: Pack): Single<Intent>?
+    fun makeGiveObservable(intent: Intent): Single<Pack>?
 }

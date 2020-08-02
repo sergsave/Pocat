@@ -7,25 +7,29 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import android.transition.Transition
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.transition.MaterialFadeThrough
 import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.fragments.CatFormFragment
-import com.sergsave.purryourcat.fragments.PurringFragment
+import com.sergsave.purryourcat.fragments.*
 import com.sergsave.purryourcat.helpers.Constants
 import com.sergsave.purryourcat.helpers.SimpleAlertDialog
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.viewmodels.*
 import kotlinx.android.synthetic.main.activity_cat_card.*
 
+//TODO: Интерфейсы фрагментов на лямбды заменить?
 class CatCardActivity : AppCompatActivity() {
 
-    private enum class PageType(val fragmentTag: String) {
+    private enum class PageType(val tag: String) {
         ADD_NEW("AddNew"),
         EDIT("Edit"),
-        PURRING("Purring")
+        SHOW_SAVED("ShowSaved"),
+        SHOW_UNSAVED("ShowUnsaved"),
+        LOADING("Loading")
     }
 
-    private lateinit var currentPage : PageType
+    private var currentPage : PageType? = null
     private lateinit var viewModel : CatCardViewModel
 
     override fun onDestroy() {
@@ -36,20 +40,20 @@ class CatCardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cat_card)
 
-        // Use common toolbar for pages to avoid transition blinking
         setSupportActionBar(toolbar)
         toolbar.setNavigationOnClickListener { onBackPressed() }
 
         val catId = getCatId(intent)
-        val catData = getCatData(intent)
-        initViewModel(catId, catData)
+        initViewModel(catId)
 
         if(savedInstanceState == null) {
             if(getTransitionName(intent) != null)
                 postponeEnterTransition()
 
-            if(catId != null || catData != null)
-                switchToPage(PageType.PURRING)
+            if(catId != null)
+                switchToPage(PageType.SHOW_SAVED)
+            else if (getSharingIntent(intent) != null)
+                switchToPage(PageType.LOADING)
             else
                 switchToPage(PageType.ADD_NEW)
 
@@ -63,105 +67,142 @@ class CatCardActivity : AppCompatActivity() {
         restoreAlertDialogsState()
     }
 
-    private fun initViewModel(catId: String?, catData: CatData?) {
-        val factory =
-            if(catData != null) CatCardViewModelFactory(catData)
-            else if (catId != null) CatCardViewModelFactory(catId)
-            else CatCardViewModelFactory()
-        viewModel = ViewModelProvider(this, factory).get(CatCardViewModel::class.java)
+    private fun initViewModel(catRepoId: String?) {
+        viewModel = ViewModelProvider(this, CatCardViewModelFactory(catRepoId))
+            .get(CatCardViewModel::class.java)
     }
 
-    private fun getTransitionName(intent: Intent) : String? {
-        return intent.getStringExtra(Constants.SHARED_TRANSITION_NAME_INTENT_KEY)
-    }
+    private fun getTransitionName(intent: Intent) =
+        intent.getStringExtra(Constants.SHARED_TRANSITION_NAME_INTENT_KEY)
 
-    private fun getCatId(intent: Intent) : String? {
-        return intent.getStringExtra(Constants.CAT_ID_INTENT_KEY)
-    }
+    private fun getCatId(intent: Intent) =
+        intent.getStringExtra(Constants.CAT_ID_INTENT_KEY)
 
-    private fun getCatData(intent: Intent) : CatData? {
-        return intent.getParcelableExtra(Constants.CAT_DATA_INTENT_KEY)
-    }
-
-    private fun setCurrentFragment(fragment: Fragment, tag: String? = null)
-    {
-        if(supportFragmentManager.findFragmentByTag(tag) != null)
-            return
-
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.container, fragment, tag)
-            .commit()
-    }
+    private fun getSharingIntent(intent: Intent) =
+        intent.getParcelableExtra<Intent>(Constants.SHARING_INPUT_INTENT_KEY)
 
     private fun switchToPage(type: PageType) {
-        val existingFragment = supportFragmentManager.findFragmentByTag(type.fragmentTag)
+        data class PageFactory(
+            val actionBarFactory: () -> Fragment,
+            val contentFactory: () -> Fragment
+        )
 
-        val fragment : Fragment = when(type) {
+        val data = viewModel.data.value ?: CatData()
+
+        val pageFactory : PageFactory = when(type) {
             PageType.ADD_NEW, PageType.EDIT -> {
-                val mode =
-                    if(type == PageType.ADD_NEW) CatFormFragment.Mode.CREATE
-                    else CatFormFragment.Mode.EDIT
+                val title =
+                    if(type == PageType.ADD_NEW) getString(R.string.add_new_cat)
+                    else getString(R.string.edit_cat)
 
-                val _fragment = existingFragment as CatFormFragment?
-                    ?: CatFormFragment.newInstance(mode, viewModel.data.value ?: CatData())
-
-                _fragment.apply { initFragment(this) }
+                PageFactory({ ActionBarFragment.newInstance(title) },
+                    { CatFormFragment.newInstance(data) })
             }
-            PageType.PURRING -> {
+            PageType.SHOW_SAVED, PageType.SHOW_UNSAVED -> {
+                val actionBarFactory: () -> Fragment =
+                    if(type == PageType.SHOW_UNSAVED) { { UnsavedCatActionBarFragment() } }
+                    else { { SavedCatActionBarFragment.newInstance(data) } }
+
                 val transition = getTransitionName(intent)
 
-                val data = viewModel.data.value ?: CatData()
-                val _fragment = existingFragment as PurringFragment?
-                    ?: PurringFragment.newInstance(transition, data)
-
-                _fragment.apply { initFragment(this) }
+                PageFactory(actionBarFactory, { PurringFragment.newInstance(transition, data) })
+            }
+            PageType.LOADING -> {
+                PageFactory({ ActionBarFragment.newInstance(getString(R.string.wait)) },
+                    { ExternalSharingDataLoadFragment.newInstance(getSharingIntent(intent)) })
             }
         }
 
-        setCurrentFragment(fragment, type.fragmentTag)
+        val show: (String?, Int, () -> Fragment, Transition?) -> Unit =
+            { tag, viewId, factory, transition ->
+                val fragment = supportFragmentManager.findFragmentByTag(tag) ?: factory()
+                fragment.enterTransition = transition
+                initFragment(fragment)
+                showFragment(fragment, viewId, tag)
+            }
+
+        val transition = makeContentTransition(currentPage, type)
+        show(type.tag + "ActionBarTag", R.id.toolbar, pageFactory.actionBarFactory, null)
+        show(type.tag + "ContentTag", R.id.container, pageFactory.contentFactory, transition)
+
         currentPage = type
     }
 
-    private fun initFragment(catForm: CatFormFragment) {
-        val applyListener = object : CatFormFragment.OnApplyListener {
-            override fun onApply() {
-                val data = catForm.catDataChange.to
+    private fun makeContentTransition(from: PageType?, to: PageType?): Transition? {
+        if(from == PageType.SHOW_UNSAVED && to == PageType.SHOW_SAVED)
+            return null
 
-                if (data == null || data.isValid().not()) {
+        return MaterialFadeThrough.create(this)
+    }
+
+    private fun initFragment(fragment: Fragment) =
+        when (fragment) {
+            is SavedCatActionBarFragment -> initFragment(fragment)
+            is UnsavedCatActionBarFragment -> initFragment(fragment)
+            is PurringFragment -> initFragment(fragment)
+            is CatFormFragment -> initFragment(fragment)
+            is ExternalSharingDataLoadFragment -> initFragment(fragment)
+            else -> {}
+        }
+
+    private fun initFragment(fragment: CatFormFragment) {
+        fragment.onApplyListener = object : CatFormFragment.OnApplyListener {
+            override fun onApply() {
+                val data = fragment.catDataChange.to
+
+                val isValid: (CatData) -> Boolean =
+                    { it.name != null && it.purrAudioUri != null && it.photoUri != null }
+
+                if (data == null || isValid(data).not()) {
                     showApplyAlertDialog()
                     return
                 }
 
                 viewModel.change(data)
                 viewModel.syncDataWithRepo()
-                switchToPage(PageType.PURRING)
+                switchToPage(PageType.SHOW_SAVED)
             }
         }
-
-        catForm.setOnApplyListener(applyListener)
     }
 
-    private fun initFragment(purring: PurringFragment) {
-        purring.actionType =
-            if(viewModel.isDataSyncWithRepo()) PurringFragment.ActionType.EDIT
-            else PurringFragment.ActionType.SAVE
-
-        purring.setOnActionClickedListener(object : PurringFragment.OnActionClickedListener {
-            override fun onActionClicked(type: PurringFragment.ActionType) {
-                when(type) {
-                    PurringFragment.ActionType.EDIT -> switchToPage(PageType.EDIT)
-                    PurringFragment.ActionType.SAVE -> {
-                        purring.actionType = PurringFragment.ActionType.EDIT
-                        viewModel.syncDataWithRepo()
-                        showSaveSnackbar()
-                    }
-                }
-            }
-        })
-        purring.setOnImageLoadedListener(object : PurringFragment.OnImageLoadedListener {
+    private fun initFragment(fragment: PurringFragment) {
+        fragment.onImageLoadedListener = object : PurringFragment.OnImageLoadedListener {
             override fun onImageLoaded() = supportStartPostponedEnterTransition()
-        })
+        }
+    }
+
+    private fun initFragment(fragment: ExternalSharingDataLoadFragment) {
+        fragment.onGiveSharingResultListener = object : ExternalSharingDataLoadFragment.OnGiveSharingResultListener {
+            override fun onSuccess(catData: CatData) {
+                viewModel.change(catData)
+                switchToPage(PageType.SHOW_UNSAVED)
+            }
+
+            override fun onError(error: String?) {
+                error?.let{ showSnackbar(it) }
+            }
+        }
+    }
+
+    private fun initFragment(fragment: UnsavedCatActionBarFragment) {
+        fragment.onSaveActionClickedListener = object: UnsavedCatActionBarFragment.OnSaveActionClikedListener {
+            override fun onSaveClicked() {
+                viewModel.syncDataWithRepo()
+                showSnackbar(getString(R.string.save_snackbar_message_text))
+                switchToPage(PageType.SHOW_SAVED)
+            }
+        }
+    }
+
+    private fun initFragment(fragment: SavedCatActionBarFragment) {
+        fragment.onEditActionClickedListener = object : SavedCatActionBarFragment.OnEditActionClikedListener {
+            override fun onEditClicked() = switchToPage(PageType.EDIT)
+        }
+
+        fragment.onTakeSharingResultListener = object: SavedCatActionBarFragment.OnTakeSharingResultListener {
+            override fun onSuccess(intent: Intent) = startActivity(intent)
+            override fun onError(error: String?) { error?.let{ showSnackbar(it) } }
+        }
     }
 
     override fun onBackPressed() {
@@ -179,19 +220,24 @@ class CatCardActivity : AppCompatActivity() {
 
     private fun finalizeBackPress() {
         if (currentPage == PageType.EDIT)
-            switchToPage(PageType.PURRING)
+            switchToPage(PageType.SHOW_SAVED)
         else
             super.onBackPressed()
     }
 
-    private fun CatData.isValid() = name != null && purrAudioUri != null && photoUri != null
+    private fun showFragment(fragment: Fragment, viewId: Int, tag: String?)
+    {
+        if(supportFragmentManager.findFragmentByTag(tag) != null)
+            return
 
-    private fun showSaveSnackbar(){
-        Snackbar.make(
-            container,
-            R.string.save_snackbar_message_text,
-            Snackbar.LENGTH_LONG
-        )
+        supportFragmentManager
+            .beginTransaction()
+            .replace(viewId, fragment, tag)
+            .commit()
+    }
+
+    private fun showSnackbar(message: String) {
+        Snackbar.make(container, message, Snackbar.LENGTH_LONG)
             .setAction(R.string.close) { }
             .show()
     }
@@ -217,15 +263,6 @@ class CatCardActivity : AppCompatActivity() {
         dialog.show(supportFragmentManager, DIALOG_ID_APPLY)
     }
 
-    private fun setDialogPositiveListener(dialog: SimpleAlertDialog, listener: () -> Unit) {
-        dialog.listener = object: SimpleAlertDialog.Listener {
-            override fun onDialogNegativeClick(dialog: DialogFragment?) { }
-            override fun onDialogPositiveClick(dialog: DialogFragment?) {
-                listener()
-            }
-        }
-    }
-
     private fun restoreAlertDialogsState() {
         val backDialog = supportFragmentManager.findFragmentByTag(DIALOG_ID_BACK) as? SimpleAlertDialog
         backDialog?.let { setDialogPositiveListener(it, { finalizeBackPress() })}
@@ -241,5 +278,14 @@ class CatCardActivity : AppCompatActivity() {
 
         private val DIALOG_ID_BACK = "DialogBack"
         private val DIALOG_ID_APPLY = "DialogApply"
+    }
+}
+
+private fun setDialogPositiveListener(dialog: SimpleAlertDialog, listener: () -> Unit) {
+    dialog.listener = object: SimpleAlertDialog.Listener {
+        override fun onDialogNegativeClick(dialog: DialogFragment?) { }
+        override fun onDialogPositiveClick(dialog: DialogFragment?) {
+            listener()
+        }
     }
 }
