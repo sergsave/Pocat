@@ -4,6 +4,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
+import androidx.recyclerview.selection.ItemDetailsLookup
+import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.extensions.LayoutContainer
 import com.sergsave.purryourcat.R
@@ -12,21 +14,16 @@ import kotlinx.android.synthetic.main.view_cat_item.view.*
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.helpers.ImageUtils
 
-class CatsListAdapter():
-    RecyclerView.Adapter<CatsListAdapter.ViewHolder>() {
+class CatsListAdapter(): RecyclerView.Adapter<CatsListAdapter.ViewHolder>() {
+
+    var tracker: SelectionTracker<Long>? = null
 
     interface OnClickListener {
         fun onClick(catWithId: Pair<Long, CatData>,
                     sharedElement: View, sharedElementTransitionName: String)
     }
 
-    interface OnLongClickListener {
-        fun onLongClick(catWithId: Pair<Long, CatData>,
-                        sharedElement: View, sharedElementTransitionName: String)
-    }
-
     var onClickListener: OnClickListener? = null
-    var onLongClickListener: OnLongClickListener? = null
 
     private var cats = listOf<Pair<Long, CatData>>()
 
@@ -42,9 +39,10 @@ class CatsListAdapter():
     class ViewHolder(override val containerView: View) :
         RecyclerView.ViewHolder(containerView), LayoutContainer {
 
-        fun bind(cat: CatData, position: Int,
-                 onClickListener: OnClickListener?, onLongClickListener: OnLongClickListener?) {
+        fun bind(cat: CatData, position: Int, isSelected: Boolean, onClickListener: OnClickListener?) {
             name_text.text = cat.name
+
+            is_selected_indicator_image.visibility = if(isSelected) View.VISIBLE else View.GONE
 
             ImageUtils.loadInto(photo_image.context, cat.photoUri, photo_image)
 
@@ -54,11 +52,13 @@ class CatsListAdapter():
             containerView.setOnClickListener{
                 onClickListener?.onClick(Pair(itemId, cat), view, transitionName)
             }
-            containerView.setOnLongClickListener{
-                onLongClickListener?.onLongClick(Pair(itemId, cat), view, transitionName)
-                true
-            }
         }
+
+        fun getItemDetails(): ItemDetailsLookup.ItemDetails<Long> =
+            object : ItemDetailsLookup.ItemDetails<Long>() {
+                override fun getPosition(): Int = adapterPosition
+                override fun getSelectionKey(): Long? = itemId
+            }
     }
 
     fun setItems(catsWithId: List<Pair<Long, CatData>>) {
@@ -78,7 +78,8 @@ class CatsListAdapter():
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(cats.get(position).second, position, onClickListener, onLongClickListener)
+        val isSelected = tracker?.isSelected(getItemId(position)) ?: false
+        holder.bind(cats.get(position).second, position, isSelected, onClickListener)
     }
 
     override fun getItemCount() = cats.size

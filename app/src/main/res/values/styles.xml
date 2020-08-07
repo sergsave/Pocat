@@ -35,6 +35,7 @@
         <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar.PrimarySurface</item>
         <item name="floatingActionButtonStyle">@style/Widget.MyTheme.FloatingActionButton</item>
         <item name="materialAlertDialogTheme">@style/MyThemeOverlay.MaterialComponents.MaterialAlertDialog</item>
+        <item name="windowActionModeOverlay">true</item>
 
         <!--Android base-->
         <item name="android:statusBarColor" tools:ignore="NewApi">?attr/colorPrimaryVariant</item>

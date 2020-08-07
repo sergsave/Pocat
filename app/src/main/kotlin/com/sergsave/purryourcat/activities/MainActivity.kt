@@ -5,19 +5,25 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.View
+import android.view.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.app.ActivityOptionsCompat
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
-import com.google.android.material.snackbar.Snackbar
+import androidx.recyclerview.selection.ItemDetailsLookup
+import androidx.recyclerview.selection.ItemKeyProvider
+import androidx.recyclerview.selection.SelectionTracker
+import androidx.recyclerview.selection.StorageStrategy
+import androidx.recyclerview.widget.RecyclerView
 import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.adapters.CatsListAdapter
-import com.sergsave.purryourcat.data.*
-import com.sergsave.purryourcat.helpers.*
-import com.sergsave.purryourcat.content.*
-import com.sergsave.purryourcat.models.*
+import com.sergsave.purryourcat.content.ContentRepo
+import com.sergsave.purryourcat.data.CatDataRepo
+import com.sergsave.purryourcat.helpers.AutoFitGridLayoutManager
+import com.sergsave.purryourcat.helpers.Constants
+import com.sergsave.purryourcat.helpers.MarginItemDecoration
+import com.sergsave.purryourcat.models.CatData
+import com.sergsave.purryourcat.models.withUpdatedContent
 import kotlinx.android.synthetic.main.activity_main.*
 
 // Global TODO
@@ -28,7 +34,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 // TODO: Code inspect
 // TODO: Подвисание на Светином телефоне
 
-//TODO: ЭТО ВАЩЕ норма, что при закрытии приложения с телефона дебаггер не прекращается??
+// TODO: ЭТО ВАЩЕ норма, что при закрытии приложения с телефона дебаггер не прекращается??
+
+// TODO: Main activity refactoring after settings and about pages
 
 private fun addTestCats(context: Context) {
     val testUri = Uri.parse(
@@ -60,6 +68,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var contentRepo: ContentRepo
     private lateinit var catsListAdapter: CatsListAdapter
     private var recyclerItemIds2catIds = mapOf<Long, String>()
+    private var actionMode: ActionMode? = null
 
     override fun onDestroy() {
         super.onDestroy()
@@ -73,8 +82,10 @@ class MainActivity : AppCompatActivity() {
         catRepo = CatDataRepo.instance!!
         contentRepo = ContentRepo.instance!!
 
+        setSupportActionBar(toolbar)
+
         addTestCats(this)
-        setupCatsList()
+        setupCatsList(savedInstanceState)
 
         val observer = Observer<Map<String, CatData>> { cats ->
             updateCatsList(cats)
@@ -82,19 +93,18 @@ class MainActivity : AppCompatActivity() {
         catRepo.read().observe(this, observer)
 
         fab.setOnClickListener {
+            actionMode?.finish()
             val intent = Intent(this, CatCardActivity::class.java)
             startActivity(intent)
         }
 
         fab_clickable_layout.setOnClickListener { fab.performClick() }
 
-        if(savedInstanceState != null)
-            return
-
-        checkInputSharingIntent()
+        if(savedInstanceState == null)
+            checkInputSharingIntent()
     }
 
-    private fun setupCatsList() {
+    private fun setupCatsList(bundle: Bundle?) {
         catsListAdapter = CatsListAdapter()
 
         catsListAdapter.onClickListener = object : CatsListAdapter.OnClickListener {
@@ -103,19 +113,12 @@ class MainActivity : AppCompatActivity() {
                 sharedElement: View,
                 sharedElementTransitionName: String
             ) {
+                if(actionMode != null)
+                    return
+
                 val id = recyclerItemIds2catIds.get(catWithId.first)
                 if(id != null)
                     goToPurringAnimated(id, sharedElement, sharedElementTransitionName)
-            }
-        }
-
-        catsListAdapter.onLongClickListener = object : CatsListAdapter.OnLongClickListener {
-            override fun onLongClick(
-                catWithId: Pair<Long, CatData>,
-                sharedElement: View,
-                sharedElementTransitionName: String
-            ) {
-                // Remove cat from list
             }
         }
 
@@ -133,6 +136,51 @@ class MainActivity : AppCompatActivity() {
             adapter = catsListAdapter
             addItemDecoration(itemDecoration)
         }
+
+        val tracker = SelectionTracker.Builder<Long>(
+            "catsListSelection",
+            recycler_view,
+            MyItemKeyProvider(recycler_view),
+            CatsListItemDetailsLookup(recycler_view),
+            StorageStrategy.createLongStorage()
+        ).withSelectionPredicate(
+            NotSelectEmptySelectionPredicate()
+        ).build()
+
+        tracker?.addObserver(
+            object : SelectionTracker.SelectionObserver<Long>() {
+                override fun onSelectionChanged() {
+                    super.onSelectionChanged()
+
+                    val isSelected = tracker.selection?.isEmpty?.not() ?: false
+
+                    if(isSelected && actionMode == null) {
+                        actionMode = startActionMode(ActionModeCallback({
+                            tracker.selection?.forEach { sel ->
+                                recyclerItemIds2catIds.get(sel.toLong())?.let { catRepo.remove(it) }
+                            }
+                            actionMode?.finish()
+                        }))
+                    }
+
+                    if(isSelected)
+                        actionMode?.title = tracker.selection?.size().toString()
+
+                    if(isSelected.not() && actionMode != null)
+                        actionMode?.finish()
+                }
+            })
+
+        catsListAdapter.tracker = tracker
+        tracker.onRestoreInstanceState(bundle)
+    }
+
+    override fun onActionModeFinished(mode: ActionMode?) {
+        super.onActionModeFinished(mode)
+        actionMode = null
+        catsListAdapter.tracker?.clearSelection()
+        // Workaround. Force update of recycler view. Without this not all items unselect.
+        catsListAdapter.notifyDataSetChanged()
     }
 
     private fun updateCatsList(cats: Map<String, CatData>) {
@@ -155,6 +203,14 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent, transitionOption.toBundle())
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_preferences, menu)
+        if (menu is MenuBuilder)
+            menu.setOptionalIconsVisible(true)
+
+        return true
+    }
+
     private fun checkInputSharingIntent() {
         val isForwarded = intent?.getBooleanExtra(Constants.IS_FORWARDED_INTENT_KEY, false) ?: false
         if(isForwarded.not())
@@ -169,5 +225,76 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        catsListAdapter.tracker?.onSaveInstanceState(outState)
+    }
+}
+
+private object EMPTY_ITEM : ItemDetailsLookup.ItemDetails<Long>() {
+    override fun getSelectionKey() = 666.toLong()
+    override fun getPosition() = Integer.MAX_VALUE
+}
+
+private class NotSelectEmptySelectionPredicate: SelectionTracker.SelectionPredicate<Long>() {
+    override fun canSelectMultiple() = true
+    override fun canSetStateForKey(key: Long, nextState: Boolean) =
+        key != EMPTY_ITEM.selectionKey
+    override fun canSetStateAtPosition(position: Int, nextState: Boolean) =
+        position != EMPTY_ITEM.position
+}
+
+private class MyItemKeyProvider(private val recyclerView: RecyclerView) :
+    ItemKeyProvider<Long>(ItemKeyProvider.SCOPE_MAPPED) {
+
+    override fun getKey(position: Int): Long? {
+        return recyclerView.adapter?.getItemId(position)
+    }
+
+    override fun getPosition(key: Long): Int {
+        val viewHolder = recyclerView.findViewHolderForItemId(key)
+        return viewHolder?.layoutPosition ?: RecyclerView.NO_POSITION
+    }
+}
+
+private class CatsListItemDetailsLookup(private val recyclerView: RecyclerView) :
+    ItemDetailsLookup<Long>() {
+    override fun getItemDetails(event: MotionEvent): ItemDetails<Long>? {
+        val view = recyclerView.findChildViewUnder(event.x, event.y)
+        if (view != null) {
+            return (recyclerView.getChildViewHolder(view) as CatsListAdapter.ViewHolder)
+                .getItemDetails()
+        }
+        return EMPTY_ITEM
+    }
+}
+
+private class ActionModeCallback(private var listener: () -> Unit): ActionMode.Callback {
+
+//    var mode: ActionMode? = null
+
+    override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+//        this.mode = mode
+        val inflater = mode.menuInflater
+        inflater.inflate(R.menu.menu_selection_context, menu)
+        return true
+    }
+
+    override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
+        return false
+    }
+
+    override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_remove -> {
+                listener?.invoke()
+                // REMOVE CATS
+//                mode.finish()
+                true
+            }
+            else -> false
+        }
+    }
+
+    override fun onDestroyActionMode(mode: ActionMode) {
+//        this.mode = null
     }
 }
