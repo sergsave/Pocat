@@ -7,7 +7,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.helpers.ActivityUtils
 
 class UnsavedCatActionBarFragment: Fragment() {
 
@@ -28,9 +27,7 @@ class UnsavedCatActionBarFragment: Fragment() {
 
     override fun onStart() {
         super.onStart()
-        ActivityUtils.setupActionBar(activity as? AppCompatActivity,
-            context?.getString(R.string.purring_title),
-            true)
+        (activity as? AppCompatActivity)?.supportActionBar?.title = context?.getString(R.string.purring_title)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

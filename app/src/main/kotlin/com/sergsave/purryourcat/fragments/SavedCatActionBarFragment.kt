@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.*
 import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.helpers.ActivityUtils
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.sharing.Pack
 
@@ -48,9 +47,7 @@ class SavedCatActionBarFragment: Fragment() {
 
     override fun onStart() {
         super.onStart()
-        ActivityUtils.setupActionBar(activity as? AppCompatActivity,
-            context?.getString(R.string.purring_title),
-            true)
+        (activity as? AppCompatActivity)?.supportActionBar?.title = context?.getString(R.string.purring_title)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

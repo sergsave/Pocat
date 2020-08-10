@@ -14,6 +14,7 @@ import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.fragments.*
 import com.sergsave.purryourcat.helpers.Constants
 import com.sergsave.purryourcat.helpers.SimpleAlertDialog
+import com.sergsave.purryourcat.helpers.setToolbarAsActionBar
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.viewmodels.*
 import kotlinx.android.synthetic.main.activity_cat_card.*
@@ -40,8 +41,7 @@ class CatCardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cat_card)
 
-        setSupportActionBar(toolbar)
-        toolbar.setNavigationOnClickListener { onBackPressed() }
+        setToolbarAsActionBar(toolbar, showBackButton = true)
 
         val catId = getCatId(intent)
         initViewModel(catId)

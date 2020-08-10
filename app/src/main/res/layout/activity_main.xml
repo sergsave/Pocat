@@ -18,15 +18,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
+        <fragment android:name="com.sergsave.purryourcat.fragments.CatsListFragment"
+            android:id="@+id/cats_list_fragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clickable="true"
-            android:fadeScrollbars="true"
-            android:scrollbars="vertical">
-
-        </androidx.recyclerview.widget.RecyclerView>
+            android:layout_height="match_parent" />
 
         <FrameLayout
             android:id="@+id/fab_clickable_layout"

@@ -16,16 +16,18 @@ import com.sergsave.purryourcat.helpers.ImageUtils
 
 class CatsListAdapter(): RecyclerView.Adapter<CatsListAdapter.ViewHolder>() {
 
-    var tracker: SelectionTracker<Long>? = null
-
     interface OnClickListener {
         fun onClick(catWithId: Pair<Long, CatData>,
                     sharedElement: View, sharedElementTransitionName: String)
     }
 
+    var tracker: SelectionTracker<Long>? = null
     var onClickListener: OnClickListener? = null
-
-    private var cats = listOf<Pair<Long, CatData>>()
+    var cats = listOf<Pair<Long, CatData>>()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     init {
         // For the shared element transition to work correctly
@@ -59,15 +61,6 @@ class CatsListAdapter(): RecyclerView.Adapter<CatsListAdapter.ViewHolder>() {
                 override fun getPosition(): Int = adapterPosition
                 override fun getSelectionKey(): Long? = itemId
             }
-    }
-
-    fun setItems(catsWithId: List<Pair<Long, CatData>>) {
-        this.cats = catsWithId
-        notifyDataSetChanged()
-    }
-
-    fun getItems() : List<Pair<Long, CatData>> {
-        return cats
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

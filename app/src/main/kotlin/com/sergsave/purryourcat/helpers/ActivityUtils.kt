@@ -1,13 +1,16 @@
 package com.sergsave.purryourcat.helpers
 
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 
-object ActivityUtils {
-    fun setupActionBar(activity: AppCompatActivity?, title: String?, isBackEnabled: Boolean) {
-        activity?.getSupportActionBar()?.apply {
-            setDisplayHomeAsUpEnabled(isBackEnabled)
-            setDisplayShowHomeEnabled(isBackEnabled)
-            setTitle(title)
-        }
+fun AppCompatActivity.setToolbarAsActionBar(toolbar: Toolbar, showBackButton: Boolean) {
+    setSupportActionBar(toolbar)
+
+    getSupportActionBar()?.apply {
+        setDisplayHomeAsUpEnabled(showBackButton)
+        setDisplayShowHomeEnabled(showBackButton)
     }
+
+    if(showBackButton)
+        toolbar.setNavigationOnClickListener { onBackPressed() }
 }

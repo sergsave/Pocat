@@ -3,7 +3,6 @@ package com.sergsave.purryourcat.fragments
 import androidx.fragment.app.Fragment
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.sergsave.purryourcat.helpers.ActivityUtils
 
 class ActionBarFragment : Fragment() {
 
@@ -17,9 +16,15 @@ class ActionBarFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        ActivityUtils.setupActionBar(activity as? AppCompatActivity,
-            arguments?.let{ it.getString(ARG_TITLE) },
-            arguments?.let{ it.getBoolean(ARG_IS_BACK_ENABLED) } ?: false)
+
+        val title = arguments?.let{ it.getString(ARG_TITLE) }
+        val isBackEnabled = arguments?.let{ it.getBoolean(ARG_IS_BACK_ENABLED) } ?: false
+        val actionBar = (activity as? AppCompatActivity)?.supportActionBar
+        actionBar?.apply {
+            setDisplayHomeAsUpEnabled(isBackEnabled)
+            setDisplayShowHomeEnabled(isBackEnabled)
+            this.title = title
+        }
     }
 
     companion object {
