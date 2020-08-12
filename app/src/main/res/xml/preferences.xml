@@ -1,0 +1,11 @@
+<PreferenceScreen
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <SwitchPreferenceCompat
+      app:key="@string/vibration_preference_key"
+      app:title="@string/vibration"
+      app:summary="@string/vibration_summary"
+      app:icon="@drawable/ic_vibration_black_24dp"
+      app:defaultValue="@bool/preference_vibration_default_value"/>
+
+</PreferenceScreen>

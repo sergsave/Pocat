@@ -1,0 +1,6 @@
+<resources
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingTranslation">
+
+    <string name="vibration_preference_key">vibration</string>
+</resources>

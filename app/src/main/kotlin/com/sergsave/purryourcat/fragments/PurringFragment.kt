@@ -11,6 +11,7 @@ import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.helpers.ImageUtils
 import com.sergsave.purryourcat.helpers.PermissionUtils
 import com.sergsave.purryourcat.models.CatData
+import com.sergsave.purryourcat.preference.PreferenceReader
 import com.sergsave.purryourcat.vibration.*
 import kotlinx.android.synthetic.main.fragment_purring.*
 import java.util.*
@@ -65,6 +66,9 @@ class PurringFragment : Fragment() {
 
         activity?.setVolumeControlStream(AudioManager.STREAM_MUSIC)
         mediaPlayer = MediaPlayer.create(requireContext(), audioUri)?.apply { setLooping(true) }
+
+        if(PreferenceReader(requireContext()).isVibrationEnabled.not())
+            return
 
         prepareBeatDetectorAsync{ detector ->
             if(detector != null && context != null)

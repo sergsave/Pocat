@@ -49,7 +49,7 @@ class SharedPreferencesCatDataStorage(private val context: Context): ICatDataSto
 
     companion object {
         private val BUNDLE_ACTUAL_VERSION = 1
-        private val PREFERENCES_NAME = "CatsMap"
-        private val CATS_LIST_KEY = "CatsMapKey"
+        private val PREFERENCES_NAME = "cats_database"
+        private val CATS_LIST_KEY = "cats_map"
     }
 }

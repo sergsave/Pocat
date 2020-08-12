@@ -5,6 +5,7 @@ import androidx.annotation.MainThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 
+// Save content to file storage available for application
 class ContentRepo private constructor(private val storage: IContentStorage)
 {
     private val liveData = MutableLiveData<List<Uri>>()

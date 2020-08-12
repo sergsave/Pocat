@@ -1,0 +1,3 @@
+<resources>
+    <bool name="preference_vibration_default_value">true</bool>
+</resources>
