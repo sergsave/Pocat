@@ -29,13 +29,13 @@ class SendAnywhereNetworkService(private val context: Context): INetworkService 
         var task: SendTask? = null
 
         return Single.create<URL> { emitter ->
-            if(NetworkUtils.isNetworkAvailable(context).not())
+            if(NetworkUtils.isNetworkAvailable(context)) {
+                task = SendTask(context, arrayOf(file), true).also {
+                    initSendTask(it, emitter)
+                    it.start()
+                }
+            } else
                 emitter.onError(connectionError)
-
-            task = SendTask(context, arrayOf(file), true).also {
-                initSendTask(it, emitter)
-                it.start()
-            }
         }.doOnDispose {
             task?.cancel()
             task = null
@@ -75,13 +75,13 @@ class SendAnywhereNetworkService(private val context: Context): INetworkService 
         var task: ReceiveTask? = null
 
         return Single.create<File> { emitter ->
-            if(NetworkUtils.isNetworkAvailable(context).not())
+            if (NetworkUtils.isNetworkAvailable(context)) {
+                task = ReceiveTask(context, url.toString(), destDir).also {
+                    initReceiveTask(it, emitter)
+                    it.start()
+                }
+            } else
                 emitter.onError(connectionError)
-
-            task = ReceiveTask(context, url.toString(), destDir).also {
-                initReceiveTask(it, emitter)
-                it.start()
-            }
         }.doOnDispose {
             task?.cancel()
             task = null

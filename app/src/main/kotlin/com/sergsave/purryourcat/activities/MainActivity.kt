@@ -19,12 +19,10 @@ import com.sergsave.purryourcat.*
 import kotlinx.android.synthetic.main.activity_main.*
 
 // TODO: Check sdk version of all function
-// TODO: Check Leaks of fragment, activity, viewmodel. And local variable without reference (like visualizer). USE Profiler!!
 // TODO: Names of constants (XX_BUNDLE_KEY or BUNDLE_KEY_XX)
 // TODO: File size limits
-// TODO: Code inspect
+// TODO: Code inspect and warnings
 // TODO: Подвисание на Светином телефоне
-// TODO: ЭТО ВАЩЕ норма, что при закрытии приложения с телефона дебаггер не прекращается??
 
 class MainActivity : AppCompatActivity() {
 

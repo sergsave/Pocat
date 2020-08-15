@@ -1,14 +1,10 @@
 package com.sergsave.purryourcat.fragments
 
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
+import android.view.*
 import com.sergsave.purryourcat.R
 
-class UnsavedCatActionBarFragment: Fragment() {
+class UnsavedCatToolbarFragment: ToolbarFragment() {
 
     interface OnSaveActionClikedListener {
         fun onSaveClicked()
@@ -16,18 +12,13 @@ class UnsavedCatActionBarFragment: Fragment() {
 
     var onSaveActionClickedListener: OnSaveActionClikedListener? = null
 
-    override fun onDestroy() {
-        super.onDestroy()
-    }
+    override val title: String?
+        get() { return context?.getString(R.string.purring_title) }
+    override val isBackEnabled = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-    }
-
-    override fun onStart() {
-        super.onStart()
-        (activity as? AppCompatActivity)?.supportActionBar?.title = context?.getString(R.string.purring_title)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

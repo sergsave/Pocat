@@ -1,16 +1,13 @@
 package com.sergsave.purryourcat.fragments
 
-import android.content.Context
 import android.content.Intent
-import androidx.fragment.app.Fragment
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
 import android.view.*
+import android.os.Bundle
 import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.sharing.Pack
 
-class SavedCatActionBarFragment: Fragment() {
+class SavedCatToolbarFragment: ToolbarFragment() {
 
     interface OnEditActionClikedListener {
         fun onEditClicked()
@@ -30,9 +27,9 @@ class SavedCatActionBarFragment: Fragment() {
             activity?.invalidateOptionsMenu()
         }
 
-    override fun onDestroy() {
-        super.onDestroy()
-    }
+    override val title: String?
+        get() { return context?.getString(R.string.purring_title) }
+    override val isBackEnabled = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,11 +40,6 @@ class SavedCatActionBarFragment: Fragment() {
                 TakeSharingHeadlessFragment
         fragment?.let{ initFragment(it) }
         sharingInProcess = fragment != null
-    }
-
-    override fun onStart() {
-        super.onStart()
-        (activity as? AppCompatActivity)?.supportActionBar?.title = context?.getString(R.string.purring_title)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -114,7 +106,7 @@ class SavedCatActionBarFragment: Fragment() {
 
         @JvmStatic
         fun newInstance(catData: CatData) =
-            SavedCatActionBarFragment().apply {
+            SavedCatToolbarFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(ARG_CAT_DATA, catData)
                 }

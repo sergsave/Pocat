@@ -14,7 +14,6 @@ import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.fragments.*
 import com.sergsave.purryourcat.helpers.Constants
 import com.sergsave.purryourcat.helpers.SimpleAlertDialog
-import com.sergsave.purryourcat.helpers.setToolbarAsActionBar
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.viewmodels.*
 import kotlinx.android.synthetic.main.activity_cat_card.*
@@ -40,8 +39,6 @@ class CatCardActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cat_card)
-
-        setToolbarAsActionBar(toolbar, showBackButton = true)
 
         val catId = getCatId(intent)
         initViewModel(catId)
@@ -95,20 +92,20 @@ class CatCardActivity : AppCompatActivity() {
                     if(type == PageType.ADD_NEW) getString(R.string.add_new_cat)
                     else getString(R.string.edit_cat)
 
-                PageFactory({ ActionBarFragment.newInstance(title) },
+                PageFactory({ ToolbarFragment.newInstance(title) },
                     { CatFormFragment.newInstance(data) })
             }
             PageType.SHOW_SAVED, PageType.SHOW_UNSAVED -> {
                 val actionBarFactory: () -> Fragment =
-                    if(type == PageType.SHOW_UNSAVED) { { UnsavedCatActionBarFragment() } }
-                    else { { SavedCatActionBarFragment.newInstance(data) } }
+                    if(type == PageType.SHOW_UNSAVED) { { UnsavedCatToolbarFragment() } }
+                    else { { SavedCatToolbarFragment.newInstance(data) } }
 
                 val transition = getTransitionName(intent)
 
                 PageFactory(actionBarFactory, { PurringFragment.newInstance(transition, data) })
             }
             PageType.LOADING -> {
-                PageFactory({ ActionBarFragment.newInstance(getString(R.string.wait)) },
+                PageFactory({ ToolbarFragment.newInstance(getString(R.string.wait)) },
                     { ExternalSharingDataLoadFragment.newInstance(getSharingIntent(intent)) })
             }
         }
@@ -122,8 +119,8 @@ class CatCardActivity : AppCompatActivity() {
             }
 
         val transition = makeContentTransition(currentPage, type)
-        show(type.tag + "ActionBarTag", R.id.toolbar, pageFactory.actionBarFactory, null)
-        show(type.tag + "ContentTag", R.id.container, pageFactory.contentFactory, transition)
+        show(type.tag + "ToolbarTag", R.id.toolbar_container, pageFactory.actionBarFactory, null)
+        show(type.tag + "ContentTag", R.id.content_container, pageFactory.contentFactory, transition)
 
         currentPage = type
     }
@@ -137,8 +134,8 @@ class CatCardActivity : AppCompatActivity() {
 
     private fun initFragment(fragment: Fragment) =
         when (fragment) {
-            is SavedCatActionBarFragment -> initFragment(fragment)
-            is UnsavedCatActionBarFragment -> initFragment(fragment)
+            is SavedCatToolbarFragment -> initFragment(fragment)
+            is UnsavedCatToolbarFragment -> initFragment(fragment)
             is PurringFragment -> initFragment(fragment)
             is CatFormFragment -> initFragment(fragment)
             is ExternalSharingDataLoadFragment -> initFragment(fragment)
@@ -184,8 +181,8 @@ class CatCardActivity : AppCompatActivity() {
         }
     }
 
-    private fun initFragment(fragment: UnsavedCatActionBarFragment) {
-        fragment.onSaveActionClickedListener = object: UnsavedCatActionBarFragment.OnSaveActionClikedListener {
+    private fun initFragment(fragment: UnsavedCatToolbarFragment) {
+        fragment.onSaveActionClickedListener = object: UnsavedCatToolbarFragment.OnSaveActionClikedListener {
             override fun onSaveClicked() {
                 viewModel.syncDataWithRepo()
                 showSnackbar(getString(R.string.save_snackbar_message_text))
@@ -194,12 +191,12 @@ class CatCardActivity : AppCompatActivity() {
         }
     }
 
-    private fun initFragment(fragment: SavedCatActionBarFragment) {
-        fragment.onEditActionClickedListener = object : SavedCatActionBarFragment.OnEditActionClikedListener {
+    private fun initFragment(fragment: SavedCatToolbarFragment) {
+        fragment.onEditActionClickedListener = object : SavedCatToolbarFragment.OnEditActionClikedListener {
             override fun onEditClicked() = switchToPage(PageType.EDIT)
         }
 
-        fragment.onTakeSharingResultListener = object: SavedCatActionBarFragment.OnTakeSharingResultListener {
+        fragment.onTakeSharingResultListener = object: SavedCatToolbarFragment.OnTakeSharingResultListener {
             override fun onSuccess(intent: Intent) = startActivity(intent)
             override fun onError(error: String?) { error?.let{ showSnackbar(it) } }
         }
@@ -237,7 +234,7 @@ class CatCardActivity : AppCompatActivity() {
     }
 
     private fun showSnackbar(message: String) {
-        Snackbar.make(container, message, Snackbar.LENGTH_LONG)
+        Snackbar.make(content_container, message, Snackbar.LENGTH_LONG)
             .setAction(R.string.close) { }
             .show()
     }
