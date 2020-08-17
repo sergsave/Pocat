@@ -1,12 +1,11 @@
-package com.sergsave.purryourcat.content
+package com.sergsave.purryourcat.repositories.content
 
 import android.net.Uri
-import androidx.annotation.MainThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 
 // Save content to file storage available for application
-class ContentRepo private constructor(private val storage: IContentStorage)
+class ContentRepository (private val storage: ContentStorage)
 {
     private val liveData = MutableLiveData<List<Uri>>()
 
@@ -40,16 +39,5 @@ class ContentRepo private constructor(private val storage: IContentStorage)
 
     private fun onUpdate() {
         liveData.value = storage.read()
-    }
-
-    companion object {
-        var instance: ContentRepo? = null
-            private set
-
-        @MainThread
-        fun init(storage: IContentStorage): ContentRepo {
-            instance = instance ?: ContentRepo(storage)
-            return instance!!
-        }
     }
 }

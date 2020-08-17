@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.content
+package com.sergsave.purryourcat.repositories.content
 
 import android.content.Context
 import android.net.Uri
@@ -6,7 +6,7 @@ import com.sergsave.purryourcat.helpers.FileUtils
 import java.io.File
 import java.util.UUID
 
-class InternalFilesDirContentStorage(private val context: Context): IContentStorage {
+class InternalFilesDirContentStorage(private val context: Context): ContentStorage {
 
     override fun store(sourceContent: Uri, fileName: String): Uri? {
         val inputStream = context.contentResolver.openInputStream(sourceContent)

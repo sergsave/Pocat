@@ -26,11 +26,11 @@ private fun cacheDir(context: Context) =
 private fun errorThrowable(context: Context)
         = IOException(context.getString(R.string.connection_error))
 
-class WebSharingStrategy(private val context: Context,
-                        private val service: INetworkService,
-                        cleanCacheOnCreate: Boolean): ISharingStrategy {
+class WebSharingManager(private val context: Context,
+                        private val service: NetworkService,
+                        private val packer: DataPacker,
+                        cleanCacheOnCreate: Boolean): SharingManager {
 
-    private val packer: IDataPacker = ZipDataPacker(context, cacheDir(context))
     init {
         if(cleanCacheOnCreate) {
             cacheDir(context).apply {
@@ -43,8 +43,9 @@ class WebSharingStrategy(private val context: Context,
     override fun makeTakeObservable(pack: Pack): Single<Intent>? {
         val previewSingle = makePreview(pack)
         val throwable = errorThrowable(context)
+        val cache = cacheDir(context)
 
-        val uploadSingle = Single.fromCallable { packer.pack(pack)!! } // rxJava doesn't support null
+        val uploadSingle = Single.fromCallable { packer.pack(pack, cache)!! } // rxJava doesn't support null
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .flatMap{ file -> service.makeUploadObservable(file) }

@@ -8,14 +8,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.data.CatDataRepo
+import com.sergsave.purryourcat.MyApplication
 import com.sergsave.purryourcat.fragments.CatsListFragment
 import com.sergsave.purryourcat.helpers.ActionModeController
 import com.sergsave.purryourcat.helpers.Constants
 import com.sergsave.purryourcat.helpers.setToolbarAsActionBar
 import com.sergsave.purryourcat.models.CatData
-import com.sergsave.purryourcat.*
+import com.sergsave.purryourcat.viewmodels.CatsListViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
 // TODO: Check sdk version of all function
@@ -24,9 +25,12 @@ import kotlinx.android.synthetic.main.activity_main.*
 // TODO: Code inspect and warnings
 // TODO: Подвисание на Светином телефоне
 
+// TODO: Remove I from interface
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var catsListFragment: CatsListFragment
+    private lateinit var viewModel: CatsListViewModel
     private var actionModeController = ActionModeController()
 
     override fun onDestroy() {
@@ -37,7 +41,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        addTestCats(this)
+        initViewModel()
+//        addTestCats(this)
 
         setToolbarAsActionBar(toolbar, showBackButton = false)
 
@@ -48,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         val observer = Observer<Map<String, CatData>> { cats ->
             catsListFragment.cats = cats
         }
-        CatDataRepo.instance?.read()?.observe(this, observer)
+        viewModel.read().observe(this, observer)
 
         fab.setOnClickListener {
             actionModeController.finishActionMode()
@@ -59,6 +64,11 @@ class MainActivity : AppCompatActivity() {
 
         if(savedInstanceState == null)
             checkInputSharingIntent()
+    }
+
+    private fun initViewModel() {
+        val factory = (application as MyApplication).appContainer.provideCatsListViewModelFactory()
+        viewModel = ViewModelProvider(this, factory).get(CatsListViewModel::class.java)
     }
 
     private fun checkInputSharingIntent() {
@@ -120,7 +130,7 @@ class MainActivity : AppCompatActivity() {
                 if(item.itemId != R.id.action_remove)
                     return
 
-                catsListFragment.selection.forEach { CatDataRepo.instance?.remove(it) }
+                catsListFragment.selection.forEach { viewModel.remove(it) }
             }
         }
 

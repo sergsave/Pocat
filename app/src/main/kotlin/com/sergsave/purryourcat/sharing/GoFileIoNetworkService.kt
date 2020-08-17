@@ -11,7 +11,7 @@ import org.json.JSONObject
 
 private val HOST = "gofile.io"
 
-class GoFileIoNetworkService: INetworkService {
+class GoFileIoNetworkService: NetworkService {
     override fun makeUploadObservable(file: File): Single<URL> {
         return GetServerName.sendRequest()
             .flatMap { serverName ->

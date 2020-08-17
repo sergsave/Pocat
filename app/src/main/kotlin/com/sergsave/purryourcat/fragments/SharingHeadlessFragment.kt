@@ -1,5 +1,7 @@
 package com.sergsave.purryourcat.fragments
 
+import android.app.Application
+import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.Fragment
 import android.os.Bundle
@@ -12,13 +14,14 @@ import io.reactivex.rxjava3.disposables.Disposable
 // Headless and retained fragments for encapsulation of async sharing process
 // For sharing just create fragment
 
-class TakeSharingHeadlessFragment: BaseSharingHeadlessFragment<Intent>() {
+class TakeSharingHeadlessFragment: SharingHeadlessFragment<Intent>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val cat = arguments?.let { it.getParcelable<Pack>(ARG_PACK)?.cat }
-        single = cat?.let { SharingManager.instance?.makeTakeObservable(Pack(it))}
-
         super.onCreate(savedInstanceState)
+
+        val cat = arguments?.let { it.getParcelable<Pack>(ARG_PACK)?.cat }
+        val single = cat?.let { makeSharingManager(requireContext()).makeTakeObservable(Pack(it)) }
+        executeSingle(single)
     }
 
     companion object {
@@ -34,13 +37,14 @@ class TakeSharingHeadlessFragment: BaseSharingHeadlessFragment<Intent>() {
     }
 }
 
-class GiveSharingHeadlessFragment: BaseSharingHeadlessFragment<Pack>() {
+class GiveSharingHeadlessFragment: SharingHeadlessFragment<Pack>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val intent = arguments?.let { it.getParcelable<Intent>(ARG_INTENT) }
-        single = intent?.let { SharingManager.instance?.makeGiveObservable(intent) }
-
         super.onCreate(savedInstanceState)
+
+        val intent = arguments?.let { it.getParcelable<Intent>(ARG_INTENT) }
+        val single = intent?.let { makeSharingManager(requireContext()).makeGiveObservable(intent) }
+        executeSingle(single)
     }
 
     companion object {
@@ -57,7 +61,7 @@ class GiveSharingHeadlessFragment: BaseSharingHeadlessFragment<Pack>() {
 }
 
 // TODO? Deliver result, if activity was destroyed when sharing finished
-open class BaseSharingHeadlessFragment<T> : Fragment() {
+abstract class SharingHeadlessFragment<T> : Fragment() {
 
     enum class ErrorType {
         INVALID_INPUT_DATA,
@@ -81,8 +85,6 @@ open class BaseSharingHeadlessFragment<T> : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
-
-        executeSingle(single)
     }
 
     override fun onDetach() {
@@ -91,9 +93,7 @@ open class BaseSharingHeadlessFragment<T> : Fragment() {
         onResultListener = null
     }
 
-    protected var single: Single<T>? = null
-
-    private fun executeSingle(single: Single<T>?) {
+    protected fun executeSingle(single: Single<T>?) {
         if(single == null) {
             onResultListener?.onError(ErrorType.INVALID_INPUT_DATA, null)
             return
@@ -106,4 +106,15 @@ open class BaseSharingHeadlessFragment<T> : Fragment() {
             }
         )
     }
+}
+
+private fun makeSharingManager(context: Context): SharingManager {
+    // TODO: Firebase impl?
+    val appContext = context.applicationContext
+    return WebSharingManager(
+        appContext,
+        SendAnywhereNetworkService(appContext),
+        ZipDataPacker(appContext),
+        cleanCacheOnCreate = true
+    )
 }

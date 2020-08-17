@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import android.transition.Transition
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
+import com.sergsave.purryourcat.MyApplication
 import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.fragments.*
 import com.sergsave.purryourcat.helpers.Constants
@@ -65,8 +66,9 @@ class CatCardActivity : AppCompatActivity() {
     }
 
     private fun initViewModel(catRepoId: String?) {
-        viewModel = ViewModelProvider(this, CatCardViewModelFactory(catRepoId))
-            .get(CatCardViewModel::class.java)
+        val factory = (application as MyApplication).appContainer
+            .provideCatCardViewModelFactory(catRepoId)
+        viewModel = ViewModelProvider(this, factory).get(CatCardViewModel::class.java)
     }
 
     private fun getTransitionName(intent: Intent) =

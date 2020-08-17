@@ -1,8 +1,8 @@
-package com.sergsave.purryourcat.content
+package com.sergsave.purryourcat.repositories.content
 
 import android.net.Uri
 
-interface IContentStorage {
+interface ContentStorage {
     fun store(sourceContent: Uri, fileName: String): Uri?
     fun store(sourceContent: Uri): Uri? // keep source file name
     fun read(): List<Uri>?

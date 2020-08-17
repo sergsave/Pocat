@@ -100,7 +100,7 @@ class PurringFragment : Fragment() {
         })
     }
 
-    private fun prepareBeatDetectorAsync(callback: (ISoundBeatDetector?)->Unit ) {
+    private fun prepareBeatDetectorAsync(callback: (SoundBeatDetector?)->Unit ) {
         val sessionId = mediaPlayer?.getAudioSessionId()
         if(sessionId == null || context == null) {
             callback(null)

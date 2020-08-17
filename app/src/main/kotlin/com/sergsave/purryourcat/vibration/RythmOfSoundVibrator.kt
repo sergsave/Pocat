@@ -7,7 +7,7 @@ import android.os.Vibrator
 
 class RythmOfSoundVibrator(
     private val context: Context,
-    private val beatDetector: ISoundBeatDetector) {
+    private val beatDetector: SoundBeatDetector) {
 
     init {
         val vibrationDuration: Long = 20

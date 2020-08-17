@@ -1,13 +1,12 @@
-package com.sergsave.purryourcat.data
+package com.sergsave.purryourcat.repositories.data
 
 import android.net.Uri
-import com.sergsave.purryourcat.models.CatData
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.annotation.MainThread
+import com.sergsave.purryourcat.models.CatData
 import java.util.UUID
 
-class CatDataRepo private constructor(private val storage: ICatDataStorage)
+class CatDataRepository(private val storage: CatDataStorage)
 {
     private val cats = mutableMapOf<String, CatData>()
     private val liveData = MutableLiveData<Map<String, CatData>>()
@@ -41,16 +40,5 @@ class CatDataRepo private constructor(private val storage: ICatDataStorage)
     private fun onUpdate() {
         storage.save(cats)
         liveData.value = cats.toMap()
-    }
-
-    companion object {
-        var instance: CatDataRepo? = null
-            private set
-
-        @MainThread
-        fun init(storage: ICatDataStorage): CatDataRepo {
-            instance = instance ?: CatDataRepo(storage)
-            return instance!!
-        }
     }
 }

@@ -71,15 +71,15 @@ class SavedCatToolbarFragment: ToolbarFragment() {
             sharingInProcess = false
         }
 
-        fragment.onResultListener = object: BaseSharingHeadlessFragment.OnResultListener<Intent> {
+        fragment.onResultListener = object: SharingHeadlessFragment.OnResultListener<Intent> {
             override fun onSuccess(data: Intent) {
                 finish()
                 onTakeSharingResultListener?.onSuccess(data)
             }
 
-            override fun onError(error: BaseSharingHeadlessFragment.ErrorType, message: String?) {
+            override fun onError(error: SharingHeadlessFragment.ErrorType, message: String?) {
                 finish()
-                if(error == BaseSharingHeadlessFragment.ErrorType.ERROR_IN_PROCESS)
+                if(error == SharingHeadlessFragment.ErrorType.ERROR_IN_PROCESS)
                     onTakeSharingResultListener?.onError(message)
             }
         }

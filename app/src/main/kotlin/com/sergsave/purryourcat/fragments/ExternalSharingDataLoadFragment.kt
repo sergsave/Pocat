@@ -43,15 +43,15 @@ class ExternalSharingDataLoadFragment: Fragment() {
             progressBar.visibility = View.INVISIBLE
         }
 
-        fragment.onResultListener = object: BaseSharingHeadlessFragment.OnResultListener<Pack> {
+        fragment.onResultListener = object: SharingHeadlessFragment.OnResultListener<Pack> {
             override fun onSuccess(data: Pack) {
                 finish()
                 onGiveSharingResultListener?.onSuccess(data.cat)
             }
 
-            override fun onError(error: BaseSharingHeadlessFragment.ErrorType, message: String?) {
+            override fun onError(error: SharingHeadlessFragment.ErrorType, message: String?) {
                 finish()
-                if(error == BaseSharingHeadlessFragment.ErrorType.ERROR_IN_PROCESS)
+                if(error == SharingHeadlessFragment.ErrorType.ERROR_IN_PROCESS)
                     onGiveSharingResultListener?.onError(message)
             }
         }

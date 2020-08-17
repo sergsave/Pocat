@@ -9,7 +9,7 @@ import com.sergsave.purryourcat.helpers.PermissionUtils
 // Note. Need RECORD_AUDIO Permission.
 class AndroidVisualizerBeatDetector(
     private val context: Context,
-    private val mediaPlayerSessionId: Int): ISoundBeatDetector {
+    private val mediaPlayerSessionId: Int): SoundBeatDetector {
 
     private var listener: (()->Unit)? = null
     private var visualizer: Visualizer? = null

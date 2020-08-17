@@ -1,17 +1,17 @@
-package com.sergsave.purryourcat.data
+package com.sergsave.purryourcat.repositories.data
 
-import com.sergsave.purryourcat.models.CatData
 import android.content.Context
 import android.net.Uri
+import com.sergsave.purryourcat.models.CatData
 import kotlinx.serialization.json.*
 import kotlinx.serialization.*
 
 // TODO: USE bundle utils
 
 @Serializable
-private data class Bundle(val version: Int, val map: Map<String,CatData>)
+private data class Bundle(val version: Int, val map: Map<String, CatData>)
 
-class SharedPreferencesCatDataStorage(private val context: Context): ICatDataStorage {
+class SharedPreferencesCatDataStorage(private val context: Context): CatDataStorage {
 
     private val jsonObj = Json(JsonConfiguration.Stable)
 

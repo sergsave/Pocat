@@ -10,13 +10,13 @@ import com.sergsave.purryourcat.models.extractContent
 import com.sergsave.purryourcat.models.withUpdatedContent
 import java.io.File
 
-class ZipDataPacker(private val context: Context, private val workDir: File): IDataPacker {
+class ZipDataPacker(private val context: Context): DataPacker {
 
-    override fun pack(pack: Pack): File? {
-        ensureWorkDir()
+    override fun pack(pack: Pack, dir: File): File? {
+        if(dir.exists().not()) dir.mkdirs()
 
         val name = pack.cat.name ?: "Cat"
-        val zipPath = workDir.path + "/$name.zip"
+        val zipPath = dir.path + "/$name.zip"
 
         val contentUris = pack.cat.extractContent().mapNotNull { it }
         val withFixedUris = pack.cat.withUpdatedContent { uri ->
@@ -25,7 +25,7 @@ class ZipDataPacker(private val context: Context, private val workDir: File): ID
         }
 
         val bundle = Bundle(Bundle.ACTUAL_VERSION, Pack(withFixedUris))
-        val bundleFile = BundleUtils.toJsonFile(bundle, workDir)
+        val bundleFile = BundleUtils.toJsonFile(bundle, dir)
         val zipped = contentUris + Uri.fromFile(bundleFile)
 
         FileUtils.zip(context, zipped.toTypedArray(), zipPath)
@@ -33,20 +33,24 @@ class ZipDataPacker(private val context: Context, private val workDir: File): ID
     }
 
     override fun unpack(file: File): Pack? {
-        ensureWorkDir()
-        FileUtils.unzip(file.path, workDir.path)
+        if(file.exists().not())
+            return null
 
-        val bundleFile = File(workDir, BundleUtils.JSON_FILE_NAME)
+        val tempDir = file.parentFile
+        if(tempDir == null)
+            return null
+
+        FileUtils.unzip(file.path, tempDir.path)
+
+        val bundleFile = File(tempDir, BundleUtils.JSON_FILE_NAME)
         val bundle = BundleUtils.fromJsonFile<Bundle>(bundleFile)
 
         if (bundle == null || bundle.version > Bundle.ACTUAL_VERSION)
             return null
 
         val withFixedUris = bundle.pack.cat.withUpdatedContent { uri ->
-            uri?.let { Uri.fromFile(File(workDir, it.toString())) }
+            uri?.let { Uri.fromFile(File(tempDir, it.toString())) }
         }
         return Pack(withFixedUris)
     }
-
-    private fun ensureWorkDir() { if(workDir.exists().not()) workDir.mkdirs() }
 }

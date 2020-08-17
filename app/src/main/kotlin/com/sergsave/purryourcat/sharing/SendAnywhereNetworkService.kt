@@ -16,7 +16,7 @@ private val DEBUG_TAG = "SendAnywhereService"
 private fun logProgress(fileState: Task.FileState?) =
     fileState?.let{ Log.d(DEBUG_TAG, "progress: " + it.transferSize * 100 / it.totalSize) }
 
-class SendAnywhereNetworkService(private val context: Context): INetworkService {
+class SendAnywhereNetworkService(private val context: Context): NetworkService {
 
     init {
         val apiKey = "dfe91eb770456c0a269625ce8e0128ad2b4a5fb0"

@@ -2,7 +2,7 @@ package com.sergsave.purryourcat.vibration
 
 // TODO? Adjustable beat level
 // Use release() for free any resources, don't call start() after release()
-interface ISoundBeatDetector {
+interface SoundBeatDetector {
     fun start()
     fun stop()
     fun release()
