@@ -16,12 +16,13 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.helpers.*
+import com.sergsave.purryourcat.helpers.FileUtils
+import com.sergsave.purryourcat.helpers.ImageUtils
+import com.sergsave.purryourcat.helpers.PermissionUtils
 import com.sergsave.purryourcat.models.CatData
 import kotlinx.android.synthetic.main.fragment_cat_form.*
 import kotlinx.android.synthetic.main.view_form_fields.view.*
@@ -77,7 +78,7 @@ class CatFormFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        catLiveData.observe(this, Observer<CatData> { cat ->
+        catLiveData.observe(viewLifecycleOwner, Observer { cat ->
             val context = context
             if (context != null) {
                 ImageUtils.loadInto(context, cat?.photoUri, photo_image as ImageView)
@@ -215,7 +216,7 @@ class CatFormFragment : Fragment() {
         if (resultCode != Activity.RESULT_OK)
             return
 
-        var catDataCopy = when(requestCode) {
+        val catDataCopy = when(requestCode) {
             PICK_IMAGE_CODE -> {
                 // Null data - image from camera
                 val uri = data?.data ?: cameraImageUri
@@ -243,15 +244,15 @@ class CatFormFragment : Fragment() {
     }
 
     companion object {
-        private val BUNDLE_KEY_CAMERA_IMAGE_URI = "BundleCameraImageUri"
-        private val BUNDLE_KEY_CAT_DATA = "BundleCatData"
+        private const val BUNDLE_KEY_CAMERA_IMAGE_URI = "BundleCameraImageUri"
+        private const val BUNDLE_KEY_CAT_DATA = "BundleCatData"
 
-        private val PERMISSIONS_IMAGE_CODE = 1000
-        private val PERMISSIONS_AUDIO_CODE = 1001
-        private val PICK_IMAGE_CODE = 1002
-        private val PICK_AUDIO_CODE = 1003
+        private const val PERMISSIONS_IMAGE_CODE = 1000
+        private const val PERMISSIONS_AUDIO_CODE = 1001
+        private const val PICK_IMAGE_CODE = 1002
+        private const val PICK_AUDIO_CODE = 1003
 
-        private val ARG_CAT_DATA = "ArgCatData"
+        private const val ARG_CAT_DATA = "ArgCatData"
 
         @JvmStatic
         fun newInstance(catData: CatData) =

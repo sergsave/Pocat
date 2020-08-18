@@ -1,14 +1,11 @@
 package com.sergsave.purryourcat.fragments
 
-import android.content.Context
 import android.content.Intent
-import androidx.fragment.app.Fragment
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import com.sergsave.purryourcat.MyApplication
-import com.sergsave.purryourcat.sharing.SharingManager
 import com.sergsave.purryourcat.sharing.Pack
-import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.models.CatData
+import com.sergsave.purryourcat.sharing.SharingManager
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.Disposable
 
@@ -26,7 +23,7 @@ class TakeSharingHeadlessFragment: SharingHeadlessFragment<Intent>() {
     }
 
     companion object {
-        private val ARG_PACK = "ArgPack"
+        private const val ARG_PACK = "ArgPack"
 
         @JvmStatic
         fun newInstance(pack: Pack) =
@@ -43,13 +40,13 @@ class GiveSharingHeadlessFragment: SharingHeadlessFragment<Pack>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val intent = arguments?.let { it.getParcelable<Intent>(ARG_INTENT) }
+        val intent = arguments?.getParcelable<Intent>(ARG_INTENT)
         val single = intent?.let { getSharingManager(this)?.makeGiveObservable(intent) }
         executeSingle(single)
     }
 
     companion object {
-        private val ARG_INTENT = "ArgIntent"
+        private const val ARG_INTENT = "ArgIntent"
 
         @JvmStatic
         fun newInstance(intent: Intent) =

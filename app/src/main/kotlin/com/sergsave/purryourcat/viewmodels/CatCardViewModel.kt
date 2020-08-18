@@ -38,14 +38,14 @@ class CatCardViewModel(
     fun change(data: CatData) {
         val prevData = _data.value ?: CatData()
 
-        val dataWithUpdatedContent = data.combineContent(prevData, { new, old ->
+        val dataWithUpdatedContent = data.combineContent(prevData) { new, old ->
             if(new != old) {
                 val updated = contentRepository.add(new)
                 contentRepository.remove(old)
                 updated
             } else
                 old
-        })
+        }
 
         _data.value = dataWithUpdatedContent
     }

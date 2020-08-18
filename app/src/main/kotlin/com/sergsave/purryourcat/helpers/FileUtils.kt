@@ -30,12 +30,10 @@ object FileUtils {
         var result: String? = null
         if (contentUri.getScheme().equals("content")) {
             val cursor = context.getContentResolver().query(contentUri, null, null, null, null)
-            try {
-                if (cursor != null && cursor.moveToFirst()) {
-                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+            cursor.use { it ->
+                if (it != null && it.moveToFirst()) {
+                    result = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
                 }
-            } finally {
-                cursor?.close()
             }
         }
         if (result == null) {
@@ -83,7 +81,7 @@ object FileUtils {
         val dirChecker = { dir: String ->
             val f = File(dir)
             if (f.isDirectory().not()) {
-                f.mkdirs();
+                f.mkdirs()
             }
         }
 
@@ -92,8 +90,8 @@ object FileUtils {
         try {
             val fin = FileInputStream(zipPath)
             val zin = ZipInputStream(fin)
-            var ze: ZipEntry? = null
-            while (zin.getNextEntry().also({ ze = it }) != null) {
+            var ze: ZipEntry?
+            while (zin.getNextEntry().also { ze = it } != null) {
 
                 //create dir if required while unzipping
                 if (ze!!.isDirectory) {
@@ -102,8 +100,8 @@ object FileUtils {
                     val fout = FileOutputStream(targetLocation + "/" + ze!!.name)
                     val bufout = BufferedOutputStream(fout)
                     val buffer = ByteArray(1024)
-                    var read = 0
-                    while (zin.read(buffer).also({ read = it }) != -1) {
+                    var read: Int
+                    while (zin.read(buffer).also { read = it } != -1) {
                         bufout.write(buffer, 0, read)
                     }
 

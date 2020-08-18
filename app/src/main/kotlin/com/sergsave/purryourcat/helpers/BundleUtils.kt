@@ -6,7 +6,7 @@ import java.io.File
 
 object BundleUtils {
 
-    val JSON_FILE_NAME = "bundle.json"
+    const val JSON_FILE_NAME = "bundle.json"
 
     @ImplicitReflectionSerializer
     inline fun <reified T: Any> toJsonFile(bundle: T, fileRootDir: File): File {
@@ -25,11 +25,10 @@ object BundleUtils {
         if(file.exists().not())
             return null
 
-        try {
-            return Json(JsonConfiguration.Stable).parse(T::class.serializer(), file.readText())
-        }
-        catch(e: Exception) {
-            return null
+        return try {
+            Json(JsonConfiguration.Stable).parse(T::class.serializer(), file.readText())
+        } catch(e: Exception) {
+            null
         }
     }
 }

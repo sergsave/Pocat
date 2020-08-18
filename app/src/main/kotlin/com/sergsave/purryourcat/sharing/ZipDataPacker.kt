@@ -2,10 +2,8 @@ package com.sergsave.purryourcat.sharing
 
 import android.content.Context
 import android.net.Uri
-import com.sergsave.purryourcat.BuildConfig
 import com.sergsave.purryourcat.helpers.BundleUtils
 import com.sergsave.purryourcat.helpers.FileUtils
-import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.models.extractContent
 import com.sergsave.purryourcat.models.withUpdatedContent
 import java.io.File
@@ -18,7 +16,7 @@ class ZipDataPacker(private val context: Context): DataPacker {
         val name = pack.cat.name ?: "Cat"
         val zipPath = dir.path + "/$name.zip"
 
-        val contentUris = pack.cat.extractContent().mapNotNull { it }
+        val contentUris = pack.cat.extractContent().map { it }
         val withFixedUris = pack.cat.withUpdatedContent { uri ->
             val _name = uri?.let { FileUtils.getContentFileName(context, it) }
             _name?.let { Uri.parse(it) }

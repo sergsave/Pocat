@@ -6,11 +6,11 @@ import com.sergsave.purryourcat.R
 
 class UnsavedCatToolbarFragment: ToolbarFragment() {
 
-    interface OnSaveActionClikedListener {
+    interface OnSaveActionClickedListener {
         fun onSaveClicked()
     }
 
-    var onSaveActionClickedListener: OnSaveActionClikedListener? = null
+    var onSaveActionClickedListener: OnSaveActionClickedListener? = null
 
     override val title: String?
         get() { return context?.getString(R.string.purring_title) }

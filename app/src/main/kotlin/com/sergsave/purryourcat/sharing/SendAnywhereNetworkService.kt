@@ -2,17 +2,17 @@ package com.sergsave.purryourcat.sharing
 
 import android.content.Context
 import android.util.Log
-import com.sergsave.purryourcat.helpers.NetworkUtils
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import java.io.*
-import java.net.URL
-import io.reactivex.rxjava3.core.*
-import io.reactivex.rxjava3.schedulers.Schedulers
 import com.estmob.android.sendanywhere.sdk.ReceiveTask
 import com.estmob.android.sendanywhere.sdk.SendTask
 import com.estmob.android.sendanywhere.sdk.Task
+import com.sergsave.purryourcat.helpers.NetworkUtils
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.SingleEmitter
+import java.io.File
+import java.io.IOException
+import java.net.URL
 
-private val DEBUG_TAG = "SendAnywhereService"
+private const val DEBUG_TAG = "SendAnywhereService"
 private fun logProgress(fileState: Task.FileState?) =
     fileState?.let{ Log.d(DEBUG_TAG, "progress: " + it.transferSize * 100 / it.totalSize) }
 

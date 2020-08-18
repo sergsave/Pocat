@@ -1,10 +1,10 @@
 package com.sergsave.purryourcat.repositories.data
 
 import android.content.Context
-import android.net.Uri
 import com.sergsave.purryourcat.models.CatData
-import kotlinx.serialization.json.*
-import kotlinx.serialization.*
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 
 // TODO: USE bundle utils
 
@@ -48,8 +48,8 @@ class SharedPreferencesCatDataStorage(private val context: Context): CatDataStor
     }
 
     companion object {
-        private val BUNDLE_ACTUAL_VERSION = 1
-        private val PREFERENCES_NAME = "cats_database"
-        private val CATS_LIST_KEY = "cats_map"
+        private const val BUNDLE_ACTUAL_VERSION = 1
+        private const val PREFERENCES_NAME = "cats_database"
+        private const val CATS_LIST_KEY = "cats_map"
     }
 }

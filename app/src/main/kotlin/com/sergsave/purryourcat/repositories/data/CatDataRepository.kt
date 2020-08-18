@@ -1,10 +1,9 @@
 package com.sergsave.purryourcat.repositories.data
 
-import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sergsave.purryourcat.models.CatData
-import java.util.UUID
+import java.util.*
 
 class CatDataRepository(private val storage: CatDataStorage)
 {

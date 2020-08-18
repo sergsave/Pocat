@@ -3,7 +3,6 @@ package com.sergsave.purryourcat.vibration
 import android.Manifest
 import android.content.Context
 import android.media.audiofx.Visualizer
-import com.sergsave.purryourcat.fragments.CatFormFragment
 import com.sergsave.purryourcat.helpers.PermissionUtils
 
 // Note. Need RECORD_AUDIO Permission.
@@ -18,10 +17,10 @@ class AndroidVisualizerBeatDetector(
                                            waveform: ByteArray?, samplingRate: Int)
         {
             // Check "this" visualizer, because callback may call after release
-            if(this@AndroidVisualizerBeatDetector.visualizer?.enabled?.not() ?: true)
+            if(this@AndroidVisualizerBeatDetector.visualizer?.enabled?.not() != false)
                 return
 
-            var measurement = Visualizer.MeasurementPeakRms()
+            val measurement = Visualizer.MeasurementPeakRms()
             visualizer?.getMeasurementPeakRms(measurement)
             val threshold = -4500
 

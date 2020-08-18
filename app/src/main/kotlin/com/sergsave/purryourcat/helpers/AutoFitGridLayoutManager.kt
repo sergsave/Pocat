@@ -1,11 +1,11 @@
 package com.sergsave.purryourcat.helpers
 
 import android.content.Context
-import android.util.DisplayMetrics
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
+import kotlin.math.max
 
 class AutoFitGridLayoutManager(context: Context, private var columnWidthDp : Int) :
     GridLayoutManager(context, 1) {
@@ -17,7 +17,7 @@ class AutoFitGridLayoutManager(context: Context, private var columnWidthDp : Int
         setColumnWidth(columnWidthDp)
     }
 
-    fun setColumnWidth(newColumnWidthDp: Int) {
+    private fun setColumnWidth(newColumnWidthDp: Int) {
         if (newColumnWidthDp > 0 && newColumnWidthDp != columnWidthDp) {
             columnWidthDp = newColumnWidthDp
             columnWidthChanged = true
@@ -33,7 +33,7 @@ class AutoFitGridLayoutManager(context: Context, private var columnWidthDp : Int
             } else {
                 height - paddingTop - paddingBottom
             }
-            val spanCount = Math.max(1, totalSpace / columnWidthPx)
+            val spanCount = max(1, totalSpace / columnWidthPx)
             setSpanCount(spanCount)
             columnWidthChanged = false
         }

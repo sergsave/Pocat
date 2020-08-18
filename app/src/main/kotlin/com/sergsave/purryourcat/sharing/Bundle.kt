@@ -11,5 +11,5 @@ data class Pack(val cat: CatData): Parcelable
 
 @Serializable
 data class Bundle(val version: Int, val pack: Pack) {
-    companion object { val ACTUAL_VERSION = 1 }
+    companion object { const val ACTUAL_VERSION = 1 }
 }

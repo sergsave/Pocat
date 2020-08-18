@@ -3,7 +3,7 @@ package com.sergsave.purryourcat.models
 import android.net.Uri
 
 fun CatData.extractContent(): List<Uri> {
-    return listOfNotNull<Uri>(photoUri, purrAudioUri)
+    return listOfNotNull(photoUri, purrAudioUri)
 }
 
 fun CatData.withUpdatedContent(transform: (Uri?)->Uri?): CatData {

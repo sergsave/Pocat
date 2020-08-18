@@ -2,12 +2,11 @@ package com.sergsave.purryourcat.activities
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.annotation.MainThread
+import android.transition.Transition
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import android.transition.Transition
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import com.sergsave.purryourcat.MyApplication
@@ -16,7 +15,7 @@ import com.sergsave.purryourcat.fragments.*
 import com.sergsave.purryourcat.helpers.Constants
 import com.sergsave.purryourcat.helpers.SimpleAlertDialog
 import com.sergsave.purryourcat.models.CatData
-import com.sergsave.purryourcat.viewmodels.*
+import com.sergsave.purryourcat.viewmodels.CatCardViewModel
 import kotlinx.android.synthetic.main.activity_cat_card.*
 
 //TODO: Интерфейсы фрагментов на лямбды заменить?
@@ -48,12 +47,11 @@ class CatCardActivity : AppCompatActivity() {
             if(getTransitionName(intent) != null)
                 postponeEnterTransition()
 
-            if(catId != null)
-                switchToPage(PageType.SHOW_SAVED)
-            else if (getSharingIntent(intent) != null)
-                switchToPage(PageType.LOADING)
-            else
-                switchToPage(PageType.ADD_NEW)
+            when {
+                catId != null -> switchToPage(PageType.SHOW_SAVED)
+                getSharingIntent(intent) != null -> switchToPage(PageType.LOADING)
+                else -> switchToPage(PageType.ADD_NEW)
+            }
 
             return
         }
@@ -184,7 +182,7 @@ class CatCardActivity : AppCompatActivity() {
     }
 
     private fun initFragment(fragment: UnsavedCatToolbarFragment) {
-        fragment.onSaveActionClickedListener = object: UnsavedCatToolbarFragment.OnSaveActionClikedListener {
+        fragment.onSaveActionClickedListener = object: UnsavedCatToolbarFragment.OnSaveActionClickedListener {
             override fun onSaveClicked() {
                 viewModel.syncDataWithRepo()
                 showSnackbar(getString(R.string.save_snackbar_message_text))
@@ -194,7 +192,7 @@ class CatCardActivity : AppCompatActivity() {
     }
 
     private fun initFragment(fragment: SavedCatToolbarFragment) {
-        fragment.onEditActionClickedListener = object : SavedCatToolbarFragment.OnEditActionClikedListener {
+        fragment.onEditActionClickedListener = object : SavedCatToolbarFragment.OnEditActionClickedListener {
             override fun onEditClicked() = switchToPage(PageType.EDIT)
         }
 
@@ -212,7 +210,7 @@ class CatCardActivity : AppCompatActivity() {
         val change = formFragment?.catDataChange
 
         if(isFormActive && change?.to != change?.from)
-            showBackAlertDialog({ finalizeBackPress() })
+            showBackAlertDialog { finalizeBackPress() }
         else
             finalizeBackPress()
     }
@@ -264,7 +262,7 @@ class CatCardActivity : AppCompatActivity() {
 
     private fun restoreAlertDialogsState() {
         val backDialog = supportFragmentManager.findFragmentByTag(DIALOG_ID_BACK) as? SimpleAlertDialog
-        backDialog?.let { setDialogPositiveListener(it, { finalizeBackPress() })}
+        backDialog?.let { setDialogPositiveListener(it) { finalizeBackPress() } }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -273,10 +271,10 @@ class CatCardActivity : AppCompatActivity() {
     }
 
     companion object {
-        private val BUNDLE_KEY_CURRENT_PAGE = "CurrentPage"
+        private const val BUNDLE_KEY_CURRENT_PAGE = "CurrentPage"
 
-        private val DIALOG_ID_BACK = "DialogBack"
-        private val DIALOG_ID_APPLY = "DialogApply"
+        private const val DIALOG_ID_BACK = "DialogBack"
+        private const val DIALOG_ID_APPLY = "DialogApply"
     }
 }
 

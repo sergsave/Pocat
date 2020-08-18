@@ -4,7 +4,6 @@ import android.app.Activity
 import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 
 class ActionModeController : ActionMode.Callback {
 

@@ -1,15 +1,13 @@
 package com.sergsave.purryourcat.helpers
 
-import androidx.fragment.app.DialogFragment
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import android.app.AlertDialog
 import android.app.Dialog
-import android.content.DialogInterface
 import android.os.Bundle
 import android.os.Parcelable
+import androidx.fragment.app.DialogFragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.android.parcel.Parcelize
 
-class SimpleAlertDialog(): DialogFragment() {
+class SimpleAlertDialog : DialogFragment() {
 
     private var title: String? = null
     private var buttons: Map<Button, String>? = null
@@ -39,16 +37,14 @@ class SimpleAlertDialog(): DialogFragment() {
         val builder = MaterialAlertDialogBuilder(context)
         builder.setTitle(title).apply {
 
-            if(buttons?.contains(Button.POSITIVE) ?: false) {
-                setPositiveButton(buttons?.get(Button.POSITIVE),
-                    DialogInterface.OnClickListener { _, _ ->
+            if(buttons?.contains(Button.POSITIVE) == true) {
+                setPositiveButton(buttons?.get(Button.POSITIVE), { _, _ ->
                         listener?.onDialogPositiveClick(this@SimpleAlertDialog)
                     })
             }
 
-            if(buttons?.contains(Button.NEGATIVE) ?: false) {
-                setNegativeButton(buttons?.get(Button.NEGATIVE),
-                    DialogInterface.OnClickListener { _, _ ->
+            if(buttons?.contains(Button.NEGATIVE) == true) {
+                setNegativeButton(buttons?.get(Button.NEGATIVE), { _, _ ->
                         listener?.onDialogNegativeClick(this@SimpleAlertDialog)
                     })
             }
@@ -61,7 +57,7 @@ class SimpleAlertDialog(): DialogFragment() {
     private class CachedData(val title: String?, val buttons: Map<Int, String>) : Parcelable
 
     companion object {
-        private val ARG_CACHED_DATA = "ArgCached"
+        private const val ARG_CACHED_DATA = "ArgCached"
 
         @JvmStatic
         fun newInstance(title: String, buttons: Map<Button, String>) =

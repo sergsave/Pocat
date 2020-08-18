@@ -42,7 +42,7 @@ class PurringFragment : Fragment() {
 
         arguments?.let {
             transitionName = it.getString(ARG_TRANSITION_NAME)
-            catData = it.getParcelable<CatData>(ARG_CAT_DATA)
+            catData = it.getParcelable(ARG_CAT_DATA)
         }
     }
 
@@ -95,9 +95,9 @@ class PurringFragment : Fragment() {
             true
         }
 
-        ImageUtils.loadInto(context, catData?.photoUri, photo_image, {
+        ImageUtils.loadInto(context, catData?.photoUri, photo_image) {
             onImageLoadedListener?.onImageLoaded()
-        })
+        }
     }
 
     private fun prepareBeatDetectorAsync(callback: (SoundBeatDetector?)->Unit ) {
@@ -151,11 +151,11 @@ class PurringFragment : Fragment() {
     }
 
     companion object {
-        private val AUDIO_TIMEOUT = 2000
-        private val PERMISSION_RECORD_AUDIO_CODE = 1000
+        private const val AUDIO_TIMEOUT = 2000
+        private const val PERMISSION_RECORD_AUDIO_CODE = 1000
 
-        private val ARG_TRANSITION_NAME = "TransitionName"
-        private val ARG_CAT_DATA = "CatData"
+        private const val ARG_TRANSITION_NAME = "TransitionName"
+        private const val ARG_CAT_DATA = "CatData"
 
         @JvmStatic
         fun newInstance(sharedElementTransitionName: String?, catData: CatData) =

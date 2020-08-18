@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="#40FFFFFF"
     android:backgroundTint="?attr/colorPrimaryVariant"
-    android:clickable="true"
     android:orientation="vertical">
 
     <ProgressBar

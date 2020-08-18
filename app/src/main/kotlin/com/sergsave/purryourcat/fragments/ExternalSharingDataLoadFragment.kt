@@ -1,11 +1,11 @@
 package com.sergsave.purryourcat.fragments
 
 import android.content.Intent
-import android.opengl.Visibility
-import android.view.View
-import androidx.fragment.app.Fragment
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.sharing.Pack
@@ -81,7 +81,7 @@ class ExternalSharingDataLoadFragment: Fragment() {
             return
         }
 
-        val intent = arguments?.let { it.getParcelable<Intent>(ARG_INTENT) }
+        val intent = arguments?.getParcelable<Intent>(ARG_INTENT)
         if(intent == null)
             return
 
@@ -92,8 +92,8 @@ class ExternalSharingDataLoadFragment: Fragment() {
     }
 
     companion object {
-        private val SHARING_FRAGMENT_TAG = "SharingFragmentTag"
-        private val ARG_INTENT = "ArgCatData"
+        private const val SHARING_FRAGMENT_TAG = "SharingFragmentTag"
+        private const val ARG_INTENT = "ArgCatData"
 
         @JvmStatic
         fun newInstance(sharingIntent: Intent) =

@@ -1,13 +1,11 @@
 package com.sergsave.purryourcat.viewmodels
 
 import android.net.Uri
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider.Factory
-import com.sergsave.purryourcat.repositories.data.CatDataRepository
+import com.sergsave.purryourcat.models.extractContent
 import com.sergsave.purryourcat.repositories.content.ContentRepository
-import com.sergsave.purryourcat.models.*
+import com.sergsave.purryourcat.repositories.data.CatDataRepository
 
 class CatsListViewModel(
     private var catDataRepository: CatDataRepository,

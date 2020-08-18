@@ -9,7 +9,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import org.json.JSONException
 import org.json.JSONObject
 
-private val HOST = "gofile.io"
+private const val HOST = "gofile.io"
 
 class GoFileIoNetworkService: NetworkService {
     override fun makeUploadObservable(file: File): Single<URL> {
@@ -37,7 +37,7 @@ class GoFileIoNetworkService: NetworkService {
 }
 
 private object GetServerName {
-    fun sendRequest() = Single.fromCallable {
+    fun sendRequest(): Single<String> = Single.fromCallable {
         val response = NetworkUtils.sendGetRequest(URL("https://apiv2.$HOST/getServer"))
         parseServerName(response)
     }
@@ -49,7 +49,7 @@ private object GetServerName {
 }
 
 private object UploadFile {
-    fun sendRequest(serverName: String, file: File) = Single.fromCallable {
+    fun sendRequest(serverName: String, file: File): Single<URL> = Single.fromCallable {
         val url = URL("https://$serverName.$HOST/upload")
         val multipartSender = NetworkUtils.MultipartPostSender(url)
 

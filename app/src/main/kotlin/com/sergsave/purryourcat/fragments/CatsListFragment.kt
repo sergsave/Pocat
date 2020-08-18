@@ -40,7 +40,7 @@ class CatsListFragment : Fragment() {
 
     fun clearSelection() {
         catsListAdapter.tracker?.clearSelection()
-        // Workaround. Force update of recycler view. Without this not all items unselect.
+        // Workaround. Force update of recycler view. Without this not all items deselect.
         catsListAdapter.notifyDataSetChanged()
     }
 
@@ -49,10 +49,6 @@ class CatsListFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
     }
 
     override fun onCreateView(
@@ -142,7 +138,7 @@ class CatsListFragment : Fragment() {
 
 private class Long2StringIdMapper {
     companion object {
-        val INVALID_ID = Long.MAX_VALUE
+        const val INVALID_ID = Long.MAX_VALUE
     }
 
     private val long2string = mutableMapOf<Long, String>()
@@ -171,7 +167,7 @@ private class Long2StringIdMapper {
 // Id of emptyItem not be the same as id of any other items
 private class CatsListItemDetailsLookup(
     private val recyclerView: RecyclerView,
-    private val emptyItem: ItemDetailsLookup.ItemDetails<Long>
+    private val emptyItem: ItemDetails<Long>
 ) :
     ItemDetailsLookup<Long>() {
     override fun getItemDetails(event: MotionEvent): ItemDetails<Long>? {

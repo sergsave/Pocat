@@ -8,17 +8,12 @@ import com.sergsave.purryourcat.BuildConfig
 import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.helpers.ImageUtils
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.Singles
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.io.File
 import java.io.IOException
 import java.net.URL
-import java.util.*
-import java.util.concurrent.TimeUnit
-import java.util.function.Function
 
 private fun cacheDir(context: Context) =
     File(context.cacheDir, "sharing").also { if(it.exists().not()) it.mkdirs() }
@@ -74,14 +69,14 @@ class WebSharingManager(private val context: Context,
         val width = 360
         val height = 640
 
-        return Single.create<Uri> { emitter ->
-            ImageUtils.loadInto(context, photoUri, file, width, height, { res ->
+        return Single.create { emitter ->
+            ImageUtils.loadInto(context, photoUri, file, width, height) { res ->
                 val uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID, file)
                 if(res)
                     emitter.onSuccess(uri)
                 else
                     emitter.onError(IllegalStateException("Image load error"))
-            })
+            }
         }
     }
 

@@ -67,8 +67,8 @@ object NetworkUtils {
     constructor(url: URL) {
 
         companion object {
-            private val LINE_FEED = "\r\n"
-            private val charset = "UTF-8"
+            private const val LINE_FEED = "\r\n"
+            private const val charset = "UTF-8"
         }
 
         // creates a unique boundary based on time stamp
@@ -85,7 +85,7 @@ object NetworkUtils {
             httpConnection = connection.apply {
                 setRequestProperty("User-Agent", "CodeJava Agent")
                 setRequestProperty("Test", "Bonjour")
-                setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary)
+                setRequestProperty("Content-Type", "multipart/form-data; boundary=$boundary")
                 doInput = true
                 doOutput = true    // indicates POST method
                 useCaches = false
@@ -94,31 +94,17 @@ object NetworkUtils {
             writer = PrintWriter(OutputStreamWriter(outputStream, charset), true)
         }
 
-        /**
-         * Adds a form field to the request
-         * @param name  field name
-         * *
-         * @param value field value
-         */
         fun addFormField(name: String, value: String) {
             writer.append("--").append(boundary).append(LINE_FEED)
-            writer.append("Content-Disposition: form-data; name=\"" + name + "\"")
+            writer.append("Content-Disposition: form-data; name=\"$name\"")
                 .append(LINE_FEED)
-            writer.append("Content-Type: text/plain; charset=" + charset).append(
+            writer.append("Content-Type: text/plain; charset=$charset").append(
                 LINE_FEED)
             writer.append(LINE_FEED)
             writer.append(value).append(LINE_FEED)
             writer.flush()
         }
 
-        /**
-         * Adds a upload file section to the request
-         * @param fieldName  - name attribute in <input type="file" name="..."></input>
-         * *
-         * @param uploadFile - a File to be uploaded
-         * *
-         * @throws IOException
-         */
         @Throws(IOException::class)
         fun addFilePart(fieldName: String, uploadFile: File) {
             val fileName = uploadFile.name
@@ -130,7 +116,7 @@ object NetworkUtils {
                         + "\"; filename=\"" + fileName + "\""
             )
                 .append(LINE_FEED)
-            writer.append("Content-Type: "+ fileType).append(LINE_FEED)
+            writer.append("Content-Type: $fileType").append(LINE_FEED)
             writer.append("Content-Transfer-Encoding: binary").append(LINE_FEED)
             writer.append(LINE_FEED)
             writer.flush()
@@ -148,23 +134,11 @@ object NetworkUtils {
             writer.flush()
         }
 
-        /**
-         * Adds a header field to the request.
-         * @param name  - name of the header field
-         * *
-         * @param value - value of the header field
-         */
         fun addHeaderField(name: String, value: String) {
-            writer.append(name + ": " + value).append(LINE_FEED)
+            writer.append("$name: $value").append(LINE_FEED)
             writer.flush()
         }
 
-        /**
-         * Upload the file and receive a response from the server.
-         * @param onFileUploadedListener
-         * *
-         * @throws IOException
-         */
         @Throws(IOException::class)
         fun finish(): String {
             writer.append(LINE_FEED).flush()

@@ -7,14 +7,13 @@ import androidx.core.view.ViewCompat
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.extensions.LayoutContainer
 import com.sergsave.purryourcat.R
-import kotlinx.android.synthetic.main.view_cat_item.*
-import kotlinx.android.synthetic.main.view_cat_item.view.*
-import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.helpers.ImageUtils
+import com.sergsave.purryourcat.models.CatData
+import kotlinx.android.extensions.LayoutContainer
+import kotlinx.android.synthetic.main.view_cat_item.*
 
-class CatsListAdapter(): RecyclerView.Adapter<CatsListAdapter.ViewHolder>() {
+class CatsListAdapter : RecyclerView.Adapter<CatsListAdapter.ViewHolder>() {
 
     interface OnClickListener {
         fun onClick(catWithId: Pair<Long, CatData>,
@@ -49,7 +48,7 @@ class CatsListAdapter(): RecyclerView.Adapter<CatsListAdapter.ViewHolder>() {
             ImageUtils.loadInto(photo_image.context, cat.photoUri, photo_image)
 
             val view = photo_image
-            val transitionName = "photo_image" + position
+            val transitionName = "photo_image$position"
             ViewCompat.setTransitionName(view, transitionName)
             containerView.setOnClickListener{
                 onClickListener?.onClick(Pair(itemId, cat), view, transitionName)

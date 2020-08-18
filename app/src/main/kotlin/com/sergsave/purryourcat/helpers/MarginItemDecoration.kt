@@ -15,13 +15,13 @@ class MarginItemDecoration(private val margin: Int, private val columnCount : ()
         val column = position % columnCount
 
         with(outRect) {
-            left = margin - column * margin / columnCount;
-            right = (column + 1) * margin / columnCount;
+            left = margin - column * margin / columnCount
+            right = (column + 1) * margin / columnCount
 
             if (position < columnCount) {
-                top = margin;
+                top = margin
             }
-            bottom = margin;
+            bottom = margin
         }
     }
 }

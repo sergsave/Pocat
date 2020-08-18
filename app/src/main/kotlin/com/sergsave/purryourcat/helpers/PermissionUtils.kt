@@ -28,7 +28,7 @@ class PermissionUtils {
 
         fun checkRequestResult(grantResults: IntArray) : Boolean
         {
-            return grantResults.size > 0 && grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+            return grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }
         }
     }
 }

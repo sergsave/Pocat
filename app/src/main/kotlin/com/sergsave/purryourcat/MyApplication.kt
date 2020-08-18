@@ -14,7 +14,7 @@ import com.sergsave.purryourcat.viewmodels.CatCardViewModelFactory
 import com.sergsave.purryourcat.viewmodels.CatsListViewModelFactory
 
 // Manual dependency injection
-class AppContainer(private val context: Context) {
+class AppContainer(context: Context) {
     private val catDataRepo = CatDataRepository(SharedPreferencesCatDataStorage(context))
     private val contentRepo = ContentRepository(InternalFilesDirContentStorage(context))
 

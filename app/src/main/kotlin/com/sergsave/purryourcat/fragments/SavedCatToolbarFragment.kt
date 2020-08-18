@@ -9,7 +9,7 @@ import com.sergsave.purryourcat.sharing.Pack
 
 class SavedCatToolbarFragment: ToolbarFragment() {
 
-    interface OnEditActionClikedListener {
+    interface OnEditActionClickedListener {
         fun onEditClicked()
     }
 
@@ -19,7 +19,7 @@ class SavedCatToolbarFragment: ToolbarFragment() {
     }
 
     var onTakeSharingResultListener: OnTakeSharingResultListener? = null
-    var onEditActionClickedListener: OnEditActionClikedListener? = null
+    var onEditActionClickedListener: OnEditActionClickedListener? = null
 
     private var sharingInProgress = false
         set(value) {
@@ -97,7 +97,7 @@ class SavedCatToolbarFragment: ToolbarFragment() {
         if(sharingInProgress)
             return
 
-        val catData = arguments?.let { it.getParcelable<CatData>(ARG_CAT_DATA) }
+        val catData = arguments?.getParcelable<CatData>(ARG_CAT_DATA)
         if(catData == null)
             return
 
@@ -109,8 +109,8 @@ class SavedCatToolbarFragment: ToolbarFragment() {
     }
 
     companion object {
-        private val SHARING_FRAGMENT_TAG = "SharingFragmentTag"
-        private val ARG_CAT_DATA = "ArgCatData"
+        private const val SHARING_FRAGMENT_TAG = "SharingFragmentTag"
+        private const val ARG_CAT_DATA = "ArgCatData"
 
         @JvmStatic
         fun newInstance(catData: CatData) =

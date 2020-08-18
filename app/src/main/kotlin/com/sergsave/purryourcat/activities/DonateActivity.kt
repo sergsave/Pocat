@@ -1,9 +1,6 @@
 package com.sergsave.purryourcat.activities
 
-import android.content.Context
-import android.net.Uri
 import android.os.Bundle
-import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.helpers.setToolbarAsActionBar

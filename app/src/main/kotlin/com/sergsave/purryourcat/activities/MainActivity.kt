@@ -1,16 +1,18 @@
 package com.sergsave.purryourcat.activities
 
-import android.content.Context
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.MyApplication
+import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.fragments.CatsListFragment
 import com.sergsave.purryourcat.helpers.ActionModeController
 import com.sergsave.purryourcat.helpers.Constants
@@ -146,6 +148,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("RestrictedApi")
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         if (menu is MenuBuilder)

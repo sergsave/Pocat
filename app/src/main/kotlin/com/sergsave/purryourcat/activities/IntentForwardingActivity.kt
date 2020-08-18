@@ -3,7 +3,6 @@ package com.sergsave.purryourcat.activities
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.sergsave.purryourcat.activities.MainActivity
 import com.sergsave.purryourcat.helpers.Constants
 
 // Telegram doesn't want open app in new window when MainActivity has "singleTask" launch mode.

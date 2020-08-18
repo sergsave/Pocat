@@ -11,7 +11,7 @@ class RythmOfSoundVibrator(
 
     init {
         val vibrationDuration: Long = 20
-        beatDetector.setOnBeatDetectedListener({ vibrate(vibrationDuration) })
+        beatDetector.setOnBeatDetectedListener { vibrate(vibrationDuration) }
     }
 
     fun start() = beatDetector.start()
@@ -21,11 +21,11 @@ class RythmOfSoundVibrator(
     private fun vibrate(durationMs: Long) {
         val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator?
         val pattern : LongArray = longArrayOf(0, durationMs)
-        if (vibrator?.hasVibrator() ?: false) {
+        if (vibrator?.hasVibrator() == true) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vibrator?.vibrate(VibrationEffect.createWaveform(pattern, -1))
+                vibrator.vibrate(VibrationEffect.createWaveform(pattern, -1))
             } else {
-                vibrator?.vibrate(pattern, -1)
+                vibrator.vibrate(pattern, -1)
             }
         }
     }

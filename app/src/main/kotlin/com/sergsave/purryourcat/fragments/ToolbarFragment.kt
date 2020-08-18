@@ -32,19 +32,19 @@ open class ToolbarFragment : Fragment() {
         compatActivity?.setToolbarAsActionBar(toolbar, isBackEnabled)
     }
 
-    open protected val title: String?
+    protected open val title: String?
         get() {
-            return arguments?.let{ it.getString(ARG_TITLE) }
+            return arguments?.getString(ARG_TITLE)
         }
 
-    open protected val isBackEnabled: Boolean
+    protected open val isBackEnabled: Boolean
         get() {
-            return arguments?.let{ it.getBoolean(ARG_IS_BACK_ENABLED) } ?: false
+            return arguments?.getBoolean(ARG_IS_BACK_ENABLED) ?: false
         }
 
     companion object {
-        private val ARG_TITLE = "ArgTitle"
-        private val ARG_IS_BACK_ENABLED = "ArgIsBackEnabled"
+        private const val ARG_TITLE = "ArgTitle"
+        private const val ARG_IS_BACK_ENABLED = "ArgIsBackEnabled"
 
         @JvmStatic
         fun newInstance(title: String?, isBackEnabled: Boolean = true) =
