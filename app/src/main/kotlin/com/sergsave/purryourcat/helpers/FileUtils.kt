@@ -28,16 +28,16 @@ object FileUtils {
     // https://stackoverflow.com/questions/5568874/how-to-extract-the-file-name-from-uri-returned-from-intent-action-get-content
     fun getContentFileName(context: Context, contentUri: Uri): String? {
         var result: String? = null
-        if (contentUri.getScheme().equals("content")) {
-            val cursor = context.getContentResolver().query(contentUri, null, null, null, null)
-            cursor.use { it ->
+        if (contentUri.scheme.equals("content")) {
+            val cursor = context.contentResolver.query(contentUri, null, null, null, null)
+            cursor.use {
                 if (it != null && it.moveToFirst()) {
                     result = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
                 }
             }
         }
         if (result == null) {
-            result = contentUri.getPath()
+            result = contentUri.path
             val cut = result?.lastIndexOf('/')
             if (cut != null && cut != -1) {
                 result = result?.substring(cut + 1)
@@ -80,7 +80,7 @@ object FileUtils {
 
         val dirChecker = { dir: String ->
             val f = File(dir)
-            if (f.isDirectory().not()) {
+            if (f.isDirectory.not()) {
                 f.mkdirs()
             }
         }
@@ -91,7 +91,7 @@ object FileUtils {
             val fin = FileInputStream(zipPath)
             val zin = ZipInputStream(fin)
             var ze: ZipEntry?
-            while (zin.getNextEntry().also { ze = it } != null) {
+            while (zin.nextEntry.also { ze = it } != null) {
 
                 //create dir if required while unzipping
                 if (ze!!.isDirectory) {

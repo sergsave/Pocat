@@ -10,7 +10,7 @@ import kotlin.math.max
 class AutoFitGridLayoutManager(context: Context, private var columnWidthDp : Int) :
     GridLayoutManager(context, 1) {
 
-    private val displayMetrics = context.getResources().getDisplayMetrics()
+    private val displayMetrics = context.resources.displayMetrics
     private var columnWidthChanged = true
 
     init {

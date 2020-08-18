@@ -95,7 +95,7 @@ class CatFormFragment : Fragment() {
         fab.setOnClickListener { addPhoto() }
         photo_image.setOnClickListener { addPhoto() }
 
-        form_layout.name_edit_text.setImeOptions(EditorInfo.IME_ACTION_DONE)
+        form_layout.name_edit_text.imeOptions = EditorInfo.IME_ACTION_DONE
         form_layout.name_edit_text.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 v.clearFocus()
@@ -234,7 +234,7 @@ class CatFormFragment : Fragment() {
 
     private fun hideKeyboard() {
         val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-        imm?.hideSoftInputFromWindow(view?.getWindowToken(), 0)
+        imm?.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

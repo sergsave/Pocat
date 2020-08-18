@@ -6,7 +6,7 @@ import androidx.appcompat.widget.Toolbar
 fun AppCompatActivity.setToolbarAsActionBar(toolbar: Toolbar, showBackButton: Boolean) {
     setSupportActionBar(toolbar)
 
-    getSupportActionBar()?.apply {
+    supportActionBar?.apply {
         setDisplayHomeAsUpEnabled(showBackButton)
         setDisplayShowHomeEnabled(showBackButton)
     }

@@ -53,7 +53,7 @@ class PurringFragment : Fragment() {
         player?.release()
         vibrator?.release()
 
-        activity?.setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE)
+        activity?.volumeControlStream = AudioManager.USE_DEFAULT_STREAM_TYPE
 
         super.onStop()
     }
@@ -64,8 +64,8 @@ class PurringFragment : Fragment() {
         if(audioUri == null || context == null)
             return
 
-        activity?.setVolumeControlStream(AudioManager.STREAM_MUSIC)
-        mediaPlayer = MediaPlayer.create(requireContext(), audioUri)?.apply { setLooping(true) }
+        activity?.volumeControlStream = AudioManager.STREAM_MUSIC
+        mediaPlayer = MediaPlayer.create(requireContext(), audioUri)?.apply { isLooping = true }
 
         if(PreferenceReader(requireContext()).isVibrationEnabled.not())
             return
@@ -88,9 +88,9 @@ class PurringFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Shared element transition
-        photo_image.setTransitionName(transitionName)
+        photo_image.transitionName = transitionName
         photo_image.setOnTouchListener { _, event ->
-            if(event.getAction() == ACTION_MOVE)
+            if(event.action == ACTION_MOVE)
                 playAudio()
             true
         }
@@ -101,7 +101,7 @@ class PurringFragment : Fragment() {
     }
 
     private fun prepareBeatDetectorAsync(callback: (SoundBeatDetector?)->Unit ) {
-        val sessionId = mediaPlayer?.getAudioSessionId()
+        val sessionId = mediaPlayer?.audioSessionId
         if(sessionId == null || context == null) {
             callback(null)
             return

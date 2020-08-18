@@ -58,7 +58,7 @@ class WebSharingManager(private val context: Context,
             val text = context.getString(R.string.sharing_text, url.toString())
             putExtra(Intent.EXTRA_TEXT, text)
             putExtra(Intent.EXTRA_STREAM, previewUri)
-            setType("image/*")
+            type = "image/*"
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
     }

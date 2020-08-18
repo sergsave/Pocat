@@ -28,7 +28,7 @@ class InternalFilesDirContentStorage(private val context: Context): ContentStora
     }
 
     override fun read(): List<Uri>? {
-        val files = dir().walk().filter{ it.isDirectory().not() }.toList()
+        val files = dir().walk().filter{ it.isDirectory.not() }.toList()
         return files.map { Uri.fromFile(it) }
     }
 

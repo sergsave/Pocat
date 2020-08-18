@@ -46,16 +46,16 @@ class AndroidVisualizerBeatDetector(
                 )
                 val captureSize = 256
                 setCaptureSize(captureSize)
-                setMeasurementMode(Visualizer.MEASUREMENT_MODE_PEAK_RMS)
+                measurementMode = Visualizer.MEASUREMENT_MODE_PEAK_RMS
             }
         }
 
-        visualizer?.setEnabled(true)
+        visualizer?.enabled = true
     }
 
     override fun stop() {
         if(checkPermission())
-            visualizer?.setEnabled(false)
+            visualizer?.enabled = false
     }
 
     override fun release() {
