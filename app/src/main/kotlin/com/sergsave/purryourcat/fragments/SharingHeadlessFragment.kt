@@ -1,11 +1,12 @@
 package com.sergsave.purryourcat.fragments
 
-import android.app.Application
 import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.Fragment
 import android.os.Bundle
-import com.sergsave.purryourcat.sharing.*
+import com.sergsave.purryourcat.MyApplication
+import com.sergsave.purryourcat.sharing.SharingManager
+import com.sergsave.purryourcat.sharing.Pack
 import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.models.CatData
 import io.reactivex.rxjava3.core.Single
@@ -20,7 +21,7 @@ class TakeSharingHeadlessFragment: SharingHeadlessFragment<Intent>() {
         super.onCreate(savedInstanceState)
 
         val cat = arguments?.let { it.getParcelable<Pack>(ARG_PACK)?.cat }
-        val single = cat?.let { makeSharingManager(requireContext()).makeTakeObservable(Pack(it)) }
+        val single = cat?.let { getSharingManager(this)?.makeTakeObservable(Pack(it)) }
         executeSingle(single)
     }
 
@@ -43,7 +44,7 @@ class GiveSharingHeadlessFragment: SharingHeadlessFragment<Pack>() {
         super.onCreate(savedInstanceState)
 
         val intent = arguments?.let { it.getParcelable<Intent>(ARG_INTENT) }
-        val single = intent?.let { makeSharingManager(requireContext()).makeGiveObservable(intent) }
+        val single = intent?.let { getSharingManager(this)?.makeGiveObservable(intent) }
         executeSingle(single)
     }
 
@@ -108,13 +109,6 @@ abstract class SharingHeadlessFragment<T> : Fragment() {
     }
 }
 
-private fun makeSharingManager(context: Context): SharingManager {
-    // TODO: Firebase impl?
-    val appContext = context.applicationContext
-    return WebSharingManager(
-        appContext,
-        SendAnywhereNetworkService(appContext),
-        ZipDataPacker(appContext),
-        cleanCacheOnCreate = true
-    )
+private fun getSharingManager(fragment: Fragment): SharingManager? {
+    return ((fragment.activity?.application) as? MyApplication)?.appContainer?.sharingManager
 }

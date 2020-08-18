@@ -77,7 +77,6 @@ class CatFormFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // TODO. TOP 5 errors with model view !!
         catLiveData.observe(this, Observer<CatData> { cat ->
             val context = context
             if (context != null) {

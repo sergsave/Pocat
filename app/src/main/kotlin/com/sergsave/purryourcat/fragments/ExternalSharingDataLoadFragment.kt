@@ -20,6 +20,12 @@ class ExternalSharingDataLoadFragment: Fragment() {
 
     var onGiveSharingResultListener: OnGiveSharingResultListener? = null
 
+    private var sharingInProgress = false
+        set(value) {
+            field = value
+            progressBar.visibility = if(value) View.VISIBLE else View.INVISIBLE
+        }
+
     override fun onDestroy() {
         super.onDestroy()
     }
@@ -37,10 +43,19 @@ class ExternalSharingDataLoadFragment: Fragment() {
         startSharing()
     }
 
+    override fun onStop() {
+        sharingFragment()?.onResultListener = null
+        sharingInProgress = false
+        super.onStop()
+    }
+
+    private fun sharingFragment() = childFragmentManager.findFragmentByTag(SHARING_FRAGMENT_TAG) as?
+            GiveSharingHeadlessFragment
+
     private fun initFragment(fragment: GiveSharingHeadlessFragment) {
         val finish = {
             childFragmentManager.beginTransaction().remove(fragment).commit()
-            progressBar.visibility = View.INVISIBLE
+            sharingInProgress = false
         }
 
         fragment.onResultListener = object: SharingHeadlessFragment.OnResultListener<Pack> {
@@ -58,11 +73,11 @@ class ExternalSharingDataLoadFragment: Fragment() {
     }
 
     private fun startSharing() {
-        val currentFragment = childFragmentManager.findFragmentByTag(SHARING_FRAGMENT_TAG) as?
-                GiveSharingHeadlessFragment
+        val currentFragment = sharingFragment()
 
         if(currentFragment != null) {
             initFragment(currentFragment)
+            sharingInProgress = true
             return
         }
 
@@ -70,7 +85,7 @@ class ExternalSharingDataLoadFragment: Fragment() {
         if(intent == null)
             return
 
-        progressBar.visibility = View.VISIBLE
+        sharingInProgress = true
         val newFragment = GiveSharingHeadlessFragment.newInstance(intent)
         initFragment(newFragment)
         childFragmentManager.beginTransaction().add(newFragment, SHARING_FRAGMENT_TAG).commit()

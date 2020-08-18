@@ -25,8 +25,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 // TODO: Code inspect and warnings
 // TODO: Подвисание на Светином телефоне
 
-// TODO: Remove I from interface
-
 class MainActivity : AppCompatActivity() {
 
     private lateinit var catsListFragment: CatsListFragment
@@ -62,8 +60,11 @@ class MainActivity : AppCompatActivity() {
 
         fab_clickable_layout.setOnClickListener { fab.performClick() }
 
-        if(savedInstanceState == null)
+        if(savedInstanceState == null) {
+            // Cleanup not in Application, because Application create is created after device reload
+            (application as MyApplication).appContainer.sharingManager.cleanup()
             checkInputSharingIntent()
+        }
     }
 
     private fun initViewModel() {

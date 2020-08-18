@@ -6,6 +6,10 @@ import com.sergsave.purryourcat.repositories.content.ContentRepository
 import com.sergsave.purryourcat.repositories.content.InternalFilesDirContentStorage
 import com.sergsave.purryourcat.repositories.data.CatDataRepository
 import com.sergsave.purryourcat.repositories.data.SharedPreferencesCatDataStorage
+import com.sergsave.purryourcat.sharing.SendAnywhereNetworkService
+import com.sergsave.purryourcat.sharing.SharingManager
+import com.sergsave.purryourcat.sharing.WebSharingManager
+import com.sergsave.purryourcat.sharing.ZipDataPacker
 import com.sergsave.purryourcat.viewmodels.CatCardViewModelFactory
 import com.sergsave.purryourcat.viewmodels.CatsListViewModelFactory
 
@@ -21,8 +25,16 @@ class AppContainer(private val context: Context) {
     fun provideCatsListViewModelFactory(): CatsListViewModelFactory {
         return CatsListViewModelFactory(catDataRepo, contentRepo)
     }
+
+    // TODO: Firebase impl?
+    val sharingManager: SharingManager =
+        WebSharingManager(
+            context,
+            SendAnywhereNetworkService(context),
+            ZipDataPacker(context)
+        )
 }
 
 class MyApplication : Application() {
-    val appContainer = AppContainer(this)
+    val appContainer: AppContainer by lazy { AppContainer(applicationContext) }
 }

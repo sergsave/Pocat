@@ -21,7 +21,7 @@ class SavedCatToolbarFragment: ToolbarFragment() {
     var onTakeSharingResultListener: OnTakeSharingResultListener? = null
     var onEditActionClickedListener: OnEditActionClikedListener? = null
 
-    private var sharingInProcess = false
+    private var sharingInProgress = false
         set(value) {
             field = value
             activity?.invalidateOptionsMenu()
@@ -36,17 +36,25 @@ class SavedCatToolbarFragment: ToolbarFragment() {
 
         setHasOptionsMenu(true)
 
-        val fragment = childFragmentManager.findFragmentByTag(SHARING_FRAGMENT_TAG) as?
-                TakeSharingHeadlessFragment
+        val fragment = sharingFragment()
         fragment?.let{ initFragment(it) }
-        sharingInProcess = fragment != null
+        sharingInProgress = fragment != null
+    }
+
+    private fun sharingFragment() = childFragmentManager.findFragmentByTag(SHARING_FRAGMENT_TAG) as?
+            TakeSharingHeadlessFragment
+
+    override fun onStop() {
+        sharingFragment()?.onResultListener = null
+        sharingInProgress = false
+        super.onStop()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_show_saved_cat, menu)
 
         menu.findItem(R.id.action_share).apply {
-            if(sharingInProcess)
+            if(sharingInProgress)
                 setActionView(R.layout.view_loader)
             else
                 setActionView(null)
@@ -68,7 +76,7 @@ class SavedCatToolbarFragment: ToolbarFragment() {
     private fun initFragment(fragment: TakeSharingHeadlessFragment) {
         val finish = {
             childFragmentManager.beginTransaction().remove(fragment).commit()
-            sharingInProcess = false
+            sharingInProgress = false
         }
 
         fragment.onResultListener = object: SharingHeadlessFragment.OnResultListener<Intent> {
@@ -86,7 +94,7 @@ class SavedCatToolbarFragment: ToolbarFragment() {
     }
 
     private fun startSharing() {
-        if(sharingInProcess)
+        if(sharingInProgress)
             return
 
         val catData = arguments?.let { it.getParcelable<CatData>(ARG_CAT_DATA) }
@@ -97,7 +105,7 @@ class SavedCatToolbarFragment: ToolbarFragment() {
         initFragment(fragment)
         childFragmentManager.beginTransaction().add(fragment, SHARING_FRAGMENT_TAG).commit()
 
-        sharingInProcess = true
+        sharingInProgress = true
     }
 
     companion object {

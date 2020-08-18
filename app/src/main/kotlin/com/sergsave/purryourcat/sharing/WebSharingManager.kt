@@ -28,16 +28,18 @@ private fun errorThrowable(context: Context)
 
 class WebSharingManager(private val context: Context,
                         private val service: NetworkService,
-                        private val packer: DataPacker,
-                        cleanCacheOnCreate: Boolean): SharingManager {
+                        private val packer: DataPacker
+): SharingManager {
 
-    init {
-        if(cleanCacheOnCreate) {
-            cacheDir(context).apply {
-                deleteRecursively()
-                mkdirs()
-            }
+    override fun cleanup() {
+        Single.fromCallable {
+            val cache = cacheDir(context)
+            cache.deleteRecursively()
+            cache.mkdirs()
         }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe()
     }
 
     override fun makeTakeObservable(pack: Pack): Single<Intent>? {
