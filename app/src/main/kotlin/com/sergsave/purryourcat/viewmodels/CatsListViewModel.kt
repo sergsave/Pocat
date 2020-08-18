@@ -39,6 +39,7 @@ class CatsListViewModelFactory(
     private var catDataRepository: CatDataRepository,
     private var contentRepository: ContentRepository
 ): Factory {
+    @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return if (modelClass.isAssignableFrom(CatsListViewModel::class.java)) {
             CatsListViewModel(catDataRepository, contentRepository) as T

@@ -25,7 +25,7 @@ class RythmOfSoundVibrator(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 vibrator.vibrate(VibrationEffect.createWaveform(pattern, -1))
             } else {
-                vibrator.vibrate(pattern, -1)
+                @Suppress("DEPRECATION") vibrator.vibrate(pattern, -1)
             }
         }
     }

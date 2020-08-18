@@ -56,6 +56,7 @@ class CatCardViewModelFactory(
     private var contentRepository: ContentRepository,
     private val catId: String?
 ): Factory {
+    @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return if (modelClass.isAssignableFrom(CatCardViewModel::class.java)) {
             CatCardViewModel(catDataRepository, contentRepository, catId) as T

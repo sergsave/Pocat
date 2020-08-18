@@ -25,8 +25,8 @@ object NetworkUtils {
                 else -> false
             }
         } else {
-            val nwInfo = connectivityManager.activeNetworkInfo ?: return false
-            return nwInfo.isConnected
+            @Suppress("DEPRECATION") val nwInfo = connectivityManager.activeNetworkInfo ?: return false
+            @Suppress("DEPRECATION") return nwInfo.isConnected
         }
     }
 
