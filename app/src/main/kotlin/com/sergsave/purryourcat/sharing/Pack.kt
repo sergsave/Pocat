@@ -8,8 +8,3 @@ import kotlinx.serialization.*
 @Serializable
 @Parcelize
 data class Pack(val cat: CatData): Parcelable
-
-@Serializable
-data class Bundle(val version: Int, val pack: Pack) {
-    companion object { const val ACTUAL_VERSION = 1 }
-}
