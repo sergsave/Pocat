@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
+import android.text.format.Formatter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,7 @@ import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import com.google.android.material.snackbar.Snackbar
 import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.helpers.FileUtils
 import com.sergsave.purryourcat.helpers.ImageUtils
@@ -212,24 +214,38 @@ class CatFormFragment : Fragment() {
         startActivityForResult(chooser, PICK_AUDIO_CODE)
     }
 
+    private fun checkFileSize(uri: Uri?, maxSize: Long): Boolean {
+        if(context == null || uri == null)
+            return false
+
+        return FileUtils.getContentFileSize(requireContext(), uri) < maxSize
+    }
+
+    private fun showExceededFileSizeSnackbar(maxSize: Long) {
+        val formattedSize = Formatter.formatShortFileSize(context, maxSize)
+        val message = resources.getString(R.string.file_size_exceeded_message_text, formattedSize)
+        Snackbar.make(main_layout, message, Snackbar.LENGTH_LONG).show()
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode != Activity.RESULT_OK)
             return
 
-        val catDataCopy = when(requestCode) {
+        when(requestCode) {
             PICK_IMAGE_CODE -> {
                 // Null data - image from camera
                 val uri = data?.data ?: cameraImageUri
-                catLiveData.value?.copy(photoUri = uri)
+                catLiveData.value = catLiveData.value?.copy(photoUri = uri)
             }
             PICK_AUDIO_CODE -> {
+                val maxFileSize: Long = 2 * 1024 * 1024
                 val uri = data?.data
-                catLiveData.value?.copy(purrAudioUri = uri)
+                if(checkFileSize(uri, maxFileSize))
+                    catLiveData.value = catLiveData.value?.copy(purrAudioUri = uri)
+                else
+                    showExceededFileSizeSnackbar(maxFileSize)
             }
-            else -> catLiveData.value
         }
-
-        catLiveData.value = catDataCopy
     }
 
     private fun hideKeyboard() {

@@ -18,7 +18,6 @@ import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.viewmodels.CatCardViewModel
 import kotlinx.android.synthetic.main.activity_cat_card.*
 
-//TODO: Интерфейсы фрагментов на лямбды заменить?
 class CatCardActivity : AppCompatActivity() {
 
     private enum class PageType(val tag: String) {
@@ -234,9 +233,7 @@ class CatCardActivity : AppCompatActivity() {
     }
 
     private fun showSnackbar(message: String) {
-        Snackbar.make(content_container, message, Snackbar.LENGTH_LONG)
-            .setAction(R.string.close) { }
-            .show()
+        Snackbar.make(content_container, message, Snackbar.LENGTH_LONG).show()
     }
 
     private fun showBackAlertDialog(finishCallback: () -> Unit) {

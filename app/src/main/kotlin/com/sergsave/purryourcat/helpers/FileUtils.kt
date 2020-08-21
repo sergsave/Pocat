@@ -1,6 +1,7 @@
 package com.sergsave.purryourcat.helpers
 
 import android.content.Context
+import android.database.Cursor
 import android.net.Uri
 import android.provider.OpenableColumns
 import java.io.*
@@ -25,23 +26,42 @@ object FileUtils {
         }
     }
 
+    private fun getContentResolverQuery(context: Context, contentUri: Uri): Cursor? {
+        return if (contentUri.scheme.equals("content"))
+            context.contentResolver.query(contentUri, null, null, null, null)
+        else
+            null
+    }
+
     // https://stackoverflow.com/questions/5568874/how-to-extract-the-file-name-from-uri-returned-from-intent-action-get-content
     fun getContentFileName(context: Context, contentUri: Uri): String? {
         var result: String? = null
-        if (contentUri.scheme.equals("content")) {
-            val cursor = context.contentResolver.query(contentUri, null, null, null, null)
-            cursor.use {
-                if (it != null && it.moveToFirst()) {
-                    result = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
-                }
-            }
+        val cursor = getContentResolverQuery(context, contentUri)
+        cursor?.use {
+            if (it.moveToFirst())
+                result = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
         }
+
         if (result == null) {
             result = contentUri.path
             val cut = result?.lastIndexOf('/')
             if (cut != null && cut != -1) {
                 result = result?.substring(cut + 1)
             }
+        }
+        return result
+    }
+
+    fun getContentFileSize(context: Context, contentUri: Uri): Long {
+        var result: Long = 0
+        val cursor = getContentResolverQuery(context, contentUri)
+        cursor?.use {
+            if (it.moveToFirst())
+                result = it.getLong(it.getColumnIndex(OpenableColumns.SIZE))
+        }
+
+        if (result == 0L) {
+            result = contentUri.path?.let { File(it).length() } ?: 0
         }
         return result
     }

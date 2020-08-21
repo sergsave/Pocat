@@ -23,9 +23,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 // TODO: Check sdk version of all function
 // TODO: Names of constants (XX_BUNDLE_KEY or BUNDLE_KEY_XX)
-// TODO: File size limits
 // TODO: Code inspect and warnings
-// TODO: Подвисание на Светином телефоне
+// TODO: Hangs on Xiaomi Redmi 6
+// TODO: Change fragments interfaces to lambdas?
 
 class MainActivity : AppCompatActivity() {
 
@@ -42,7 +42,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         initViewModel()
-//        addTestCats(this)
 
         setToolbarAsActionBar(toolbar, showBackButton = false)
 
