@@ -13,9 +13,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.sergsave.purryourcat.MyApplication
 import com.sergsave.purryourcat.R
+import com.sergsave.purryourcat.Constants
 import com.sergsave.purryourcat.fragments.CatsListFragment
 import com.sergsave.purryourcat.helpers.ActionModeController
-import com.sergsave.purryourcat.helpers.Constants
 import com.sergsave.purryourcat.helpers.setToolbarAsActionBar
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.viewmodels.CatsListViewModel

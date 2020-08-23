@@ -26,5 +26,6 @@
     <string name="about">About</string>
     <string name="vibration">Enable vibration</string>
     <string name="vibration_summary">Vibration occurs when you touch a cat</string>
+    <string name="sample_1_name">Demo cat</string>
 
 </resources>

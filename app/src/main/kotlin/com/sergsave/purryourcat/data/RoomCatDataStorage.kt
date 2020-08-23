@@ -21,8 +21,8 @@ class RoomCatDataStorage(context: Context): CatDataStorage {
         return database.catDao().getAll().associate {
             val catData = CatData(
                 name = it.name,
-                purrAudioUri = Uri.parse(it.audioUri),
-                photoUri = Uri.parse(it.photoUri)
+                photoUri = it.photoUri?.let { Uri.parse(it) },
+                purrAudioUri = it.audioUri?.let { Uri.parse(it) }
             )
             Pair(it.id, catData)
         }

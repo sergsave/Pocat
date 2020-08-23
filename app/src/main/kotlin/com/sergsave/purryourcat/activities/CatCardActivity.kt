@@ -12,7 +12,7 @@ import com.google.android.material.transition.MaterialFadeThrough
 import com.sergsave.purryourcat.MyApplication
 import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.fragments.*
-import com.sergsave.purryourcat.helpers.Constants
+import com.sergsave.purryourcat.Constants
 import com.sergsave.purryourcat.helpers.SimpleAlertDialog
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.viewmodels.CatCardViewModel
