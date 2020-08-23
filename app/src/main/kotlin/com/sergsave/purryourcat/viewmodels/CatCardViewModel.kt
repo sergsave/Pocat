@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider.Factory
-import com.sergsave.purryourcat.repositories.data.CatDataRepository
-import com.sergsave.purryourcat.repositories.content.ContentRepository
+import com.sergsave.purryourcat.data.CatDataRepository
+import com.sergsave.purryourcat.content.ContentRepository
 import com.sergsave.purryourcat.models.combineContent
 import com.sergsave.purryourcat.models.CatData
 

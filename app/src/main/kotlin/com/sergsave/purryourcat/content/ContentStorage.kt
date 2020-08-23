@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.repositories.content
+package com.sergsave.purryourcat.content
 
 import android.net.Uri
 

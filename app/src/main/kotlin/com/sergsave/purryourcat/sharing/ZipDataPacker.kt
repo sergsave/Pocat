@@ -8,22 +8,26 @@ import com.sergsave.purryourcat.models.withUpdatedContent
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
+import kotlinx.serialization.json.JsonLiteral
+import kotlinx.serialization.json.JsonObject
 import java.io.File
 import java.lang.Exception
 
-@Serializable
-private data class Bundle(val version: Int, val pack: Pack) {
-    companion object { const val ACTUAL_VERSION = 1 }
-}
-
 private const val BUNDLE_FILE_NAME = "bundle.json"
+private const val BUNDLE_ACTUAL_VERSION = 1
+private const val VERSION_KEY = "version"
+private const val PACK_KEY = "pack"
 
 private fun savePackToBundleFile(pack: Pack, file: File) {
     if(file.exists())
         file.delete()
 
-    val bundle = Bundle(Bundle.ACTUAL_VERSION, pack)
-    file.writeText(Json(JsonConfiguration.Stable).stringify(Bundle.serializer(), bundle))
+    val jsonMap = mapOf(
+        VERSION_KEY to JsonLiteral(BUNDLE_ACTUAL_VERSION),
+        PACK_KEY to Json(JsonConfiguration.Stable).toJson(pack)
+    )
+
+    file.writeText(JsonObject(jsonMap).toString())
 }
 
 private fun readPackFromBundleFile(file: File): Pack? {
@@ -32,15 +36,23 @@ private fun readPackFromBundleFile(file: File): Pack? {
 
     val text = file.readText()
 
-    return try {
-        val bundle = Json(JsonConfiguration.Stable).parse(Bundle.serializer(), text)
-        if(bundle.version > Bundle.ACTUAL_VERSION)
-            null
-        else
-            bundle.pack
+    try {
+        val jsoner = Json(JsonConfiguration.Stable)
+        val jsonObject = jsoner.parseJson(text).jsonObject
+
+        val version = jsonObject.getPrimitive(VERSION_KEY).int
+        if(version > BUNDLE_ACTUAL_VERSION)
+            return null
+
+        var packJsonObj = jsonObject.getObject(PACK_KEY)
+        if(version < BUNDLE_ACTUAL_VERSION) {
+            // adapt pack here
+        }
+
+        return jsoner.fromJson<Pack>(packJsonObj)
     }
     catch (e: Exception) {
-        null
+        return null
     }
 }
 

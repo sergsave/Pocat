@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.repositories.data
+package com.sergsave.purryourcat.data
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,7 +11,7 @@ class CatDataRepository(private val storage: CatDataStorage)
     private val liveData = MutableLiveData<Map<String, CatData>>()
 
     init {
-        storage.load()?.let { cats.putAll(it) }
+        cats.putAll(storage.load())
         liveData.value = cats
     }
 

@@ -4,8 +4,8 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider.Factory
 import com.sergsave.purryourcat.models.extractContent
-import com.sergsave.purryourcat.repositories.content.ContentRepository
-import com.sergsave.purryourcat.repositories.data.CatDataRepository
+import com.sergsave.purryourcat.content.ContentRepository
+import com.sergsave.purryourcat.data.CatDataRepository
 
 class CatsListViewModel(
     private var catDataRepository: CatDataRepository,
