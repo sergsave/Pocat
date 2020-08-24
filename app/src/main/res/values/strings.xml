@@ -1,6 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE resources [
+    <!ENTITY appname "Purr My Cat">
+    ]>
+
 <resources>
-    <string name="app_name">PurrYourCat</string>
-    <string name="sharing_text">Check out my cat in PurrYourCat App!\n\n%1$s\n\nDownload app here: … </string>
+    <string name="app_name">&appname;</string>
+    <string name="sharing_text">Check out my cat in \"&appname;\" App!\n\n%1$s\n\nDownload app here: … </string>
     <string name="add_new_cat">Add a new cat</string>
     <string name="name">Name</string>
     <string name="go_to_purr">Apply</string>
@@ -26,6 +31,6 @@
     <string name="about">About</string>
     <string name="vibration">Enable vibration</string>
     <string name="vibration_summary">Vibration occurs when you touch a cat</string>
-    <string name="sample_1_name">Demo cat</string>
+    <string name="sample_1_name">Demo Cat</string>
 
 </resources>
