@@ -9,6 +9,21 @@ import com.sergsave.purryourcat.models.CatData
 private data class Sample(val nameResource: Int, val photoResource: Int, val audioResource: Int)
 
 private val samples = listOf(
+    Sample(R.string.sample_1_name, R.raw.sample_1_photo, R.raw.sample_1_audio),
+    Sample(R.string.sample_1_name, R.raw.sample_1_photo, R.raw.sample_1_audio),
+    Sample(R.string.sample_1_name, R.raw.sample_1_photo, R.raw.sample_1_audio),
+    Sample(R.string.sample_1_name, R.raw.sample_1_photo, R.raw.sample_1_audio),
+    Sample(R.string.sample_1_name, R.raw.sample_1_photo, R.raw.sample_1_audio),
+    Sample(R.string.sample_1_name, R.raw.sample_1_photo, R.raw.sample_1_audio),
+    Sample(R.string.sample_1_name, R.raw.sample_1_photo, R.raw.sample_1_audio),
+    Sample(R.string.sample_1_name, R.raw.sample_1_photo, R.raw.sample_1_audio),
+    Sample(R.string.sample_1_name, R.raw.sample_1_photo, R.raw.sample_1_audio),
+    Sample(R.string.sample_1_name, R.raw.sample_1_photo, R.raw.sample_1_audio),
+    Sample(R.string.sample_1_name, R.raw.sample_1_photo, R.raw.sample_1_audio),
+    Sample(R.string.sample_1_name, R.raw.sample_1_photo, R.raw.sample_1_audio),
+    Sample(R.string.sample_1_name, R.raw.sample_1_photo, R.raw.sample_1_audio),
+    Sample(R.string.sample_1_name, R.raw.sample_1_photo, R.raw.sample_1_audio),
+    Sample(R.string.sample_1_name, R.raw.sample_1_photo, R.raw.sample_1_audio),
     Sample(R.string.sample_1_name, R.raw.sample_1_photo, R.raw.sample_1_audio)
 )
 

@@ -6,7 +6,7 @@ import android.transition.Transition
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import com.sergsave.purryourcat.MyApplication
@@ -16,6 +16,8 @@ import com.sergsave.purryourcat.Constants
 import com.sergsave.purryourcat.helpers.SimpleAlertDialog
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.viewmodels.CatCardViewModel
+import com.sergsave.purryourcat.viewmodels.CatDataViewModel
+import com.sergsave.purryourcat.viewmodels.CatDataViewModelFactory
 import kotlinx.android.synthetic.main.activity_cat_card.*
 
 class CatCardActivity : AppCompatActivity() {
@@ -66,6 +68,10 @@ class CatCardActivity : AppCompatActivity() {
         val factory = (application as MyApplication).appContainer
             .provideCatCardViewModelFactory(catRepoId)
         viewModel = ViewModelProvider(this, factory).get(CatCardViewModel::class.java)
+
+        // init here for using in fragments
+        ViewModelProvider(this, CatDataViewModelFactory(viewModel.data))
+            .get(CatDataViewModel::class.java)
     }
 
     private fun getTransitionName(intent: Intent) =
@@ -83,25 +89,26 @@ class CatCardActivity : AppCompatActivity() {
             val contentFactory: () -> Fragment
         )
 
-        val data = viewModel.data.value ?: CatData()
-
         val pageFactory : PageFactory = when(type) {
             PageType.ADD_NEW, PageType.EDIT -> {
                 val title =
                     if(type == PageType.ADD_NEW) getString(R.string.add_new_cat)
                     else getString(R.string.edit_cat)
 
+                if(viewModel.hasBackup().not())
+                    viewModel.saveBackup()
+
                 PageFactory({ ToolbarFragment.newInstance(title) },
-                    { CatFormFragment.newInstance(data) })
+                    { CatFormFragment.newInstance(viewModel.maxImageFileSize, viewModel.maxAudioFileSize) })
             }
             PageType.SHOW_SAVED, PageType.SHOW_UNSAVED -> {
                 val actionBarFactory: () -> Fragment =
                     if(type == PageType.SHOW_UNSAVED) { { UnsavedCatToolbarFragment() } }
-                    else { { SavedCatToolbarFragment.newInstance(data) } }
+                    else { { SavedCatToolbarFragment() } }
 
                 val transition = getTransitionName(intent)
 
-                PageFactory(actionBarFactory, { PurringFragment.newInstance(transition, data) })
+                PageFactory(actionBarFactory, { PurringFragment.newInstance(transition) })
             }
             PageType.LOADING -> {
                 PageFactory({ ToolbarFragment.newInstance(getString(R.string.wait)) },
@@ -142,10 +149,17 @@ class CatCardActivity : AppCompatActivity() {
         }
 
     private fun initFragment(fragment: CatFormFragment) {
+        fragment.onDataChangeRequestedListener = object: CatFormFragment.OnDataChangeRequestedListener {
+            override fun onDataChangeRequested(catData: CatData) {
+                viewModel.change(catData)
+            }
+        }
+
         fragment.onApplyListener = object : CatFormFragment.OnApplyListener {
             override fun onApply() {
-                val data = fragment.catDataChange.to
+                val data = viewModel.data.value
 
+                // TODO: To viewmodel
                 val isValid: (CatData) -> Boolean =
                     { it.name != null && it.purrAudioUri != null && it.photoUri != null }
 
@@ -154,7 +168,7 @@ class CatCardActivity : AppCompatActivity() {
                     return
                 }
 
-                viewModel.change(data)
+                viewModel.cleanBackup()
                 viewModel.syncDataWithRepo()
                 switchToPage(PageType.SHOW_SAVED)
             }
@@ -202,14 +216,12 @@ class CatCardActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        val formFragment = supportFragmentManager.findFragmentById(R.id.container) as?
+        val formFragment = supportFragmentManager.findFragmentById(R.id.content_container) as?
                 CatFormFragment
-
         val isFormActive = formFragment != null && formFragment.isVisible
-        val change = formFragment?.catDataChange
 
-        if(isFormActive && change?.to != change?.from)
-            showBackAlertDialog { finalizeBackPress() }
+        if(isFormActive && viewModel.wereChangesAfterBackup())
+            showBackAlertDialog()
         else
             finalizeBackPress()
     }
@@ -236,7 +248,7 @@ class CatCardActivity : AppCompatActivity() {
         Snackbar.make(content_container, message, Snackbar.LENGTH_LONG).show()
     }
 
-    private fun showBackAlertDialog(finishCallback: () -> Unit) {
+    private fun showBackAlertDialog() {
         val positiveText = resources.getString(R.string.discard)
         val negativeText = resources.getString(R.string._continue)
         val message = resources.getString(R.string.changes_not_saved)
@@ -246,8 +258,18 @@ class CatCardActivity : AppCompatActivity() {
             SimpleAlertDialog.Button.NEGATIVE to negativeText)
 
         val dialog = SimpleAlertDialog.newInstance(message, buttons)
-        setDialogPositiveListener(dialog, finishCallback)
+        initBackDialog(dialog)
         dialog.show(supportFragmentManager, DIALOG_ID_BACK)
+    }
+
+    private fun initBackDialog(dialog: SimpleAlertDialog) {
+        dialog.listener = object: SimpleAlertDialog.Listener {
+            override fun onDialogNegativeClick(dialog: DialogFragment?) { }
+            override fun onDialogPositiveClick(dialog: DialogFragment?) {
+                finalizeBackPress()
+                viewModel.restoreFromBackup()
+            }
+        }
     }
 
     private fun showApplyAlertDialog() {
@@ -259,7 +281,7 @@ class CatCardActivity : AppCompatActivity() {
 
     private fun restoreAlertDialogsState() {
         val backDialog = supportFragmentManager.findFragmentByTag(DIALOG_ID_BACK) as? SimpleAlertDialog
-        backDialog?.let { setDialogPositiveListener(it) { finalizeBackPress() } }
+        backDialog?.let{ initBackDialog(it) }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -272,14 +294,5 @@ class CatCardActivity : AppCompatActivity() {
 
         private const val DIALOG_ID_BACK = "DialogBack"
         private const val DIALOG_ID_APPLY = "DialogApply"
-    }
-}
-
-private fun setDialogPositiveListener(dialog: SimpleAlertDialog, listener: () -> Unit) {
-    dialog.listener = object: SimpleAlertDialog.Listener {
-        override fun onDialogNegativeClick(dialog: DialogFragment?) { }
-        override fun onDialogPositiveClick(dialog: DialogFragment?) {
-            listener()
-        }
     }
 }

@@ -3,9 +3,12 @@ package com.sergsave.purryourcat.fragments
 import android.content.Intent
 import android.view.*
 import android.os.Bundle
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.sharing.Pack
+import com.sergsave.purryourcat.viewmodels.CatDataViewModel
 
 class SavedCatToolbarFragment: ToolbarFragment() {
 
@@ -26,6 +29,10 @@ class SavedCatToolbarFragment: ToolbarFragment() {
             field = value
             activity?.invalidateOptionsMenu()
         }
+    private var catData: CatData? = null
+
+    //https://medium.com/@BladeCoder/architecture-components-pitfalls-part-1-9300dd969808
+    private val observer = Observer<CatData> { catData = it }
 
     override val title: String?
         get() { return context?.getString(R.string.purring_title) }
@@ -39,6 +46,10 @@ class SavedCatToolbarFragment: ToolbarFragment() {
         val fragment = sharingFragment()
         fragment?.let{ initFragment(it) }
         sharingInProgress = fragment != null
+
+        val viewModel: CatDataViewModel by activityViewModels()
+        viewModel.data.removeObserver(observer)
+        viewModel.data.observe(this, observer)
     }
 
     private fun sharingFragment() = childFragmentManager.findFragmentByTag(SHARING_FRAGMENT_TAG) as?
@@ -97,11 +108,10 @@ class SavedCatToolbarFragment: ToolbarFragment() {
         if(sharingInProgress)
             return
 
-        val catData = arguments?.getParcelable<CatData>(ARG_CAT_DATA)
         if(catData == null)
             return
 
-        val fragment = TakeSharingHeadlessFragment.newInstance(Pack(catData))
+        val fragment = TakeSharingHeadlessFragment.newInstance(Pack(catData!!))
         initFragment(fragment)
         childFragmentManager.beginTransaction().add(fragment, SHARING_FRAGMENT_TAG).commit()
 
@@ -110,14 +120,5 @@ class SavedCatToolbarFragment: ToolbarFragment() {
 
     companion object {
         private const val SHARING_FRAGMENT_TAG = "SharingFragmentTag"
-        private const val ARG_CAT_DATA = "ArgCatData"
-
-        @JvmStatic
-        fun newInstance(catData: CatData) =
-            SavedCatToolbarFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(ARG_CAT_DATA, catData)
-                }
-            }
     }
 }

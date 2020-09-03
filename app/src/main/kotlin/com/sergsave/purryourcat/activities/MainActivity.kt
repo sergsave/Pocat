@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         val observer = Observer<Map<String, CatData>> { cats ->
             catsListFragment.cats = cats
         }
-        viewModel.read().observe(this, observer)
+        viewModel.data.observe(this, observer)
 
         fab.setOnClickListener {
             actionModeController.finishActionMode()

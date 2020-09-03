@@ -1,43 +1,55 @@
 package com.sergsave.purryourcat.content
 
 import android.net.Uri
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.kotlin.Singles
+import io.reactivex.rxjava3.subjects.BehaviorSubject
+import java.io.IOException
 
 // Save content to file storage available for application
-class ContentRepository (private val storage: ContentStorage)
+class ContentRepository (
+    private val imageStorage: ContentStorage,
+    private val audioStorage: ContentStorage,
+    val maxImageFileSize: Long,
+    val maxAudioFileSize: Long)
 {
-    private val liveData = MutableLiveData<List<Uri>>()
+    private val contentListSubject = BehaviorSubject.create<List<Uri>>()
 
-    init {
-        liveData.value = storage.read()
+    private fun sendNotification() {
+        contentListSubject.onNext(null)
     }
 
-    fun read(): LiveData<List<Uri>> {
-        return liveData
+    fun read(): Observable<List<Uri>> {
+        return contentListSubject.flatMapSingle {
+            Singles.zip(audioStorage.read(), imageStorage.read()).map { (audios, images) ->
+                audios + images
+            }
+        }
+    }
+
+    private fun add(storage: ContentStorage, sourceContent: Uri?, withName: String? = null): Single<Uri> {
+        if(sourceContent == null)
+            return Single.error(IOException("Null content"))
+
+        return storage.store(sourceContent, withName).doOnSuccess { sendNotification() }
     }
 
     // If withName equal null, content will added with same name
-    fun add(sourceContent: Uri?, withName: String? = null): Uri? {
-        if(sourceContent == null) return null
-
-        val uri =
-            if(withName != null) storage.store(sourceContent, withName)
-            else storage.store(sourceContent)
-
-        onUpdate()
-        return uri
+    fun addAudio(sourceContent: Uri?, withName: String? = null): Single<Uri> {
+        return add(audioStorage, sourceContent, withName)
     }
 
-    fun remove(uri: Uri?): Boolean {
-        if(uri == null) return false
-
-        val res = storage.remove(uri)
-        onUpdate()
-        return res
+    fun addImage(sourceContent: Uri?, withName: String? = null): Single<Uri> {
+        return add(imageStorage, sourceContent, withName)
     }
 
-    private fun onUpdate() {
-        liveData.value = storage.read()
+    fun remove(uri: Uri?): Single<Unit> {
+        if(uri == null)
+            return Single.error(IOException("Null uri"))
+
+        return audioStorage.remove(uri)
+            .onErrorResumeNext { imageStorage.remove(uri) }
+            .doOnSuccess{ sendNotification() }
     }
 }

@@ -6,6 +6,9 @@ import androidx.room.Room
 import com.sergsave.purryourcat.data.database.Cat
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.data.database.CatDatabase
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 
 class RoomCatDataStorage(context: Context): CatDataStorage {
 
@@ -13,30 +16,37 @@ class RoomCatDataStorage(context: Context): CatDataStorage {
         context.applicationContext,
         CatDatabase::class.java, "cat_database"
     )
-        .allowMainThreadQueries() // TODO: Async interface for storage
         .build()
 
 
-    override fun load(): Map<String, CatData> {
-        return database.catDao().getAll().associate {
-            val catData = CatData(
-                name = it.name,
-                photoUri = it.photoUri?.let { Uri.parse(it) },
-                purrAudioUri = it.audioUri?.let { Uri.parse(it) }
-            )
-            Pair(it.id, catData)
+    override fun load(): Single<Map<String, CatData>> {
+        return Single.fromCallable {
+            database.catDao().getAll().associate {
+                val catData = CatData(
+                    name = it.name,
+                    photoUri = it.photoUri?.let { Uri.parse(it) },
+                    purrAudioUri = it.audioUri?.let { Uri.parse(it) }
+                )
+                Pair(it.id, catData)
+            }
         }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun save(cats: Map<String, CatData>) {
-        val entities = cats.map { (k, v) ->
-            Cat(
-                id = k,
-                name = v.name,
-                photoUri = v.photoUri?.toString(),
-                audioUri = v.purrAudioUri?.toString()
-            )
+    override fun save(cats: Map<String, CatData>): Single<Unit> {
+        return Single.fromCallable {
+            val entities = cats.map { (k, v) ->
+                Cat(
+                    id = k,
+                    name = v.name,
+                    photoUri = v.photoUri?.toString(),
+                    audioUri = v.purrAudioUri?.toString()
+                )
+            }
+            database.catDao().deleteAndInsertAll(entities)
         }
-        database.catDao().deleteAndInsertAll(entities)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
     }
 }

@@ -1,43 +1,44 @@
 package com.sergsave.purryourcat.data
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.sergsave.purryourcat.models.CatData
+import io.reactivex.rxjava3.subjects.BehaviorSubject
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
 import java.util.*
 
 class CatDataRepository(private val storage: CatDataStorage)
 {
-    private val cats = mutableMapOf<String, CatData>()
-    private val liveData = MutableLiveData<Map<String, CatData>>()
+    private val catsSubject = BehaviorSubject.create<Map<String, CatData>>()
 
-    init {
-        cats.putAll(storage.load())
-        liveData.value = cats
+    private fun sendNotification() {
+        catsSubject.onNext(null)
     }
 
-    fun read() : LiveData<Map<String, CatData>> {
-        return liveData
+    fun read(): Observable<Map<String, CatData>> {
+        return catsSubject.flatMapSingle { _ -> storage.load() }
     }
 
-    fun add(cat: CatData) : String {
+    fun add(cat: CatData): Single<String> {
         val id = UUID.randomUUID().toString()
-        cats.put(id, cat)
-        onUpdate()
-        return id
+        return updateStorage({ it.put(id, cat) })
+            .map{ id }
+            .doOnSuccess { sendNotification() }
     }
 
-    fun update(id: String, cat: CatData) {
-        cats.put(id, cat)
-        onUpdate()
+    fun update(id: String, cat: CatData): Single<Unit> {
+        return updateStorage({ it.put(id, cat) }).doOnSuccess { sendNotification() }
     }
 
-    fun remove(id: String) {
-        cats.remove(id)
-        onUpdate()
+    fun remove(id: String): Single<Unit> {
+        return updateStorage({ it.remove(id) }).doOnSuccess { sendNotification() }
     }
 
-    private fun onUpdate() {
-        storage.save(cats)
-        liveData.value = cats.toMap()
+    private fun updateStorage(updater: (MutableMap<String, CatData>) -> Unit): Single<Unit> {
+        return storage.load()
+            .flatMap { cats ->
+                val copy = cats.toMutableMap()
+                updater(copy)
+                storage.save(copy)
+            }
     }
 }

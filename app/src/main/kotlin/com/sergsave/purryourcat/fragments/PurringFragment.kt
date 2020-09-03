@@ -3,16 +3,20 @@ package com.sergsave.purryourcat.fragments
 import android.Manifest
 import android.media.AudioManager
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import android.view.MotionEvent.ACTION_MOVE
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.helpers.ImageUtils
 import com.sergsave.purryourcat.helpers.PermissionUtils
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.preference.PreferenceReader
 import com.sergsave.purryourcat.vibration.*
+import com.sergsave.purryourcat.viewmodels.CatDataViewModel
 import kotlinx.android.synthetic.main.fragment_purring.*
 import java.util.*
 import kotlin.concurrent.schedule
@@ -28,7 +32,7 @@ class PurringFragment : Fragment() {
     var onImageLoadedListener: OnImageLoadedListener? = null
 
     private var transitionName: String? = null
-    private var catData: CatData? = null
+    private var audioUri: Uri? = null
     private var mediaPlayer: MediaPlayer? = null
     private var playerTimeoutTimer: Timer? = null
     private var vibrator: RythmOfSoundVibrator? = null
@@ -42,38 +46,17 @@ class PurringFragment : Fragment() {
 
         arguments?.let {
             transitionName = it.getString(ARG_TRANSITION_NAME)
-            catData = it.getParcelable(ARG_CAT_DATA)
         }
     }
 
     override fun onStop() {
-        val player = mediaPlayer
-        mediaPlayer = null
-
-        player?.release()
-        vibrator?.release()
-
-        activity?.volumeControlStream = AudioManager.USE_DEFAULT_STREAM_TYPE
-
+        deinitAudio()
         super.onStop()
     }
 
     override fun onStart() {
         super.onStart()
-        val audioUri = catData?.purrAudioUri
-        if(audioUri == null || context == null)
-            return
-
-        activity?.volumeControlStream = AudioManager.STREAM_MUSIC
-        mediaPlayer = MediaPlayer.create(requireContext(), audioUri)?.apply { isLooping = true }
-
-        if(PreferenceReader(requireContext()).isVibrationEnabled.not())
-            return
-
-        prepareBeatDetectorAsync{ detector ->
-            if(detector != null && context != null)
-                vibrator = RythmOfSoundVibrator(requireContext(), detector)
-        }
+        initAudio(audioUri)
     }
 
     override fun onCreateView(
@@ -95,9 +78,41 @@ class PurringFragment : Fragment() {
             true
         }
 
-        ImageUtils.loadInto(context, catData?.photoUri, photo_image) {
-            onImageLoadedListener?.onImageLoaded()
+        val viewModel: CatDataViewModel by activityViewModels()
+        viewModel.data.observe(viewLifecycleOwner, Observer<CatData> { catData ->
+            ImageUtils.loadInto(context, catData?.photoUri, photo_image) {
+                onImageLoadedListener?.onImageLoaded()
+            }
+
+            audioUri = catData?.purrAudioUri
+            initAudio(audioUri)
+        })
+    }
+
+    fun initAudio(audioUri: Uri?) {
+        if(audioUri == null || context == null)
+            return
+
+        activity?.volumeControlStream = AudioManager.STREAM_MUSIC
+        mediaPlayer = MediaPlayer.create(requireContext(), audioUri)?.apply { isLooping = true }
+
+        if(PreferenceReader(requireContext()).isVibrationEnabled.not())
+            return
+
+        prepareBeatDetectorAsync{ detector ->
+            if(detector != null && context != null)
+                vibrator = RythmOfSoundVibrator(requireContext(), detector)
         }
+    }
+
+    fun deinitAudio() {
+        val player = mediaPlayer
+        mediaPlayer = null
+
+        player?.release()
+        vibrator?.release()
+
+        activity?.volumeControlStream = AudioManager.USE_DEFAULT_STREAM_TYPE
     }
 
     private fun prepareBeatDetectorAsync(callback: (SoundBeatDetector?)->Unit ) {
@@ -155,14 +170,12 @@ class PurringFragment : Fragment() {
         private const val PERMISSION_RECORD_AUDIO_CODE = 1000
 
         private const val ARG_TRANSITION_NAME = "TransitionName"
-        private const val ARG_CAT_DATA = "CatData"
 
         @JvmStatic
-        fun newInstance(sharedElementTransitionName: String?, catData: CatData) =
+        fun newInstance(sharedElementTransitionName: String?) =
             PurringFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_TRANSITION_NAME, sharedElementTransitionName)
-                    putParcelable(ARG_CAT_DATA, catData)
                 }
             }
     }

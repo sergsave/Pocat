@@ -34,7 +34,7 @@ class WebSharingManager(private val context: Context,
         }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe()
+            .subscribe{ _ ->}
     }
 
     override fun makeTakeObservable(pack: Pack): Single<Intent>? {
@@ -55,10 +55,12 @@ class WebSharingManager(private val context: Context,
 
     private fun makeIntent(url: URL, previewUri: Uri): Intent {
         return Intent(Intent.ACTION_SEND).apply {
-            val text = context.getString(R.string.sharing_text, url.toString())
+//            val text = context.getString(R.string.sharing_text, url.toString())
+            val text = url.toString()
             putExtra(Intent.EXTRA_TEXT, text)
-            putExtra(Intent.EXTRA_STREAM, previewUri)
-            type = "image/*"
+//            putExtra(Intent.EXTRA_STREAM, previewUri)
+//            type = "image/*"
+            type = "text/plain"
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
     }

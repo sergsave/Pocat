@@ -18,4 +18,10 @@ interface CatDao {
         delete()
         insertAll(cats)
     }
+
+    fun insert(cat: Cat)
+    fun remove(id: String)
+    fun update()
+    fun getAll()
+    fun get(id: String)
 }
