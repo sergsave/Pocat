@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.fragments
+package com.sergsave.purryourcat.ui.catslist
 
 import androidx.fragment.app.Fragment
 import android.os.Bundle
@@ -14,38 +14,12 @@ import com.sergsave.purryourcat.models.CatData
 import kotlinx.android.synthetic.main.fragment_cats_list.*
 
 class CatsListFragment : Fragment() {
-
-    interface OnItemClickListener {
-        fun onItemClick(catId: String, sharedElement: View, transitionName: String)
-    }
-
-    interface OnSelectionChangedListener {
-        fun onSelectionChanged(selected: List<String>)
-    }
-
-    var onItemClickListener: OnItemClickListener? = null
-    var onSelectionChangedListener: OnSelectionChangedListener? = null
-
-    var cats = mapOf<String, CatData>()
-        set(value) {
-            field = value
-            catsListAdapter.cats = value.mapKeys { (k, _) -> idMapper.longIdFrom(k)}.toList()
-        }
-
-    var selection = listOf<String>()
-        private set(value) {
-            field = value
-            onSelectionChangedListener?.onSelectionChanged(value)
-        }
-
-    fun clearSelection() {
-        catsListAdapter.tracker?.clearSelection()
-        // Workaround. Force update of recycler view. Without this not all items deselect.
-        catsListAdapter.notifyDataSetChanged()
-    }
-
+    private var viewModel: CatsListViewModel
     private lateinit var catsListAdapter: CatsListAdapter
     private val idMapper = Long2StringIdMapper()
+
+    data class SharedElementTransitionData()
+    fun getSharedElementTransitionData(): SharedElementTransitionData {}
 
     override fun onDestroy() {
         super.onDestroy()
@@ -63,6 +37,19 @@ class CatsListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupCatsList(savedInstanceState)
+
+        viewModel.cats.observe(viewLifecycleOwner, Observer<Map<String, CatData>> {
+            catsListAdapter.cats = it.mapKeys { (k, _) -> idMapper.longIdFrom(k)}.toList()
+        })
+
+        viewModel.selection.observe(viewLifecycleOwner, Observer<List<String>> { selection ->
+            idMapper // TODO Map
+            catsListAdapter.tracker?.clearSelection()
+            selection.forEach { catsListAdapter.tracker?.setItemsSelected(it, true) }
+
+            // Workaround. Force update of recycler view. Without this not all items deselect.
+            catsListAdapter.notifyDataSetChanged()
+        })
     }
 
     private fun setupCatsList(savedInstanceState: Bundle?) {
@@ -75,8 +62,9 @@ class CatsListFragment : Fragment() {
                 sharedElementTransitionName: String
             ) {
                 val id = idMapper.stringIdFrom(catWithId.first)
-                if(id != null)
-                    onItemClickListener?.onItemClick(id, sharedElement, sharedElementTransitionName)
+                viewModel.onItemClicked(id)
+//                if(id != null)
+//                    onItemClickListener?.onItemClick(id, sharedElement, sharedElementTransitionName)
             }
         }
 
@@ -123,8 +111,8 @@ class CatsListFragment : Fragment() {
                 object : SelectionTracker.SelectionObserver<Long>() {
                     override fun onSelectionChanged() {
                         super.onSelectionChanged()
-                        this@CatsListFragment.selection =
-                            tracker.selection.mapNotNull { idMapper.stringIdFrom(it) }
+                        idMapper // TODO map
+                        viewModel.changeSelection(selection)
                     }
                 })
         }
@@ -133,33 +121,6 @@ class CatsListFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         catsListAdapter.tracker?.onSaveInstanceState(outState)
-    }
-}
-
-private class Long2StringIdMapper {
-    companion object {
-        const val INVALID_ID = Long.MAX_VALUE
-    }
-
-    private val long2string = mutableMapOf<Long, String>()
-    private val string2long = mutableMapOf<String, Long>()
-    private var idCounter: Long = 0
-
-    fun longIdFrom(stringId: String): Long {
-        var id = string2long.get(stringId)
-
-        if(id == null) {
-            id = idCounter
-            string2long.put(stringId, id)
-            long2string.put(id, stringId)
-            idCounter += 1
-        }
-
-        return id
-    }
-
-    fun stringIdFrom(longId: Long): String? {
-        return long2string.get(longId)
     }
 }
 

@@ -34,6 +34,7 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <data android:scheme="http" android:host="sendanywhe.re" />
                 <data android:scheme="https" android:host="*gofile.io" />
+                <data android:scheme="https" android:host="firebasestorage.googleapis.com" />
             </intent-filter>
         </activity>
         <activity android:name=".activities.MainActivity">

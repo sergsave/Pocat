@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "87426075366",
+    "firebase_url": "https://purr-your-cat.firebaseio.com",
+    "project_id": "purr-your-cat",
+    "storage_bucket": "purr-your-cat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:87426075366:android:fea99b07d1944e7d688927",
+        "android_client_info": {
+          "package_name": "com.sergsave.purryourcat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "87426075366-r84l40ca7q2oeg4ai8et682of9mm32k0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDq1ClWCDCHeM_parlZncbkk2LSAIirFnw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "87426075366-r84l40ca7q2oeg4ai8et682of9mm32k0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.adapters
+package com.sergsave.purryourcat.ui.catslist
 
 import android.view.LayoutInflater
 import android.view.View

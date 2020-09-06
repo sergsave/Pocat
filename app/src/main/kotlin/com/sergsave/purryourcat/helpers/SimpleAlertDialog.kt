@@ -37,20 +37,20 @@ class SimpleAlertDialog : DialogFragment() {
         val builder = MaterialAlertDialogBuilder(context)
         builder.setTitle(title).apply {
 
-            if(buttons?.contains(Button.POSITIVE) == true) {
+            if (buttons?.contains(Button.POSITIVE) == true) {
                 setPositiveButton(buttons?.get(Button.POSITIVE), { _, _ ->
-                        listener?.onDialogPositiveClick(this@SimpleAlertDialog)
-                    })
+                    listener?.onDialogPositiveClick(this@SimpleAlertDialog)
+                })
             }
 
-            if(buttons?.contains(Button.NEGATIVE) == true) {
+            if (buttons?.contains(Button.NEGATIVE) == true) {
                 setNegativeButton(buttons?.get(Button.NEGATIVE), { _, _ ->
-                        listener?.onDialogNegativeClick(this@SimpleAlertDialog)
-                    })
+                    listener?.onDialogNegativeClick(this@SimpleAlertDialog)
+                })
             }
         }
         return builder.create()
-        }
+    }
 
     // It's not possible to put Map in Bundle directly. Map is not parcelable :(
     @Parcelize
