@@ -17,7 +17,7 @@ class ContentRepository (
     private val contentListSubject = BehaviorSubject.create<List<Uri>>()
 
     private fun sendNotification() {
-        contentListSubject.onNext(null)
+        contentListSubject.onNext(emptyList())
     }
 
     fun read(): Observable<List<Uri>> {

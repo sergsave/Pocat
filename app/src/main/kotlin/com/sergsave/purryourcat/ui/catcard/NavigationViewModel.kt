@@ -3,31 +3,24 @@ package com.sergsave.purryourcat.ui.catcard
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider.Factory
 import com.sergsave.purryourcat.helpers.Event
+import com.sergsave.purryourcat.models.CatData
 
-class NavigationViewModel(isThereCatId: Boolean, isThereSharingInputData: Boolean)
+class NavigationViewModel(catId: String?, isThereSharingInputData: Boolean)
     : ViewModel() {
 
-    private enum class Page {
-        ADD_NEW,
-        EDIT,
-        OPEN,
-        EXTRACT
+    sealed class Page {
+        class AddNew: Page()
+        class Edit(val id: String): Page()
+        class OpenById(val id: String): Page()
+        class OpenByData(val data: CatData): Page()
+        class Extract: Page()
     }
 
-    private var page: Page
+    private lateinit var page: Page
 
-    init {
-        when {
-            isThereCatId == true -> goToPage(Page.Open)
-            isThereSharingInputData -> goToPage(Page.EXTRACT)
-            else -> goToPage(Page.ADD_NEW)
-        }
-    }
-
-    private val _editCatEvent = MutableLiveData<Event<Unit>>()
-    val editCatEvent: LiveData<Event<Unit>>
+    private val _editCatEvent = MutableLiveData<Event<String>>()
+    val editCatEvent: LiveData<Event<String>>
         get() = _editCatEvent
 
     private val _addNewCatEvent = MutableLiveData<Event<Unit>>()
@@ -35,16 +28,16 @@ class NavigationViewModel(isThereCatId: Boolean, isThereSharingInputData: Boolea
         get() = _addNewCatEvent
 
     private val _openSavedCatEvent = MutableLiveData<Event<String>>()
-    val openSaveCatEvent: LiveData<Event<String>>
+    val openSavedCatEvent: LiveData<Event<String>>
         get() = _openSavedCatEvent
 
     private val _openUnsavedCatEvent = MutableLiveData<Event<CatData>>()
     val openUnsavedCatEvent: LiveData<Event<CatData>>
         get() = _openUnsavedCatEvent
 
-    private val _startLoadSharingDataEvent = MutableLiveData<Event<Unit>>()
-    val startLoadSharingDataEvent: LiveData<Event<Unit>>
-        get() = _startLoadSharingData
+    private val _startExtractSharingDataEvent = MutableLiveData<Event<Unit>>()
+    val startExtractSharingDataEvent: LiveData<Event<Unit>>
+        get() = _startExtractSharingDataEvent
 
     private val _startSharedElementTransitionEvent = MutableLiveData<Event<Unit>>()
     val startSharedElementTransitionEvent: LiveData<Event<Unit>>
@@ -58,56 +51,55 @@ class NavigationViewModel(isThereCatId: Boolean, isThereSharingInputData: Boolea
     val finishEvent: LiveData<Event<Unit>>
         get() = _finishEvent
 
+    init {
+        when {
+            catId != null -> goToPage(Page.OpenById(catId))
+            isThereSharingInputData -> goToPage(Page.Extract())
+            else -> goToPage(Page.AddNew())
+        }
+    }
+
     private fun goToPage(page: Page) {
         this.page = page
 
         when(page) {
-            Page.ADD_NEW -> _newCatEvent.value = Event(Unit)
-            Page.EDIT -> _editCatEvent.value = Event(Unit)
-            Page.OPEN -> _openCatEvent.value = Event(Unit)
-            Page.LOADING -> _startLoadSharingData.value = Event(Unit)
+            is Page.AddNew -> _addNewCatEvent.value = Event(Unit)
+            is Page.Edit -> _editCatEvent.value = Event(page.id)
+            is Page.OpenById -> _openSavedCatEvent.value = Event(page.id)
+            is Page.OpenByData -> _openUnsavedCatEvent.value = Event(page.data)
+            is Page.Extract -> _startExtractSharingDataEvent.value = Event(Unit)
         }
     }
 
-    fun editCat() {
-        goToPage(Page.EDIT)
+    fun editCat(id: String) {
+        goToPage(Page.Edit(id))
     }
 
     fun openCat(id: String) {
-        goToPage(Page.OPEN)
+        goToPage(Page.OpenById(id))
     }
 
     fun openCat(catData: CatData) {
-        goToPage
+        goToPage(Page.OpenByData(catData))
     }
 
     fun addNewCat() {
-        goToPage(Page.ADD_NEW)
+        goToPage(Page.AddNew())
     }
 
     fun onBackButtonPressed() {
-        _backPressedEvent = Event(Unit)
+        _backPressedEvent.value = Event(Unit)
     }
 
     fun goToBackScreen() {
-        if(page == Page.EDIT)
-            goToPage(Page.OPEN)
+        val page = this.page
+        if(page is Page.Edit)
+            goToPage(Page.OpenById(page.id))
         else
             _finishEvent.value = Event(Unit)
     }
 
     fun startSharedElementTransition() {
         _startSharedElementTransitionEvent.value = Event(Unit)
-    }
-}
-
-class NavigationViewModelFactory(isThereCatId: Boolean, isThereSharingInputData: Boolean): Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return if (modelClass.isAssignableFrom(NavigationViewModel::class.java)) {
-            NavigationViewModel(catId, inputSharingData, transitionName) as T
-        } else {
-            throw IllegalArgumentException("ViewModel Not Found")
-        }
     }
 }

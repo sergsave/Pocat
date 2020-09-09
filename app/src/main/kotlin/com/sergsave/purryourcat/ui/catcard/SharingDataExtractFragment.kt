@@ -6,15 +6,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
 import com.sergsave.purryourcat.R
+import com.sergsave.purryourcat.MyApplication
 import com.sergsave.purryourcat.models.CatData
+import com.sergsave.purryourcat.helpers.EventObserver
 import kotlinx.android.synthetic.main.fragment_loader.*
 
 class SharingDataExtractFragment: Fragment() {
-
-    private var navigator: NavigationViewModel
-    private var viewModel: SharingDataExtractViewModel
+    private val navigation: NavigationViewModel by activityViewModels()
+    private val viewModel: SharingDataExtractViewModel by viewModels {
+        (requireActivity().application as MyApplication).appContainer
+            .provideSharingDataExtractViewModelFactory()
+    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -22,14 +29,6 @@ class SharingDataExtractFragment: Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        initViewModel()
-    }
-
-    private fun initViewModel() {
-        arguments?.let {
-            transitionName = it.getString(ARG_TRANSITION_NAME)
-        }
     }
 
     override fun onCreateView(
@@ -44,31 +43,29 @@ class SharingDataExtractFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         if(savedInstanceState == null)
-            arguments?.getParcelable<Intent>(ARG_INTENT)?.let { startSharing(it) }
+            arguments?.getParcelable<Intent>(ARG_INTENT)?.let { viewModel.startExtract(it) }
 
-        viewModel.sharingState.observe(viewLifecycleOwner, Observer<Boolean> {
-            progressBar.visibility = if(it) View.VISIBLE else View.INVISIBLE
-        })
+        viewModel.apply {
+            sharingState.observe(viewLifecycleOwner, Observer {
+                progressBar.visibility = if(it) View.VISIBLE else View.INVISIBLE
+            })
 
-        viewModel.extractSuccessEvent.observe(viewLifecycleOwner, Observer<CatData> {
-            navigation.openCat(it)
-        })
+            extractSuccessEvent.observe(viewLifecycleOwner, EventObserver {
+                navigation.openCat(it)
+            })
 
-        viewModel.extractFailedEvent.observe(viewLifecycleOwner, Observer<String> {
-            Snackbar.make(container, it, Snackbar.LENGTH_LONG).show()
-        })
-    }
-
-    override fun onStop() {
-        super.onStop()
+            extractFailedEvent.observe(viewLifecycleOwner, EventObserver {
+                Snackbar.make(main_layout, it, Snackbar.LENGTH_LONG).show()
+            })
+        }
     }
 
     companion object {
-        private const val ARG_INTENT = "ArgCatData"
+        private const val ARG_INTENT = "ArgIntent"
 
         @JvmStatic
         fun newInstance(sharingIntent: Intent) =
-            ExternalSharingDataLoadFragment().apply {
+            SharingDataExtractFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(ARG_INTENT, sharingIntent)
                 }

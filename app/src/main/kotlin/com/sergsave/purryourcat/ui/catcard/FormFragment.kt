@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
+import android.text.format.Formatter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,12 +20,14 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
+import com.sergsave.purryourcat.MyApplication
 import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.helpers.ImageUtils
 import com.sergsave.purryourcat.helpers.PermissionUtils
+import com.sergsave.purryourcat.helpers.EventObserver
 import kotlinx.android.synthetic.main.fragment_cat_form.*
 import kotlinx.android.synthetic.main.view_form_fields.view.*
 
@@ -32,7 +35,10 @@ class FormFragment : Fragment() {
 
     private var cameraImageUri: Uri? = null
     private val navigation: NavigationViewModel by activityViewModels()
-    private val viewModel: FormViewModel
+    private val viewModel: FormViewModel by viewModels {
+        (requireActivity().application as MyApplication).appContainer
+            .provideFormViewModelFactory(arguments?.getString(ARG_CAT_ID))
+    }
 
     override fun onDestroy() {
         // TODO? Save keyboard visible after orientation change
@@ -43,25 +49,9 @@ class FormFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        initViewModel()
-        setupNavigation()
-
         savedInstanceState?.let {
             cameraImageUri = it.getParcelable(BUNDLE_KEY_CAMERA_IMAGE_URI)
-            restoreAlertDialogsState()
-        }
-    }
-
-    private fun initViewModel() {
-        val factory = (application as MyApplication).appContainer
-            .provideFormViewModelFactory(catRepoId)
-        viewModel = ViewModelProvider(this, factory).get(FormViewModel::class.java)
-    }
-
-    private fun setupNavigation() {
-        navigation.onBackButtonPressed().observe {
-            if(viewModel.handleBackPressed())
-                navigation.goToBackScreen()
+            restoreDialogsState()
         }
     }
 
@@ -80,34 +70,54 @@ class FormFragment : Fragment() {
         fab.setOnClickListener { addPhoto() }
         photo_image.setOnClickListener { addPhoto() }
 
-        viewModel.name.observe(viewLifecycleOwner, Observer<String> {
-            form_layout.name_edit_text.apply { if (isFocused.not()) setText(it) }
+        navigation.backPressedEvent.observe(viewLifecycleOwner, EventObserver {
+            if(viewModel.handleBackPressed())
+                navigation.goToBackScreen()
         })
 
-        viewModel.photoUri.observe(viewLifecycleOwner, Observer<Uri> {
-            ImageUtils.loadInto(context, it, photo_image as ImageView)
-        })
+        viewModel.apply {
+            name.observe(viewLifecycleOwner, Observer {
+                form_layout.name_edit_text.apply { if (isFocused.not()) setText(it) }
+            })
 
-        viewModel.audioName.observe(viewLifecycleOwner, Observer<Uri> {
-            form_layout.sound_edit_text.setText(it)
-        })
+            photoUri.observe(viewLifecycleOwner, Observer {
+                ImageUtils.loadInto(context, it, photo_image as ImageView)
+            })
 
-        viewModel.unsavedChangesMessage.observe(viewLifecycleOwner, Observer {
-            UnsavedChangesDialog().apply {
-                initUnsavedChangesDialog(this)
-                show(childFragmentManager, UNSAVED_DIALOG_TAG)
-            }
-        })
+            audioName.observe(viewLifecycleOwner, Observer {
+                form_layout.sound_edit_text.setText(it)
+            })
 
-        viewModel.notValidDataMessage.observe(viewLifecycleOwner, Observer {
-            NotValidDataDialog().show(childFragmentManager)
-        })
+            unsavedChangesMessageEvent.observe(viewLifecycleOwner, EventObserver {
+                UnsavedChangesDialog().also {
+                    initUnsavedChangesDialog(it)
+                    it.show(childFragmentManager, UNSAVED_DIALOG_TAG)
+                }
+            })
 
-        viewModel.snackbarMessage.observe(viewLifecycleOwner, Observer {
-            Snackbar.make(container, it, Snackbar.LENGTH_LONG).show()
-        })
+            notValidDataMessageEvent.observe(viewLifecycleOwner, EventObserver {
+                NotValidDataDialog().show(childFragmentManager, null)
+            })
 
-        (activity as? AppCompatActivity).supportActionBar?.title = viewModel.getToolbarTitle()
+            fileSizeExceededMessageEvent.observe(viewLifecycleOwner, EventObserver {
+                if(context != null) {
+                    val formattedSize = Formatter.formatShortFileSize(requireContext(), it)
+                    val message = requireContext().resources.getString(
+                        R.string.file_size_exceeded_message_text,
+                        formattedSize
+                    )
+
+                    Snackbar.make(main_layout, message, Snackbar.LENGTH_LONG).show()
+                }
+            })
+
+            openCardEvent.observe(viewLifecycleOwner, EventObserver {
+                navigation.openCat(it)
+            })
+
+        }
+        (activity as? AppCompatActivity)?.supportActionBar?.title =
+            resources.getString(viewModel.toolbarTitleStringId)
 
         setupFormLayout()
     }
@@ -119,7 +129,7 @@ class FormFragment : Fragment() {
         }
     }
 
-    private fun setupFormLayout {
+    private fun setupFormLayout() {
         form_layout.name_edit_text.imeOptions = EditorInfo.IME_ACTION_DONE
         form_layout.name_edit_text.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -141,15 +151,13 @@ class FormFragment : Fragment() {
                 if(text == prevText)
                     return
 
-                val name: String? = if(text.isNotEmpty()) text else null
-                requestChange(currentData().copy(name = name))
+                viewModel.changeName(text)
             }
         })
 
         form_layout.sound_edit_text.setOnClickListener { addAudio() }
         form_layout.apply_button.setOnClickListener {
-            if(viewModel.handleApplyPressed())
-                navigation.openCat()
+            viewModel.onApplyPressed()
         }
     }
 
@@ -246,10 +254,10 @@ class FormFragment : Fragment() {
             PICK_IMAGE_CODE -> {
                 // Null data - image from camera
                 val uri = data?.data ?: cameraImageUri
-                viewModel.chagePhoto(uri)
+                uri?.let{ viewModel.changePhoto(it) }
             }
             PICK_AUDIO_CODE -> {
-                viewModel.chageAudio(data?.data)
+                data?.data?.let{ viewModel.changeAudio(it) }
             }
         }
     }
@@ -265,9 +273,9 @@ class FormFragment : Fragment() {
     }
 
     private fun restoreDialogsState() {
-        val backDialog = supportFragmentManager.findFragmentByTag(UNSAVED_DIALOG_TAG)
+        val dialog = childFragmentManager.findFragmentByTag(UNSAVED_DIALOG_TAG)
                 as? UnsavedChangesDialog
-        backDialog?.let{ initBackDialog(it) }
+        dialog?.let{ initUnsavedChangesDialog(it) }
     }
 
     companion object {
@@ -283,9 +291,9 @@ class FormFragment : Fragment() {
 
         @JvmStatic
         fun newInstance(catId: String?) =
-            CatFormFragment().apply {
+            FormFragment().apply {
                 arguments = Bundle().apply {
-                    putLong(ARG_CAT_ID, catId)
+                    putString(ARG_CAT_ID, catId)
                 }
             }
     }

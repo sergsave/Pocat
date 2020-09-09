@@ -5,15 +5,21 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
+import android.content.Intent
 import android.view.*
 import android.view.MotionEvent.ACTION_MOVE
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
+import com.sergsave.purryourcat.ui.catcard.PurringViewModel.MenuState
 import com.sergsave.purryourcat.R
+import com.sergsave.purryourcat.MyApplication
 import com.sergsave.purryourcat.helpers.ImageUtils
 import com.sergsave.purryourcat.helpers.PermissionUtils
+import com.sergsave.purryourcat.helpers.EventObserver
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.vibration.*
 import kotlinx.android.synthetic.main.fragment_purring.*
@@ -24,8 +30,17 @@ import kotlin.concurrent.schedule
 
 class PurringFragment : Fragment() {
 
-    private var navigator: NavigationViewModel
-    private var viewModel: PurringViewModel
+    private val navigation: NavigationViewModel by activityViewModels()
+    private val viewModel: PurringViewModel by viewModels {
+        val inputData = arguments?.getString(ARG_CAT_ID)?.let {
+            PurringViewModel.InputData.Saved(it)
+        } ?: run {
+            val data = arguments?.getParcelable<CatData>(ARG_CAT_DATA) ?: CatData()
+            PurringViewModel.InputData.Unsaved(data)
+        }
+        (requireActivity().application as MyApplication).appContainer
+            .providePurringViewModelFactory(inputData)
+    }
 
     private var mediaPlayer: MediaPlayer? = null
     private var playerTimeoutTimer: Timer? = null
@@ -37,14 +52,6 @@ class PurringFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        initViewModel()
-    }
-
-    private fun initViewModel() {
-        arguments?.let {
-            transitionName = it.getString(ARG_TRANSITION_NAME)
-        }
     }
 
     override fun onStop() {
@@ -54,7 +61,7 @@ class PurringFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        initAudio(audioUri)
+        initAudio(viewModel.catData.value?.purrAudioUri) // In case of restart
     }
 
     override fun onCreateView(
@@ -69,56 +76,69 @@ class PurringFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Shared element transition
-        photo_image.transitionName = transitionName
+        photo_image.transitionName = arguments?.getString(ARG_TRANSITION_NAME)
         photo_image.setOnTouchListener { _, event ->
             if(event.action == ACTION_MOVE)
                 playAudio()
             true
         }
 
-        viewModel.catData.observe(viewLifecycleOwner, Observer<CatData> {
-            ImageUtils.loadInto(context, it.photoUri, photo_image) {
-                navigation.startSharedElementTransition()
-            }
+        setHasOptionsMenu(true)
 
-            initAudio(it.purrAudioUri)
+        (activity as? AppCompatActivity)?.supportActionBar?.title =
+            resources.getString(R.string.purring_title)
+
+        navigation.backPressedEvent.observe(viewLifecycleOwner, EventObserver {
+            navigation.goToBackScreen()
         })
 
-        viewModel.catData.observe(viewLifecycleOwner, Observer<PurringViewModel.MenuState> {
-            activity?.invalidateOptionsMenu()
-        })
+        viewModel.apply {
+            catData.observe(viewLifecycleOwner, Observer {
+                ImageUtils.loadInto(context, it.photoUri, photo_image) {
+                    navigation.startSharedElementTransition()
+                }
 
-        viewModel.sharingSuccessEvent.observe(viewLifecycleOwner, Observer<Intent> {
-            startActivity(it)
-        })
+                initAudio(it.purrAudioUri)
+            })
 
-        viewModel.sharingFailedEvent.observe(viewLifecycleOwner, Observer<Intent> {
-            Snackbar.make(container, it, Snackbar.LENGTH_LONG).show()
-        })
+            menuState.observe(viewLifecycleOwner, Observer {
+                activity?.invalidateOptionsMenu()
+            })
+
+            sharingSuccessEvent.observe(viewLifecycleOwner, EventObserver {
+                startActivity(it)
+            })
+
+            sharingFailedEvent.observe(viewLifecycleOwner, EventObserver {
+                Snackbar.make(main_layout, it, Snackbar.LENGTH_LONG).show()
+            })
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
         val state = viewModel.menuState.value
 
         val menuId = when(state) {
             MenuState.SHOW_SAVED, MenuState.SHARING -> R.menu.menu_show_saved_cat
             MenuState.SHOW_UNSAVED -> R.menu.menu_show_not_saved_cat
+            else -> return
         }
+
         inflater.inflate(menuId, menu)
 
         menu.findItem(R.id.action_share)?.apply {
-            if(viewModel.menuState == MenuState.SHARING)
+            if(viewModel.menuState.value == MenuState.SHARING)
                 setActionView(R.layout.view_loader)
             else
                 setActionView(null)
         }
-
-        super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = arguments?.getString(ARG_CAT_ID)
         when (item.itemId) {
-            R.id.action_edit -> navigation.onEditCat()
+            R.id.action_edit -> id?.let{ navigation.editCat(it) }
             R.id.action_share -> viewModel.startSharing()
             R.id.action_save -> viewModel.saveData()
             else -> return super.onOptionsItemSelected(item)
@@ -132,9 +152,10 @@ class PurringFragment : Fragment() {
             return
 
         activity?.volumeControlStream = AudioManager.STREAM_MUSIC
-        mediaPlayer = MediaPlayer.create(requireContext(), audioUri)?.apply { isLooping = true }
+        if(mediaPlayer == null)
+            mediaPlayer = MediaPlayer.create(requireContext(), audioUri)?.apply { isLooping = true }
 
-        if(viewModel.isVibrationEnabled.not())
+        if(viewModel.isVibrationEnabled().not() || vibrator != null)
             return
 
         prepareBeatDetectorAsync{ detector ->
@@ -214,8 +235,8 @@ class PurringFragment : Fragment() {
         private fun makeFragment(catId: String?, catData: CatData?, transition: String?) =
             PurringFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_TRANSITION_NAME, sharedElementTransitionName)
-                    putString(ARG_CAT_DATA, catData)
+                    putString(ARG_TRANSITION_NAME, transition)
+                    putParcelable(ARG_CAT_DATA, catData)
                     putString(ARG_CAT_ID, catId)
                 }
             }

@@ -19,9 +19,9 @@ interface CatDao {
         insertAll(cats)
     }
 
-    fun insert(cat: Cat)
-    fun remove(id: String)
-    fun update()
-    fun getAll()
-    fun get(id: String)
+//    fun insert(cat: Cat)
+//    fun remove(id: String)
+//    fun update()
+//    fun getAll()
+//    fun get(id: String)
 }

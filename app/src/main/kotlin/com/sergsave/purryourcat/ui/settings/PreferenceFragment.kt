@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.fragments
+package com.sergsave.purryourcat.ui.settings
 
 import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat

@@ -1,9 +1,8 @@
-package com.sergsave.purryourcat.activities
+package com.sergsave.purryourcat.ui.settings
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.fragments.PreferenceFragment
 import com.sergsave.purryourcat.helpers.setToolbarAsActionBar
 import kotlinx.android.synthetic.main.activity_settings.*
 
@@ -21,7 +20,7 @@ class SettingsActivity : AppCompatActivity() {
 
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.container, PreferenceFragment())
+            .add(R.id.container, PreferenceFragment())
             .commit()
     }
 }

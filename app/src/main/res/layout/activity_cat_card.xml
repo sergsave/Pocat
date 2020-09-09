@@ -6,15 +6,16 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-<!--    CardView for elevation-->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/toolbar_container"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardElevation="4dp" />
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme" />
 
     <FrameLayout
-        android:id="@+id/content_container"
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </LinearLayout>

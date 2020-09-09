@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.activities
+package com.sergsave.purryourcat.ui.donate
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

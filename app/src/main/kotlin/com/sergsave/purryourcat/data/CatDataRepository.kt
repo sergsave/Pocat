@@ -11,11 +11,12 @@ class CatDataRepository(private val storage: CatDataStorage)
     private val catsSubject = BehaviorSubject.create<Map<String, CatData>>()
 
     private fun sendNotification() {
-        catsSubject.onNext(null)
+        catsSubject.onNext(emptyMap())
     }
 
     fun read(): Observable<Map<String, CatData>> {
         return catsSubject.flatMapSingle { _ -> storage.load() }
+            .startWith(storage.load())
     }
 
     fun add(cat: CatData): Single<String> {

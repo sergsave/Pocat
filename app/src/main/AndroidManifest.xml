@@ -19,11 +19,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.SettingsActivity" />
-        <activity android:name=".activities.AboutActivity" />
-        <activity android:name=".activities.DonateActivity" />
-        <activity android:name=".activities.CatCardActivity" />
-        <activity android:name=".activities.IntentForwardingActivity"
+        <activity android:name=".ui.settings.SettingsActivity" />
+        <activity android:name=".ui.about.AboutActivity" />
+        <activity android:name=".ui.donate.DonateActivity" />
+        <activity android:name=".ui.catcard.CatCardActivity" />
+        <activity android:name=".ui.IntentForwardingActivity"
             android:launchMode="singleTop"
             android:theme="@android:style/Theme.Translucent.NoTitleBar">
 
@@ -37,7 +37,7 @@
                 <data android:scheme="https" android:host="firebasestorage.googleapis.com" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.MainActivity">
+        <activity android:name=".ui.catslist.CatsListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

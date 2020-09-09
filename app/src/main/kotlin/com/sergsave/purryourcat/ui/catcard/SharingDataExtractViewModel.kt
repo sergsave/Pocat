@@ -1,14 +1,20 @@
 package com.sergsave.purryourcat.ui.catcard
 
+import android.content.Intent
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider.Factory
+import androidx.lifecycle.MutableLiveData
+import io.reactivex.rxjava3.kotlin.Singles
+import com.sergsave.purryourcat.content.ContentRepository
 import com.sergsave.purryourcat.models.CatData
+import com.sergsave.purryourcat.helpers.Event
+import com.sergsave.purryourcat.helpers.DisposableViewModel
+import com.sergsave.purryourcat.sharing.SharingManager
 
 // TODO: Cancel on stop??
-class SharingDataExtractViewModel(sharingManager: SharingManager) : ViewModel() {
-
-    private var disposable = CompositeDisposable()
+class SharingDataExtractViewModel(
+    private val sharingManager: SharingManager,
+    private val contentRepo: ContentRepository
+) : DisposableViewModel() {
 
     private val _sharingState = MutableLiveData<Boolean>()
     val sharingState: LiveData<Boolean>
@@ -22,34 +28,28 @@ class SharingDataExtractViewModel(sharingManager: SharingManager) : ViewModel() 
     val extractSuccessEvent: LiveData<Event<CatData>>
         get() = _extractSuccessEvent
 
-    override fun onCleared() {
-        disposable.clear()
-        super.onCleared()
-    }
-
     // Use intent is safe here because we don't save reference to any context.
     fun startExtract(intent: Intent) {
         val single = sharingManager.makeGiveObservable(intent)
         if(single == null)
             return
 
-        val disposable = single.subscribe {
-            { data -> _extractSuccessEvent.value = data.cat },
-            { throwable -> _extractFailedEvent.value = throwable.message }
-        }
+        val disposable = single.subscribe(
+            { data -> updateContent(data.cat) },
+            { throwable -> throwable.message?.let { _extractFailedEvent.value = Event(it) } }
+        )
 
-        this.disposable.add(disposable)
+        addDisposable(disposable)
     }
 
-}
-
-class SharingDataExtractViewModelFactory(private val data: LiveData<CatData>): Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return if (modelClass.isAssignableFrom(SharingDataLoadViewModel::class.java)) {
-            SharingDataLoadViewModel(data) as T
-        } else {
-            throw IllegalArgumentException("ViewModel Not Found")
-        }
+    private fun updateContent(data: CatData) {
+        // TODO: if one is null
+        addDisposable(
+            Singles.zip(contentRepo.addImage(data.photoUri), contentRepo.addAudio(data.purrAudioUri))
+                .subscribe { (photo, audio) ->
+                    val updated = data.copy(photoUri = photo, purrAudioUri = audio)
+                    _extractSuccessEvent.value = Event(updated)
+                }
+        )
     }
 }

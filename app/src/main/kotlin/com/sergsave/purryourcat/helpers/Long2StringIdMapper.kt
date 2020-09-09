@@ -1,6 +1,6 @@
 package com.sergsave.purryourcat.helpers
 
-private class Long2StringIdMapper {
+class Long2StringIdMapper {
     companion object {
         const val INVALID_ID = Long.MAX_VALUE
     }
