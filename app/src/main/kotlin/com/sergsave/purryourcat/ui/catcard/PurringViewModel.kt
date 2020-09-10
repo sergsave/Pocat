@@ -10,17 +10,18 @@ import com.sergsave.purryourcat.sharing.Pack
 import com.sergsave.purryourcat.sharing.SharingManager
 import com.sergsave.purryourcat.helpers.Event
 import com.sergsave.purryourcat.helpers.DisposableViewModel
+import com.sergsave.purryourcat.R
 
 class PurringViewModel(
     private val catDataRepository: CatDataRepository,
     private val sharingManager: SharingManager,
     private val preferences: PreferenceReader,
-    private val inputData: InputData
+    private var cat: Cat
 ) : DisposableViewModel() {
 
-    sealed class InputData {
-        data class Saved(val catId: String): InputData()
-        data class Unsaved(val catData: CatData): InputData()
+    sealed class Cat {
+        data class Saved(val catId: String): Cat()
+        data class Unsaved(val catData: CatData): Cat()
     }
 
     enum class MenuState {
@@ -41,54 +42,68 @@ class PurringViewModel(
     val dataSavedEvent: LiveData<Event<Unit>>
         get() = _dataSavedEvent
 
-    private val _sharingFailedEvent = MutableLiveData<Event<String>>()
-    val sharingFailedEvent: LiveData<Event<String>>
-        get() = _sharingFailedEvent
+    private val _sharingFailedStringIdEvent = MutableLiveData<Event<Int>>()
+    val sharingFailedStringIdEvent: LiveData<Event<Int>>
+        get() = _sharingFailedStringIdEvent
 
     // Use intent is safe here because we don't save reference to any context.
     private val _sharingSuccessEvent = MutableLiveData<Event<Intent>>()
     val sharingSuccessEvent: LiveData<Event<Intent>>
         get() = _sharingSuccessEvent
 
-    init {
-        when(inputData) {
-            is InputData.Saved -> {
-                _menuState.value = MenuState.SHOW_SAVED
+    private val _editCatEvent = MutableLiveData<Event<String>>()
+    val editCatEvent: LiveData<Event<String>>
+        get() = _editCatEvent
 
-                val disposable = catDataRepository.read().subscribe { cats ->
-                    cats.get(inputData.catId)?.let { _catData.value = it }
-                }
-                addDisposable(disposable)
-            }
-            is InputData.Unsaved -> {
+    init {
+        when(cat) {
+            is Cat.Saved -> _menuState.value = MenuState.SHOW_SAVED
+            is Cat.Unsaved -> {
                 _menuState.value = MenuState.SHOW_UNSAVED
-                _catData.value = inputData.catData
+                _catData.value = (cat as? Cat.Unsaved)?.catData
             }
         }
+
+        val disposable = catDataRepository.read().subscribe { cats ->
+            val id = (cat as? Cat.Saved)?.catId
+
+            if(id != null)
+                cats.get(id)?.let { _catData.value = it }
+        }
+        addDisposable(disposable)
     }
 
-    fun startSharing() {
+    fun onSharePressed() {
         val pack = _catData.value?.let { Pack(it) }
         val single = pack?.let { sharingManager.makeTakeObservable(it) }
         if(single == null)
             return
 
         _menuState.value = MenuState.SHARING
+
         val disposable = single
             .doOnEvent{ _,_ -> _menuState.value = MenuState.SHOW_SAVED }
             .subscribe(
-            { data -> _sharingSuccessEvent.value = Event(data) },
-            { throwable -> throwable.message?.let { _sharingFailedEvent.value = Event(it) } }
-        )
+                { data -> _sharingSuccessEvent.value = Event(data) },
+                { _ -> _sharingFailedStringIdEvent.value = Event(R.string.connection_error) }
+            )
 
         addDisposable(disposable)
     }
 
-    fun saveData() {
+    fun onSavePressed() {
         _menuState.value = MenuState.SHOW_SAVED
         _dataSavedEvent.value = Event(Unit)
-        if(inputData is InputData.Unsaved)
-            addDisposable(catDataRepository.add(inputData.catData).subscribe { _ -> })
+        val data = (cat as? Cat.Unsaved)?.catData
+        if(data != null) {
+            addDisposable(catDataRepository.add(data).subscribe { id ->
+                cat = Cat.Saved(id)
+            })
+        }
+    }
+
+    fun onEditPressed() {
+        (cat as? Cat.Saved)?.catId?.let { _editCatEvent.value = Event(it) }
     }
 
     fun isVibrationEnabled(): Boolean {

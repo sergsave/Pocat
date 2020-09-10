@@ -107,9 +107,7 @@ class FormViewModel(
     }
 
     fun onApplyPressed() {
-        // TODO: add validation
-        if(false) {
-//        if (isCurrentDataValid().not()) {
+        if (isCurrentDataValid().not()) {
             _notValidDataMessageEvent.value = Event(Unit)
             return
         }

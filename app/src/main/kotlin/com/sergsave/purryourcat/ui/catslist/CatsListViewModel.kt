@@ -13,6 +13,8 @@ import com.sergsave.purryourcat.helpers.DisposableViewModel
 import com.sergsave.purryourcat.helpers.Long2StringIdMapper
 import io.reactivex.rxjava3.kotlin.Observables
 import io.reactivex.rxjava3.kotlin.Singles
+import java.util.Timer
+import kotlin.concurrent.schedule
 
 class CatsListViewModel(
     private val catDataRepository: CatDataRepository,
@@ -21,6 +23,7 @@ class CatsListViewModel(
 ): DisposableViewModel() {
     private var selection = listOf<Long>()
     private val idMapper = Long2StringIdMapper()
+    private var wasClickedRecently = false
 
     private val _cats = MutableLiveData<List<Pair<Long, CatData>>>()
     val cats: LiveData<List<Pair<Long, CatData>>>
@@ -56,7 +59,18 @@ class CatsListViewModel(
 
     fun stringCatIdFrom(longId: Long) = idMapper.stringIdFrom(longId)
 
-    fun handleOnItemClick(): Boolean = actionModeState.value != true
+    fun handleOnItemClick(): Boolean {
+        if(actionModeState.value == true)
+            return false
+
+        if(wasClicked)
+            return false
+
+        wasClickedRecently = true
+        val debounceTimeout = 400L
+        Timer("Click debounce", false).schedule(debounceTimeout) { wasClickedRecently = false }
+        return true
+    }
 
     fun onActionModeStarted() {
         changeActionModeState(true)

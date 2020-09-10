@@ -57,9 +57,9 @@ class AppContainer(context: Context) {
             FormViewModel(catDataRepo, contentRepo, fileHelper, catId)
         })
 
-    fun providePurringViewModelFactory(inputData: PurringViewModel.InputData) =
+    fun providePurringViewModelFactory(cat: PurringViewModel.Cat) =
         ViewModelFactory(PurringViewModel::class.java, {
-            PurringViewModel(catDataRepo, sharingManager, preferences, inputData)
+            PurringViewModel(catDataRepo, sharingManager, preferences, cat)
         })
 
     fun provideSharingDataExtractViewModelFactory() =

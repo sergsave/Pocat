@@ -39,10 +39,6 @@ class NavigationViewModel(catId: String?, isThereSharingInputData: Boolean)
     val startExtractSharingDataEvent: LiveData<Event<Unit>>
         get() = _startExtractSharingDataEvent
 
-    private val _startSharedElementTransitionEvent = MutableLiveData<Event<Unit>>()
-    val startSharedElementTransitionEvent: LiveData<Event<Unit>>
-        get() = _startSharedElementTransitionEvent
-
     private val _backPressedEvent = MutableLiveData<Event<Unit>>()
     val backPressedEvent: LiveData<Event<Unit>>
         get() = _backPressedEvent
@@ -97,9 +93,5 @@ class NavigationViewModel(catId: String?, isThereSharingInputData: Boolean)
             goToPage(Page.OpenById(page.id))
         else
             _finishEvent.value = Event(Unit)
-    }
-
-    fun startSharedElementTransition() {
-        _startSharedElementTransitionEvent.value = Event(Unit)
     }
 }

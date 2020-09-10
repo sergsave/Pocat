@@ -75,10 +75,6 @@ class CatCardActivity : AppCompatActivity() {
                 showFragment(fragment)
             })
 
-            startSharedElementTransitionEvent.observe(lifecycleOwner, EventObserver {
-                supportStartPostponedEnterTransition()
-            })
-
             finishEvent.observe(lifecycleOwner, EventObserver {
                 super.onBackPressed()
             })

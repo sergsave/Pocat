@@ -32,5 +32,6 @@
     <string name="vibration">Enable vibration</string>
     <string name="vibration_summary">Vibration occurs when you touch a cat</string>
     <string name="sample_1_name">Demo Cat</string>
+    <string name="not_valid_data">Not valid cat</string>
 
 </resources>

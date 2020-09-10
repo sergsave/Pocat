@@ -58,8 +58,8 @@ class SharingDataExtractFragment: Fragment() {
                 navigation.openCat(it)
             })
 
-            extractFailedEvent.observe(viewLifecycleOwner, EventObserver {
-                Snackbar.make(main_layout, it, Snackbar.LENGTH_LONG).show()
+            extractFailedStringIdEvent.observe(viewLifecycleOwner, EventObserver {
+                Snackbar.make(main_layout, resources.getString(it), Snackbar.LENGTH_LONG).show()
             })
         }
     }

@@ -18,8 +18,7 @@ import java.net.URL
 private fun cacheDir(context: Context) =
     File(context.cacheDir, "sharing").also { if(it.exists().not()) it.mkdirs() }
 
-private fun errorThrowable(context: Context)
-        = IOException(context.getString(R.string.connection_error))
+private val errorThrowable = IOException("Connection Error")
 
 class WebSharingManager(private val context: Context,
                         private val service: NetworkService,
@@ -39,7 +38,6 @@ class WebSharingManager(private val context: Context,
 
     override fun makeTakeObservable(pack: Pack): Single<Intent>? {
         val previewSingle = makePreview(pack)
-        val throwable = errorThrowable(context)
         val cache = cacheDir(context)
 
         val uploadSingle = Single.fromCallable { packer.pack(pack, cache)!! } // rxJava doesn't support null
@@ -50,7 +48,7 @@ class WebSharingManager(private val context: Context,
         return Singles.zip(previewSingle, uploadSingle, { preview, link ->
             makeIntent(link, preview)
         })
-            .onErrorResumeNext { Single.error(throwable) }
+            .onErrorResumeNext { Single.error(errorThrowable) }
     }
 
     private fun makeIntent(url: URL, previewUri: Uri): Intent {
@@ -87,10 +85,9 @@ class WebSharingManager(private val context: Context,
         if(uri == null)
             return null
 
-        val throwable = errorThrowable(context)
         return service
             .makeDownloadObservable(URL(uri.toString()), cacheDir(context))
             .map { file -> packer.unpack(file)!! }  // rxJava doesn't support null
-            .onErrorResumeNext { Single.error(throwable) }
+            .onErrorResumeNext { Single.error(errorThrowable) }
     }
 }
