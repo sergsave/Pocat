@@ -37,6 +37,10 @@ class PurringViewModel(
     val menuState: LiveData<MenuState>
         get() = _menuState
 
+    private val _dataSavedEvent = MutableLiveData<Event<Unit>>()
+    val dataSavedEvent: LiveData<Event<Unit>>
+        get() = _dataSavedEvent
+
     private val _sharingFailedEvent = MutableLiveData<Event<String>>()
     val sharingFailedEvent: LiveData<Event<String>>
         get() = _sharingFailedEvent
@@ -69,7 +73,10 @@ class PurringViewModel(
         if(single == null)
             return
 
-        val disposable = single.subscribe(
+        _menuState.value = MenuState.SHARING
+        val disposable = single
+            .doOnEvent{ _,_ -> _menuState.value = MenuState.SHOW_SAVED }
+            .subscribe(
             { data -> _sharingSuccessEvent.value = Event(data) },
             { throwable -> throwable.message?.let { _sharingFailedEvent.value = Event(it) } }
         )
@@ -78,6 +85,8 @@ class PurringViewModel(
     }
 
     fun saveData() {
+        _menuState.value = MenuState.SHOW_SAVED
+        _dataSavedEvent.value = Event(Unit)
         if(inputData is InputData.Unsaved)
             addDisposable(catDataRepository.add(inputData.catData).subscribe { _ -> })
     }

@@ -23,7 +23,7 @@ class FormViewModel(
         fun getFileName(uri: Uri): String?
     }
 
-    private var backup: CatData
+    private var backup: CatData? = null
 
     private val _name = MutableLiveData<String>()
     val name: LiveData<String>
@@ -59,11 +59,13 @@ class FormViewModel(
 
     init {
         val disposable = catDataRepository.read().subscribe { cats ->
-            catId?.let { updateData(cats.get(it)) }
+            val data = catId?.let{ cats.get(it) } ?: CatData()
+
+            updateData(data)
+            if(backup == null)
+                backup = data
         }
         addDisposable(disposable)
-
-        backup = currentData()
     }
 
     fun currentData() = CatData(_name.value, _photoUri.value, _audioUri.value)
@@ -160,7 +162,7 @@ class FormViewModel(
     }
 
     private fun restoreFromBackup() {
-        updateData(backup)
+        backup?.let{ updateData(it) }
     }
 
     private fun wereChangesAfterBackup(): Boolean {

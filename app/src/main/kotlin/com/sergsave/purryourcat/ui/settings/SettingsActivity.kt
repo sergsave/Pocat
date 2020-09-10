@@ -18,6 +18,9 @@ class SettingsActivity : AppCompatActivity() {
 
         setToolbarAsActionBar(toolbar, showBackButton = true)
 
+        if(savedInstanceState != null)
+            return
+
         supportFragmentManager
             .beginTransaction()
             .add(R.id.container, PreferenceFragment())

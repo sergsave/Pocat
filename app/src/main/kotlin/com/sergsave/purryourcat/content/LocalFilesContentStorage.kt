@@ -36,7 +36,6 @@ class LocalFilesContentStorage(private val context: Context,
     }
 
     override fun remove(uri: Uri): Single<Unit> {
-
         return Single.create<Unit> { emitter ->
             // Only file path uri contains in this storage type
             val path = uri.path

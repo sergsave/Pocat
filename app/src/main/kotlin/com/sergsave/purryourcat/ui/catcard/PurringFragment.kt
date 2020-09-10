@@ -92,6 +92,10 @@ class PurringFragment : Fragment() {
             navigation.goToBackScreen()
         })
 
+        val showSnackbar = { message: String ->
+            Snackbar.make(main_layout, message, Snackbar.LENGTH_LONG).show()
+        }
+
         viewModel.apply {
             catData.observe(viewLifecycleOwner, Observer {
                 ImageUtils.loadInto(context, it.photoUri, photo_image) {
@@ -110,7 +114,12 @@ class PurringFragment : Fragment() {
             })
 
             sharingFailedEvent.observe(viewLifecycleOwner, EventObserver {
-                Snackbar.make(main_layout, it, Snackbar.LENGTH_LONG).show()
+                showSnackbar(it)
+            })
+
+            dataSavedEvent.observe(viewLifecycleOwner, EventObserver {
+                val message = resources.getString(R.string.save_snackbar_message_text)
+                showSnackbar(message)
             })
         }
     }
@@ -148,14 +157,13 @@ class PurringFragment : Fragment() {
     }
 
     fun initAudio(audioUri: Uri?) {
-        if(audioUri == null || context == null)
+        if(audioUri == null || context == null || mediaPlayer != null)
             return
 
         activity?.volumeControlStream = AudioManager.STREAM_MUSIC
-        if(mediaPlayer == null)
-            mediaPlayer = MediaPlayer.create(requireContext(), audioUri)?.apply { isLooping = true }
+        mediaPlayer = MediaPlayer.create(requireContext(), audioUri)?.apply { isLooping = true }
 
-        if(viewModel.isVibrationEnabled().not() || vibrator != null)
+        if(viewModel.isVibrationEnabled().not())
             return
 
         prepareBeatDetectorAsync{ detector ->

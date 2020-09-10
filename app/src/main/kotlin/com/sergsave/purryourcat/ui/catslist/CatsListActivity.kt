@@ -20,10 +20,28 @@ import kotlinx.android.synthetic.main.activity_cats_list.*
 // TODO: Require context and requireActivity
 
 // БАГИ после рефакторинга
-// Меню главного экрана исчезает после переворота
+
+// Краш в трансформе
+// Пустой список котов
+// Нет опций меню
+// Селекшн при перевороте
+// Не открывалась карточка кота по апплай
+// Пустой текст не считался за изменение
 // Щас не воспроизводится, но фотка в форме исчезала при перевороте
 // Звук иногда не добавляется, мурки не работают
 // При перевороте экрана появляется сообщение, что данные есть несохраненные
+// Переинит аудио не оч хорошо
+// Меню главного экрана исчезает после переворота
+// Шаринга иконка
+// Перепутал валидацию данных
+// Заголовок при загрузке кота
+
+// Не открывался кот на редактирование после сохранения дискеткой
+// После сворачивания приложения не работали мурки иногда
+// Можно открыть много карточек при быстром нажатии
+// Краш и зависание при глажке кота
+// переделать репу контента
+// мб инитить аудио на касание
 
 class CatsListActivity : AppCompatActivity() {
 
@@ -35,14 +53,15 @@ class CatsListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cats_list)
 
+        if(savedInstanceState != null)
+            return
+
         supportFragmentManager
             .beginTransaction()
             .add(R.id.container, CatsListFragment())
             .commit()
 
-        if(savedInstanceState == null) {
-            checkInputSharingIntent()
-        }
+        checkInputSharingIntent()
     }
 
     private fun checkInputSharingIntent() {

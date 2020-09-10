@@ -21,11 +21,9 @@ class ContentRepository (
     }
 
     fun read(): Observable<List<Uri>> {
-        return contentListSubject.flatMapSingle {
-            Singles.zip(audioStorage.read(), imageStorage.read()).map { (audios, images) ->
-                audios + images
-            }
-        }
+        var single = Singles.zip(audioStorage.read(), imageStorage.read())
+            .map { (audios, images) -> audios + images }
+        return contentListSubject.flatMapSingle{single}.startWith(single)
     }
 
     private fun add(storage: ContentStorage, sourceContent: Uri?, withName: String? = null): Single<Uri> {
