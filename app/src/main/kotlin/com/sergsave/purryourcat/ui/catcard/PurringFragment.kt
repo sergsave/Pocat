@@ -6,6 +6,8 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import android.view.*
 import android.view.MotionEvent.ACTION_MOVE
 import androidx.appcompat.app.AppCompatActivity
@@ -23,8 +25,6 @@ import com.sergsave.purryourcat.helpers.EventObserver
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.vibration.*
 import kotlinx.android.synthetic.main.fragment_purring.*
-import java.util.*
-import kotlin.concurrent.schedule
 
 // TODO: Implement sound listener version without permission.
 
@@ -43,7 +43,7 @@ class PurringFragment : Fragment() {
     }
 
     private var mediaPlayer: MediaPlayer? = null
-    private var playerTimeoutTimer: Timer? = null
+    private var playerTimeoutHandler: Handler? = null
     private var vibrator: RythmOfSoundVibrator? = null
 
     override fun onDestroy() {
@@ -61,7 +61,6 @@ class PurringFragment : Fragment() {
         super.onStart()
         initAudio(viewModel.catData.value?.purrAudioUri)
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -158,7 +157,7 @@ class PurringFragment : Fragment() {
         return true
     }
 
-    fun initAudio(audioUri: Uri?) {
+    private fun initAudio(audioUri: Uri?) {
         if(audioUri == null || context == null || mediaPlayer != null)
             return
 
@@ -174,13 +173,13 @@ class PurringFragment : Fragment() {
         }
     }
 
-    fun deinitAudio() {
-        val player = mediaPlayer
-        mediaPlayer = null
-
-        player?.release()
+    private fun deinitAudio() {
+        playerTimeoutHandler?.removeCallbacksAndMessages(null)
+        stopAudio()
         vibrator?.release()
-
+        mediaPlayer?.release()
+        vibrator = null
+        mediaPlayer = null
         activity?.volumeControlStream = AudioManager.USE_DEFAULT_STREAM_TYPE
     }
 
@@ -228,18 +227,20 @@ class PurringFragment : Fragment() {
 
         vibrator?.start()
 
-        playerTimeoutTimer?.cancel()
-        playerTimeoutTimer?.purge()
-        playerTimeoutTimer = Timer("AudioTimeout", false)
-        playerTimeoutTimer?.schedule(AUDIO_TIMEOUT.toLong()) {
-            if(mediaPlayer?.isPlaying == true)
-                mediaPlayer?.pause()
-            vibrator?.stop()
+        playerTimeoutHandler?.removeCallbacksAndMessages(null)
+        playerTimeoutHandler = Handler(Looper.getMainLooper()).apply {
+            postDelayed({ stopAudio() }, AUDIO_TIMEOUT)
         }
     }
 
+    private fun stopAudio(){
+        if(mediaPlayer?.isPlaying == true)
+            mediaPlayer?.pause()
+        vibrator?.stop()
+    }
+
     companion object {
-        private const val AUDIO_TIMEOUT = 2000
+        private const val AUDIO_TIMEOUT = 2000L
         private const val PERMISSION_RECORD_AUDIO_CODE = 1000
 
         private const val ARG_TRANSITION_NAME = "TransitionName"

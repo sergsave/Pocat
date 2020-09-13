@@ -3,6 +3,8 @@ package com.sergsave.purryourcat.ui.catslist
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import android.os.Handler
+import android.os.Looper
 import com.sergsave.purryourcat.models.extractContent
 import com.sergsave.purryourcat.content.ContentRepository
 import com.sergsave.purryourcat.data.CatDataRepository
@@ -11,10 +13,9 @@ import com.sergsave.purryourcat.sharing.SharingManager
 import com.sergsave.purryourcat.helpers.Event
 import com.sergsave.purryourcat.helpers.DisposableViewModel
 import com.sergsave.purryourcat.helpers.Long2StringIdMapper
-import io.reactivex.rxjava3.kotlin.Observables
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.kotlin.Flowables
 import io.reactivex.rxjava3.kotlin.Singles
-import java.util.Timer
-import kotlin.concurrent.schedule
 
 class CatsListViewModel(
     private val catDataRepository: CatDataRepository,
@@ -50,8 +51,10 @@ class CatsListViewModel(
         sharingManager.cleanup()
         cleanUpUnusedContent()
 
-        addDisposable(catDataRepository.read().subscribe{
-            _cats.value = it.mapKeys{ (k, _) -> idMapper.longIdFrom(k) }.toList()
+        addDisposable(catDataRepository.read().subscribe {
+            val listOfPairs = it.mapKeys{ (k, _) -> idMapper.longIdFrom(k) }.toList()
+            val sortedByTime = listOfPairs.sortedByDescending { it.second.timeOfCreateMillis }
+            _cats.value = sortedByTime.map { (id, timed) -> Pair(id, timed.data) }
         })
     }
 
@@ -63,12 +66,14 @@ class CatsListViewModel(
         if(actionModeState.value == true)
             return false
 
-        if(wasClicked)
+        if(wasClickedRecently)
             return false
 
         wasClickedRecently = true
-        val debounceTimeout = 400L
-        Timer("Click debounce", false).schedule(debounceTimeout) { wasClickedRecently = false }
+
+        val debounceTimeout = 500L
+        Handler(Looper.getMainLooper()).postDelayed({ wasClickedRecently = false }, debounceTimeout)
+
         return true
     }
 
@@ -104,22 +109,25 @@ class CatsListViewModel(
     }
 
     private fun remove(catIds: List<String>) {
-        // TODO: FP way
-        catIds.forEach {
-            addDisposable(catDataRepository.remove(it).subscribe{ _ -> cleanUpUnusedContent() })
-        }
+        addDisposable(
+            Observable.fromIterable(catIds)
+                .concatMapCompletable { catDataRepository.remove(it) }
+                .doOnComplete{ cleanUpUnusedContent() }
+                .subscribe{}
+        )
     }
 
     private fun cleanUpUnusedContent() {
-        val disposable = Observables.zip(catDataRepository.read(), contentRepository.read())
+        val disposable = Flowables.zip(catDataRepository.read(), contentRepository.read())
             .take(1)
             .subscribe { (data, content) ->
-                val usedContent = data.flatMap { (_, cat) -> cat.extractContent() }
-
+                val usedContent = data.flatMap { (_, cat) -> cat.data.extractContent() }
                 val unusedContent = content - usedContent
-                unusedContent.forEach {
-                    addDisposable(contentRepository.remove(it).subscribe{ _ ->})
-                }
+
+                addDisposable(
+                    Observable.fromIterable(unusedContent)
+                    .concatMapCompletable { contentRepository.remove(it) }
+                    .subscribe{})
             }
         addDisposable(disposable)
     }

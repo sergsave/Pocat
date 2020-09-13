@@ -1,53 +1,45 @@
 package com.sergsave.purryourcat.content
 
 import android.net.Uri
-import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.kotlin.Singles
-import io.reactivex.rxjava3.subjects.BehaviorSubject
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.kotlin.Flowables
 import java.io.IOException
 
 // Save content to file storage available for application
+// Files will added with same names
 class ContentRepository (
     private val imageStorage: ContentStorage,
     private val audioStorage: ContentStorage,
     val maxImageFileSize: Long,
     val maxAudioFileSize: Long)
 {
-    private val contentListSubject = BehaviorSubject.create<List<Uri>>()
-
-    private fun sendNotification() {
-        contentListSubject.onNext(emptyList())
-    }
-
-    fun read(): Observable<List<Uri>> {
-        var single = Singles.zip(audioStorage.read(), imageStorage.read())
+    fun read(): Flowable<List<Uri>> {
+        return Flowables.zip(audioStorage.read(), imageStorage.read())
             .map { (audios, images) -> audios + images }
-        return contentListSubject.flatMapSingle{single}.startWith(single)
     }
 
-    private fun add(storage: ContentStorage, sourceContent: Uri?, withName: String? = null): Single<Uri> {
+    private fun add(storage: ContentStorage, sourceContent: Uri?): Single<Uri> {
         if(sourceContent == null)
             return Single.error(IOException("Null content"))
 
-        return storage.store(sourceContent, withName).doOnSuccess { sendNotification() }
+        return storage.add(sourceContent, true)
     }
 
-    // If withName equal null, content will added with same name
-    fun addAudio(sourceContent: Uri?, withName: String? = null): Single<Uri> {
-        return add(audioStorage, sourceContent, withName)
+    fun addAudio(sourceContent: Uri?): Single<Uri> {
+        return add(audioStorage, sourceContent)
     }
 
-    fun addImage(sourceContent: Uri?, withName: String? = null): Single<Uri> {
-        return add(imageStorage, sourceContent, withName)
+    fun addImage(sourceContent: Uri?): Single<Uri> {
+        return add(imageStorage, sourceContent)
     }
 
-    fun remove(uri: Uri?): Single<Unit> {
+    fun remove(uri: Uri?): Completable {
         if(uri == null)
-            return Single.error(IOException("Null uri"))
+            return Completable.error(IOException("Null uri"))
 
         return audioStorage.remove(uri)
             .onErrorResumeNext { imageStorage.remove(uri) }
-            .doOnSuccess{ sendNotification() }
     }
 }

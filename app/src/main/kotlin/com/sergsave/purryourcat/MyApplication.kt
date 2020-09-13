@@ -3,25 +3,27 @@ package com.sergsave.purryourcat
 import android.app.Application
 import android.content.Context
 import android.net.Uri
+import io.reactivex.rxjava3.core.Observable
 import com.sergsave.purryourcat.content.ContentRepository
-import com.sergsave.purryourcat.content.LocalFilesContentStorage
-import com.sergsave.purryourcat.content.ImageResizeSavingStrategy
 import com.sergsave.purryourcat.content.CopySavingStrategy
+import com.sergsave.purryourcat.content.ImageResizeSavingStrategy
+import com.sergsave.purryourcat.content.LocalFilesContentStorage
 import com.sergsave.purryourcat.data.CatDataRepository
 import com.sergsave.purryourcat.data.RoomCatDataStorage
 import com.sergsave.purryourcat.helpers.FileUtils
 import com.sergsave.purryourcat.helpers.FirstLaunchChecker
 import com.sergsave.purryourcat.helpers.ViewModelFactory
 import com.sergsave.purryourcat.preference.PreferenceReader
+import com.sergsave.purryourcat.sampleprovider.SampleProvider
 import com.sergsave.purryourcat.sharing.FirebaseNetworkService
 import com.sergsave.purryourcat.sharing.SharingManager
 import com.sergsave.purryourcat.sharing.WebSharingManager
 import com.sergsave.purryourcat.sharing.ZipDataPacker
-import com.sergsave.purryourcat.sampleprovider.SampleProvider
-import com.sergsave.purryourcat.ui.catslist.CatsListViewModel
 import com.sergsave.purryourcat.ui.catcard.FormViewModel
 import com.sergsave.purryourcat.ui.catcard.PurringViewModel
 import com.sergsave.purryourcat.ui.catcard.SharingDataExtractViewModel
+import com.sergsave.purryourcat.ui.catslist.CatsListViewModel
+import java.util.*
 
 // Manual dependency injection
 class AppContainer(context: Context) {
@@ -37,15 +39,15 @@ class AppContainer(context: Context) {
         maxAudioFileSize = 2 * 1024 * 1024
     )
 
-    init { addSamples(context) }
-
-    // TODO: Firebase impl?
-    val sharingManager: SharingManager =
+    private val sharingManager: SharingManager =
         WebSharingManager(
             context,
             FirebaseNetworkService(),
             ZipDataPacker(context)
         )
+    private val sharingErrorStringId = R.string.connection_error
+
+    init { addSamples(context) }
 
     fun provideCatsListViewModelFactory() =
         ViewModelFactory(CatsListViewModel::class.java, {
@@ -59,12 +61,12 @@ class AppContainer(context: Context) {
 
     fun providePurringViewModelFactory(cat: PurringViewModel.Cat) =
         ViewModelFactory(PurringViewModel::class.java, {
-            PurringViewModel(catDataRepo, sharingManager, preferences, cat)
+            PurringViewModel(catDataRepo, sharingManager, preferences, sharingErrorStringId, cat)
         })
 
     fun provideSharingDataExtractViewModelFactory() =
         ViewModelFactory(SharingDataExtractViewModel::class.java, {
-            SharingDataExtractViewModel(sharingManager, contentRepo)
+            SharingDataExtractViewModel(sharingManager, contentRepo, sharingErrorStringId)
         })
 
     private val fileHelper = object: FormViewModel.FileHelper {
@@ -76,17 +78,7 @@ class AppContainer(context: Context) {
         val preferences = context.getSharedPreferences(Constants.FIRST_LAUNCH_SHARED_PREFS_NAME, 0)
         if(FirstLaunchChecker(preferences).check()) {
             val samples = SampleProvider(context).provide().toMutableList()
-
-            samples.forEach { catDataRepo.add(it).subscribe{ _ -> } }
-//            fun add() {
-//                if (samples.isNotEmpty()) {
-//                    @OptIn(kotlin.ExperimentalStdlibApi::class)
-//                    catDataRepo.add(samples.removeLast()).subscribe{ _ -> add() }
-//                }
-//            }
-//
-//            add()
-
+            Observable.fromIterable(samples).concatMapSingle{ catDataRepo.add(it) }.subscribe{_ ->}
         }
     }
 }
@@ -96,6 +88,7 @@ class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
         appContainer // init
     }
 }

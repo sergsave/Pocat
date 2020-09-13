@@ -59,7 +59,7 @@ class FormViewModel(
 
     init {
         val disposable = catDataRepository.read().subscribe { cats ->
-            val data = catId?.let{ cats.get(it) } ?: CatData()
+            val data = catId?.let{ cats.get(it)?.data } ?: CatData()
 
             updateData(data)
             if(backup == null)
@@ -139,7 +139,7 @@ class FormViewModel(
 
     private fun syncDataWithRepo() {
         catId?.let { id ->
-            addDisposable(catDataRepository.update(id, currentData()).subscribe { _ ->
+            addDisposable(catDataRepository.update(id, currentData()).subscribe {
                 _openCardEvent.value = Event(id)
             })
         } ?: run {

@@ -1,10 +1,12 @@
 package com.sergsave.purryourcat.content
 
 import android.net.Uri
+import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.Completable
 
 interface ContentStorage {
-    fun store(sourceContent: Uri, fileName: String? = null): Single<Uri>
-    fun read(): Single<List<Uri>>
-    fun remove(uri: Uri): Single<Unit>
+    fun read(): Flowable<List<Uri>>
+    fun add(sourceContent: Uri, keepFileName: Boolean): Single<Uri>
+    fun remove(uri: Uri): Completable
 }

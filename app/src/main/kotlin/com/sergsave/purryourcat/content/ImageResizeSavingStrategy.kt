@@ -2,7 +2,7 @@ package com.sergsave.purryourcat.content
 
 import android.content.Context
 import android.net.Uri
-import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.Completable
 import java.io.File
 import java.io.IOException
 import com.sergsave.purryourcat.helpers.FileUtils
@@ -14,11 +14,11 @@ class ImageResizeSavingStrategy(private val context: Context): SavingStrategy {
 
     // TODO: DONT resize little images
 
-    override fun save(sourceContent: Uri, outputFile: File): Single<Unit> {
-        return Single.create<Unit> { emitter ->
+    override fun save(sourceContent: Uri, outputFile: File): Completable {
+        return Completable.create { emitter ->
             ImageUtils.loadInto(context, sourceContent, outputFile, width, height) { res ->
                 if(res)
-                    emitter.onSuccess(Unit)
+                    emitter.onComplete()
                 else
                     emitter.onError(IOException("Image loading error"))
             }

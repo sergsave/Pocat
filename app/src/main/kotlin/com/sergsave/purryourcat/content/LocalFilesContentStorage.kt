@@ -4,7 +4,11 @@ import android.content.Context
 import android.net.Uri
 import com.sergsave.purryourcat.helpers.FileUtils
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.BackpressureStrategy
 import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.io.File
 import java.io.IOException
@@ -13,9 +17,27 @@ import java.util.UUID
 class LocalFilesContentStorage(private val context: Context,
                                private val savingStrategy: SavingStrategy): ContentStorage {
 
-    override fun store(sourceContent: Uri, fileName: String?): Single<Uri> {
-        val sourceName = FileUtils.getContentFileName(context, sourceContent)
-        val name = fileName ?: sourceName
+    private val contentListSubject = BehaviorSubject.create<List<Uri>>()
+
+    private fun sendNotification() {
+        // http://arturogutierrez.github.io/2016/05/07/rxjava-data-store-hot-observables/
+        contentListSubject.onNext(emptyList())
+    }
+
+    override fun read(): Flowable<List<Uri>> {
+        val readFileUris = {
+            dir().walk().filter{ it.isDirectory.not() }.map{ Uri.fromFile(it) }.toList()
+        }
+        return contentListSubject
+            .toFlowable(BackpressureStrategy.LATEST)
+            .map{ readFileUris() }
+            .startWith(Flowable.fromCallable{ readFileUris() })
+    }
+
+    override fun add(sourceContent: Uri, keepFileName: Boolean): Single<Uri> {
+        // This implementation always keep file name
+        val name = FileUtils.getContentFileName(context, sourceContent)
+
         if(name == null)
             return Single.error(IOException("Invalid file name"))
         
@@ -23,20 +45,14 @@ class LocalFilesContentStorage(private val context: Context,
         dir.mkdirs()
         val file = File(dir, name)
 
-        return savingStrategy.save(sourceContent, file).map{ Uri.fromFile(file) }
+        return savingStrategy.save(sourceContent, file).toSingle { Uri.fromFile(file) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnSuccess { sendNotification() }
     }
 
-    override fun read(): Single<List<Uri>> {
-        val files = dir().walk().filter{ it.isDirectory.not() }.toList()
-        return Single.fromCallable{ files.map { Uri.fromFile(it) } }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-    }
-
-    override fun remove(uri: Uri): Single<Unit> {
-        return Single.create<Unit> { emitter ->
+    override fun remove(uri: Uri): Completable {
+        return Completable.create { emitter ->
             // Only file path uri contains in this storage type
             val path = uri.path
 
@@ -47,12 +63,13 @@ class LocalFilesContentStorage(private val context: Context,
             }
 
             if(res)
-                emitter.onSuccess(Unit)
+                emitter.onComplete()
             else
                 emitter.onError(IOException("Removing error"))
         }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnComplete { sendNotification() }
 
     }
 

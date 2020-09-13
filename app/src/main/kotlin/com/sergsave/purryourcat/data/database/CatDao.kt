@@ -1,27 +1,28 @@
 package com.sergsave.purryourcat.data.database
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Delete
+import androidx.room.Update
+import androidx.room.OnConflictStrategy
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Flowable
 
 @Dao
 interface CatDao {
-    @Query("SELECT * FROM cat")
-    fun getAll(): List<Cat>
+    @Query("SELECT * FROM cats")
+    fun getAll(): Flowable<List<Cat>>
 
-    @Insert
-    fun insertAll(cats: List<Cat>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(cat: Cat): Completable
 
-    @Query("DELETE FROM cat")
-    fun delete()
+    @Update(entity = Cat::class)
+    fun update(cat: CatWithoutTime): Completable
 
-    @Transaction
-    fun deleteAndInsertAll(cats: List<Cat>) {
-        delete()
-        insertAll(cats)
-    }
+    @Delete
+    fun delete(cat: Cat): Completable
 
-//    fun insert(cat: Cat)
-//    fun remove(id: String)
-//    fun update()
-//    fun getAll()
-//    fun get(id: String)
+    @Query("DELETE FROM cats WHERE id = :catId")
+    fun deleteById(catId: String): Completable
 }

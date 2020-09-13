@@ -16,6 +16,7 @@ class PurringViewModel(
     private val catDataRepository: CatDataRepository,
     private val sharingManager: SharingManager,
     private val preferences: PreferenceReader,
+    private val sharingErrorStringId: Int,
     private var cat: Cat
 ) : DisposableViewModel() {
 
@@ -68,7 +69,7 @@ class PurringViewModel(
             val id = (cat as? Cat.Saved)?.catId
 
             if(id != null)
-                cats.get(id)?.let { _catData.value = it }
+                cats.get(id)?.let { _catData.value = it.data }
         }
         addDisposable(disposable)
     }
@@ -85,7 +86,7 @@ class PurringViewModel(
             .doOnEvent{ _,_ -> _menuState.value = MenuState.SHOW_SAVED }
             .subscribe(
                 { data -> _sharingSuccessEvent.value = Event(data) },
-                { _ -> _sharingFailedStringIdEvent.value = Event(R.string.connection_error) }
+                { _ -> _sharingFailedStringIdEvent.value = Event(sharingErrorStringId) }
             )
 
         addDisposable(disposable)

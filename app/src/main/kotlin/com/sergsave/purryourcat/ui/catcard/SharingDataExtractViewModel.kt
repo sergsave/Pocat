@@ -13,7 +13,8 @@ import com.sergsave.purryourcat.R
 
 class SharingDataExtractViewModel(
     private val sharingManager: SharingManager,
-    private val contentRepo: ContentRepository
+    private val contentRepo: ContentRepository,
+    private val errorStringId: Int
 ) : DisposableViewModel() {
 
     private val _sharingState = MutableLiveData<Boolean>()
@@ -36,7 +37,7 @@ class SharingDataExtractViewModel(
 
         val disposable = single.subscribe(
             { data -> updateContent(data.cat) },
-            { _ -> _extractFailedStringIdEvent.value = Event(R.string.connection_error) }
+            { _ -> _extractFailedStringIdEvent.value = Event(errorStringId) }
         )
 
         addDisposable(disposable)
