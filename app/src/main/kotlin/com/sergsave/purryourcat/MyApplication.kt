@@ -3,7 +3,6 @@ package com.sergsave.purryourcat
 import android.app.Application
 import android.content.Context
 import android.net.Uri
-import io.reactivex.rxjava3.core.Observable
 import com.sergsave.purryourcat.content.ContentRepository
 import com.sergsave.purryourcat.content.CopySavingStrategy
 import com.sergsave.purryourcat.content.ImageResizeSavingStrategy
@@ -23,7 +22,7 @@ import com.sergsave.purryourcat.ui.catcard.FormViewModel
 import com.sergsave.purryourcat.ui.catcard.PurringViewModel
 import com.sergsave.purryourcat.ui.catcard.SharingDataExtractViewModel
 import com.sergsave.purryourcat.ui.catslist.CatsListViewModel
-import java.util.*
+import io.reactivex.rxjava3.core.Observable
 
 // Manual dependency injection
 class AppContainer(context: Context) {
@@ -78,7 +77,7 @@ class AppContainer(context: Context) {
         val preferences = context.getSharedPreferences(Constants.FIRST_LAUNCH_SHARED_PREFS_NAME, 0)
         if(FirstLaunchChecker(preferences).check()) {
             val samples = SampleProvider(context).provide().toMutableList()
-            Observable.fromIterable(samples).concatMapSingle{ catDataRepo.add(it) }.subscribe{_ ->}
+            Observable.fromIterable(samples).concatMapSingle{ catDataRepo.add(it) }.subscribe{ }
         }
     }
 }

@@ -18,8 +18,8 @@ open class DisposableViewModel : ViewModel() {
     }
 }
 
-class ViewModelFactory<T: ViewModel>(val modelClass: Class<T>,
-                                     val modelSupplier: () -> T): Factory {
+class ViewModelFactory<T: ViewModel>(private val modelClass: Class<T>,
+                                     private val modelSupplier: () -> T): Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return if (modelClass.isAssignableFrom(this.modelClass)) {

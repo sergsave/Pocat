@@ -5,13 +5,11 @@ import android.net.Uri
 import com.sergsave.purryourcat.helpers.FileUtils
 import com.sergsave.purryourcat.models.extractContent
 import com.sergsave.purryourcat.models.withUpdatedContent
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.json.JsonLiteral
 import kotlinx.serialization.json.JsonObject
 import java.io.File
-import java.lang.Exception
 
 private const val BUNDLE_FILE_NAME = "bundle.json"
 private const val BUNDLE_ACTUAL_VERSION = 1
@@ -44,12 +42,12 @@ private fun readPackFromBundleFile(file: File): Pack? {
         if(version > BUNDLE_ACTUAL_VERSION)
             return null
 
-        var packJsonObj = jsonObject.getObject(PACK_KEY)
+        val packJsonObj = jsonObject.getObject(PACK_KEY)
         if(version < BUNDLE_ACTUAL_VERSION) {
             // adapt pack here
         }
 
-        return jsoner.fromJson<Pack>(packJsonObj)
+        return jsoner.fromJson(packJsonObj)
     }
     catch (e: Exception) {
         return null

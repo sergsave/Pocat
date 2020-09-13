@@ -68,7 +68,7 @@ class FormViewModel(
         addDisposable(disposable)
     }
 
-    fun currentData() = CatData(_name.value, _photoUri.value, _audioUri.value)
+    private fun currentData() = CatData(_name.value, _photoUri.value, _audioUri.value)
 
     val toolbarTitleStringId: Int
         get() {

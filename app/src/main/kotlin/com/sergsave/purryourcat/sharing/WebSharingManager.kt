@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import androidx.core.content.FileProvider
 import com.sergsave.purryourcat.BuildConfig
-import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.helpers.ImageUtils
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
@@ -33,7 +32,7 @@ class WebSharingManager(private val context: Context,
         }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe{ _ ->}
+            .subscribe{ _ -> }
     }
 
     override fun makeTakeObservable(pack: Pack): Single<Intent>? {

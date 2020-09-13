@@ -1,26 +1,24 @@
 package com.sergsave.purryourcat.ui.catslist
 
-import android.net.Uri
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import android.os.Handler
 import android.os.Looper
-import com.sergsave.purryourcat.models.extractContent
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.sergsave.purryourcat.content.ContentRepository
 import com.sergsave.purryourcat.data.CatDataRepository
-import com.sergsave.purryourcat.models.CatData
-import com.sergsave.purryourcat.sharing.SharingManager
-import com.sergsave.purryourcat.helpers.Event
 import com.sergsave.purryourcat.helpers.DisposableViewModel
+import com.sergsave.purryourcat.helpers.Event
 import com.sergsave.purryourcat.helpers.Long2StringIdMapper
+import com.sergsave.purryourcat.models.CatData
+import com.sergsave.purryourcat.models.extractContent
+import com.sergsave.purryourcat.sharing.SharingManager
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.kotlin.Flowables
-import io.reactivex.rxjava3.kotlin.Singles
 
 class CatsListViewModel(
     private val catDataRepository: CatDataRepository,
     private val contentRepository: ContentRepository,
-    private val sharingManager: SharingManager
+    sharingManager: SharingManager
 ): DisposableViewModel() {
     private var selection = listOf<Long>()
     private val idMapper = Long2StringIdMapper()
@@ -33,10 +31,6 @@ class CatsListViewModel(
     private val _actionModeState = MutableLiveData<Boolean>()
     val actionModeState: LiveData<Boolean>
         get() = _actionModeState
-
-    private val _finishActionModeEvent = MutableLiveData<Event<Unit>>()
-    val finishActionModeEvent: LiveData<Event<Unit>>
-        get() = _finishActionModeEvent
 
     private val _actionModeTitle = MutableLiveData<String>()
     val actionModeTitle: LiveData<String>
@@ -51,8 +45,8 @@ class CatsListViewModel(
         sharingManager.cleanup()
         cleanUpUnusedContent()
 
-        addDisposable(catDataRepository.read().subscribe {
-            val listOfPairs = it.mapKeys{ (k, _) -> idMapper.longIdFrom(k) }.toList()
+        addDisposable(catDataRepository.read().subscribe { catMap ->
+            val listOfPairs = catMap.mapKeys{ (k, _) -> idMapper.longIdFrom(k) }.toList()
             val sortedByTime = listOfPairs.sortedByDescending { it.second.timeOfCreateMillis }
             _cats.value = sortedByTime.map { (id, timed) -> Pair(id, timed.data) }
         })

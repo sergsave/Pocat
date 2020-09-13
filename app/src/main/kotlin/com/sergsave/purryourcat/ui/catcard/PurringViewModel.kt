@@ -4,13 +4,12 @@ import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sergsave.purryourcat.data.CatDataRepository
+import com.sergsave.purryourcat.helpers.DisposableViewModel
+import com.sergsave.purryourcat.helpers.Event
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.preference.PreferenceReader
 import com.sergsave.purryourcat.sharing.Pack
 import com.sergsave.purryourcat.sharing.SharingManager
-import com.sergsave.purryourcat.helpers.Event
-import com.sergsave.purryourcat.helpers.DisposableViewModel
-import com.sergsave.purryourcat.R
 
 class PurringViewModel(
     private val catDataRepository: CatDataRepository,
@@ -86,7 +85,7 @@ class PurringViewModel(
             .doOnEvent{ _,_ -> _menuState.value = MenuState.SHOW_SAVED }
             .subscribe(
                 { data -> _sharingSuccessEvent.value = Event(data) },
-                { _ -> _sharingFailedStringIdEvent.value = Event(sharingErrorStringId) }
+                { _sharingFailedStringIdEvent.value = Event(sharingErrorStringId) }
             )
 
         addDisposable(disposable)

@@ -2,17 +2,16 @@ package com.sergsave.purryourcat.content
 
 import android.content.Context
 import android.net.Uri
+import com.sergsave.purryourcat.helpers.ImageUtils
 import io.reactivex.rxjava3.core.Completable
 import java.io.File
 import java.io.IOException
-import com.sergsave.purryourcat.helpers.FileUtils
-import com.sergsave.purryourcat.helpers.ImageUtils
 
 class ImageResizeSavingStrategy(private val context: Context): SavingStrategy {
     private val width = 1440
     private val height = 2560
 
-    // TODO: DONT resize little images
+    // TODO: DON'T resize little images
 
     override fun save(sourceContent: Uri, outputFile: File): Completable {
         return Completable.create { emitter ->

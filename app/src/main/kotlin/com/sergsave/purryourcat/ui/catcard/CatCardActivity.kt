@@ -5,14 +5,12 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.*
 import com.google.android.material.transition.MaterialFadeThrough
 import com.sergsave.purryourcat.Constants
 import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.models.CatData
-import com.sergsave.purryourcat.helpers.setToolbarAsActionBar
 import com.sergsave.purryourcat.helpers.EventObserver
 import com.sergsave.purryourcat.helpers.ViewModelFactory
+import com.sergsave.purryourcat.helpers.setToolbarAsActionBar
 import kotlinx.android.synthetic.main.activity_cat_card.*
 
 class CatCardActivity : AppCompatActivity() {

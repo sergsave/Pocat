@@ -125,7 +125,7 @@ class CatsListFragment : Fragment() {
         val itemMargin = 16
 
         val viewManager = AutoFitGridLayoutManager(requireContext(), columnWidth)
-        val itemDecoration = MarginItemDecoration(itemMargin, { viewManager.spanCount })
+        val itemDecoration = MarginItemDecoration(itemMargin) { viewManager.spanCount }
 
         recycler_view.apply {
             setHasFixedSize(true)

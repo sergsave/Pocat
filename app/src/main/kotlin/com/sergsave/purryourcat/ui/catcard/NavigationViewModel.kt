@@ -10,11 +10,11 @@ class NavigationViewModel(catId: String?, isThereSharingInputData: Boolean)
     : ViewModel() {
 
     sealed class Page {
-        class AddNew: Page()
+        object AddNew : Page()
         class Edit(val id: String): Page()
         class OpenById(val id: String): Page()
         class OpenByData(val data: CatData): Page()
-        class Extract: Page()
+        object Extract : Page()
     }
 
     private lateinit var page: Page
@@ -50,8 +50,8 @@ class NavigationViewModel(catId: String?, isThereSharingInputData: Boolean)
     init {
         when {
             catId != null -> goToPage(Page.OpenById(catId))
-            isThereSharingInputData -> goToPage(Page.Extract())
-            else -> goToPage(Page.AddNew())
+            isThereSharingInputData -> goToPage(Page.Extract)
+            else -> goToPage(Page.AddNew)
         }
     }
 
@@ -77,10 +77,6 @@ class NavigationViewModel(catId: String?, isThereSharingInputData: Boolean)
 
     fun openCat(catData: CatData) {
         goToPage(Page.OpenByData(catData))
-    }
-
-    fun addNewCat() {
-        goToPage(Page.AddNew())
     }
 
     fun onBackButtonPressed() {

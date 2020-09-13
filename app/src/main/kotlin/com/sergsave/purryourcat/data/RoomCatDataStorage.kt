@@ -3,16 +3,14 @@ package com.sergsave.purryourcat.data
 import android.content.Context
 import android.net.Uri
 import androidx.room.Room
-import com.sergsave.purryourcat.data.database.Cat
-import com.sergsave.purryourcat.data.database.CatWithoutTime
 import com.sergsave.purryourcat.data.database.BaseCatEntity
-import com.sergsave.purryourcat.models.CatData
+import com.sergsave.purryourcat.data.database.Cat
 import com.sergsave.purryourcat.data.database.CatDatabase
-import com.sergsave.purryourcat.data.TimedCatData
+import com.sergsave.purryourcat.data.database.CatWithoutTime
+import com.sergsave.purryourcat.models.CatData
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 
 class RoomCatDataStorage(context: Context): CatDataStorage {
@@ -24,15 +22,15 @@ class RoomCatDataStorage(context: Context): CatDataStorage {
         .build()
 
     override fun read(): Flowable<Map<String, TimedCatData>> {
-        return database.catDao().getAll().map {
-            it.associate {
+        return database.catDao().getAll().map { cats ->
+            cats.associate { cat ->
                 val catData = CatData(
-                    name = it.entity.name,
-                    photoUri = it.entity.photoUri?.let { Uri.parse(it) },
-                    purrAudioUri = it.entity.audioUri?.let { Uri.parse(it) }
+                    name = cat.entity.name,
+                    photoUri = cat.entity.photoUri?.let { Uri.parse(it) },
+                    purrAudioUri = cat.entity.audioUri?.let { Uri.parse(it) }
                 )
 
-                Pair(it.id, TimedCatData(it.createdTime, catData))
+                Pair(cat.id, TimedCatData(cat.createdTime, catData))
             }
         }
             .observeOn(AndroidSchedulers.mainThread())

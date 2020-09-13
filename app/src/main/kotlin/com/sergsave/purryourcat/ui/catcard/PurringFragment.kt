@@ -5,7 +5,6 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
-import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import android.view.*
@@ -16,14 +15,16 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
-import com.sergsave.purryourcat.ui.catcard.PurringViewModel.MenuState
-import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.MyApplication
+import com.sergsave.purryourcat.R
+import com.sergsave.purryourcat.helpers.EventObserver
 import com.sergsave.purryourcat.helpers.ImageUtils
 import com.sergsave.purryourcat.helpers.PermissionUtils
-import com.sergsave.purryourcat.helpers.EventObserver
 import com.sergsave.purryourcat.models.CatData
-import com.sergsave.purryourcat.vibration.*
+import com.sergsave.purryourcat.ui.catcard.PurringViewModel.MenuState
+import com.sergsave.purryourcat.vibration.AndroidVisualizerBeatDetector
+import com.sergsave.purryourcat.vibration.RythmOfSoundVibrator
+import com.sergsave.purryourcat.vibration.SoundBeatDetector
 import kotlinx.android.synthetic.main.fragment_purring.*
 
 // TODO: Implement sound listener version without permission.
@@ -35,7 +36,7 @@ class PurringFragment : Fragment() {
         val cat = arguments?.getString(ARG_CAT_ID)?.let {
             PurringViewModel.Cat.Saved(it)
         } ?: run {
-            val data = arguments?.getParcelable<CatData>(ARG_CAT_DATA) ?: CatData()
+            val data = arguments?.getParcelable(ARG_CAT_DATA) ?: CatData()
             PurringViewModel.Cat.Unsaved(data)
         }
         (requireActivity().application as MyApplication).appContainer
@@ -128,9 +129,8 @@ class PurringFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        val state = viewModel.menuState.value
 
-        val menuId = when(state) {
+        val menuId = when(viewModel.menuState.value) {
             MenuState.SHOW_SAVED, MenuState.SHARING -> R.menu.menu_show_saved_cat
             MenuState.SHOW_UNSAVED -> R.menu.menu_show_not_saved_cat
             else -> return

@@ -37,7 +37,7 @@ class SharingDataExtractViewModel(
 
         val disposable = single.subscribe(
             { data -> updateContent(data.cat) },
-            { _ -> _extractFailedStringIdEvent.value = Event(errorStringId) }
+            { _extractFailedStringIdEvent.value = Event(errorStringId) }
         )
 
         addDisposable(disposable)
@@ -54,7 +54,7 @@ class SharingDataExtractViewModel(
                         val updated = data.copy(photoUri = photo, purrAudioUri = audio)
                         _extractSuccessEvent.value = Event(updated)
                     },
-                    { _ -> _extractFailedStringIdEvent.value = Event(R.string.not_valid_data) }
+                    { _extractFailedStringIdEvent.value = Event(R.string.not_valid_data) }
                 )
         )
     }

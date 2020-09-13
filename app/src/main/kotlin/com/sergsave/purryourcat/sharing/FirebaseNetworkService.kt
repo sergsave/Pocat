@@ -77,7 +77,7 @@ class FirebaseNetworkService: NetworkService {
         var uploadTask: UploadTask? = null
 
         val uploadSingle = Single.create<Uri> { emitter ->
-            var uri = Uri.fromFile(file)
+            val uri = Uri.fromFile(file)
             val uuid = UUID.randomUUID().toString()
             val reference = storage.reference.child("archives/$uuid/${uri.lastPathSegment}")
 

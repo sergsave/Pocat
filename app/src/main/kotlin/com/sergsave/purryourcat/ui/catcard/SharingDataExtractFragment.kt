@@ -11,9 +11,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
-import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.MyApplication
-import com.sergsave.purryourcat.models.CatData
+import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.helpers.EventObserver
 import kotlinx.android.synthetic.main.fragment_loader.*
 
