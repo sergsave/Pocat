@@ -46,7 +46,7 @@ class AppContainer(context: Context) {
         )
     private val sharingErrorStringId = R.string.connection_error
 
-    init { addSamples(context) }
+    init { addSamples(context) } // TODO: Synchronous add to avoid recycler view shuffle on first start
 
     fun provideCatsListViewModelFactory() =
         ViewModelFactory(CatsListViewModel::class.java, {

@@ -70,7 +70,6 @@ class LocalFilesContentStorage(private val context: Context,
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnComplete { sendNotification() }
-
     }
 
     private fun dir(): File {
