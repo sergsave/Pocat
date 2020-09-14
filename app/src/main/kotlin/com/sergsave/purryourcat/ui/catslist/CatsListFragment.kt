@@ -209,7 +209,8 @@ class CatsListFragment : Fragment() {
     }
 }
 
-// Note. getItemDetails return emptyItem when tap outside the recycler view items
+// Note. This class fixes clear selection on tap outside recycler view
+// getItemDetails return emptyItem when tap outside
 // Id of emptyItem not be the same as id of any other items
 private class CatsListItemDetailsLookup(
     private val recyclerView: RecyclerView,

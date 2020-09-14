@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.ui
+package com.sergsave.purryourcat
 
 import android.content.Intent
 import android.os.Bundle

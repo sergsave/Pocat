@@ -46,7 +46,7 @@ class AppContainer(context: Context) {
         )
     private val sharingErrorStringId = R.string.connection_error
 
-    init { addSamples(context) } // TODO: Synchronous add to avoid recycler view shuffle on first start
+    init { addSamples(context) }
 
     fun provideCatsListViewModelFactory() =
         ViewModelFactory(CatsListViewModel::class.java, {
@@ -76,6 +76,7 @@ class AppContainer(context: Context) {
     private fun addSamples(context: Context) {
         val preferences = context.getSharedPreferences(Constants.FIRST_LAUNCH_SHARED_PREFS_NAME, 0)
         if(FirstLaunchChecker(preferences).check()) {
+            // TODO: Synchronous add to avoid recycler view shuffle on first start
             val samples = SampleProvider(context).provide().toMutableList()
             Observable.fromIterable(samples).concatMapSingle{ catDataRepo.add(it) }.subscribe{ }
         }
