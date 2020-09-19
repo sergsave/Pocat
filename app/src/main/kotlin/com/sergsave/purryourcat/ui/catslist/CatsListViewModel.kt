@@ -12,8 +12,8 @@ import com.sergsave.purryourcat.helpers.Long2StringIdMapper
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.models.extractContent
 import com.sergsave.purryourcat.sharing.SharingManager
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.kotlin.Flowables
+import io.reactivex.Observable
+import io.reactivex.rxkotlin.Flowables
 
 class CatsListViewModel(
     private val catDataRepository: CatDataRepository,

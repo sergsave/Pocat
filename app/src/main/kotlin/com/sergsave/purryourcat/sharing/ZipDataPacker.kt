@@ -5,9 +5,9 @@ import android.net.Uri
 import com.sergsave.purryourcat.helpers.FileUtils
 import com.sergsave.purryourcat.models.extractContent
 import com.sergsave.purryourcat.models.withUpdatedContent
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.json.JsonLiteral

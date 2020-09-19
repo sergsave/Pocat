@@ -1,8 +1,8 @@
 package com.sergsave.purryourcat.data
 
 import com.sergsave.purryourcat.models.CatData
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.Completable
+import io.reactivex.Flowable
 
 interface CatDataStorage {
     fun read(): Flowable<Map<String, TimedCatData>>

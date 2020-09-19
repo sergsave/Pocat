@@ -1,8 +1,8 @@
 package com.sergsave.purryourcat.sharing
 
 import android.content.Intent
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.Completable
+import io.reactivex.Single
+import io.reactivex.Completable
 
 interface SharingManager{
     fun makeTakeObservable(pack: Pack): Single<Intent>

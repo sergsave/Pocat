@@ -21,7 +21,7 @@ import com.sergsave.purryourcat.ui.catcard.FormViewModel
 import com.sergsave.purryourcat.ui.catcard.PurringViewModel
 import com.sergsave.purryourcat.ui.catcard.SharingDataExtractViewModel
 import com.sergsave.purryourcat.ui.catslist.CatsListViewModel
-import io.reactivex.rxjava3.core.Observable
+import io.reactivex.Observable
 
 // Manual dependency injection
 class AppContainer(context: Context) {

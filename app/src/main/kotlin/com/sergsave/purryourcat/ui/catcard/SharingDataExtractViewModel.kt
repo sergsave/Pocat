@@ -3,7 +3,7 @@ package com.sergsave.purryourcat.ui.catcard
 import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.rxjava3.kotlin.Singles
+import io.reactivex.rxkotlin.Singles
 import com.sergsave.purryourcat.content.ContentRepository
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.helpers.Event

@@ -8,10 +8,10 @@ import com.sergsave.purryourcat.data.database.Cat
 import com.sergsave.purryourcat.data.database.CatDatabase
 import com.sergsave.purryourcat.data.database.CatWithoutTime
 import com.sergsave.purryourcat.models.CatData
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.Completable
+import io.reactivex.Flowable
+import io.reactivex.schedulers.Schedulers
 
 class RoomCatDataStorage(context: Context): CatDataStorage {
 

@@ -2,8 +2,8 @@ package com.sergsave.purryourcat.helpers
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider.Factory
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 
 open class DisposableViewModel : ViewModel() {
     private val disposable = CompositeDisposable()

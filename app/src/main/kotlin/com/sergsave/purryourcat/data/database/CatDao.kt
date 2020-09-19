@@ -6,8 +6,8 @@ import androidx.room.Query
 import androidx.room.Delete
 import androidx.room.Update
 import androidx.room.OnConflictStrategy
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.Completable
+import io.reactivex.Flowable
 
 @Dao
 interface CatDao {

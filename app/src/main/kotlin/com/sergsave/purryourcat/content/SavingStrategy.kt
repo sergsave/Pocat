@@ -1,7 +1,7 @@
 package com.sergsave.purryourcat.content
 
 import android.net.Uri
-import io.reactivex.rxjava3.core.Completable
+import io.reactivex.Completable
 import java.io.File
 
 interface SavingStrategy {

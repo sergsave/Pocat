@@ -1,10 +1,10 @@
 package com.sergsave.purryourcat.content
 
 import android.net.Uri
-import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.kotlin.Flowables
+import io.reactivex.Flowable
+import io.reactivex.Single
+import io.reactivex.Completable
+import io.reactivex.rxkotlin.Flowables
 import java.io.IOException
 
 // Save content to file storage available for application

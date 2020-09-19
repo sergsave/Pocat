@@ -14,16 +14,16 @@ import com.google.firebase.storage.FileDownloadTask
 import com.google.firebase.storage.UploadTask
 import com.google.firebase.storage.ktx.storage
 import java.io.File
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.Completable
+import io.reactivex.Single
+import io.reactivex.Completable
 import com.sergsave.purryourcat.helpers.ImageUtils
 import com.sergsave.purryourcat.helpers.NetworkUtils
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import java.io.IOException
 import java.util.*
 import com.sergsave.purryourcat.R
-import io.reactivex.rxjava3.subjects.BehaviorSubject
+import io.reactivex.subjects.BehaviorSubject
 
 class FirebaseCloudSharingManager(
     private val context: Context,
@@ -148,6 +148,7 @@ private fun createDynamicLink(downloadLink: Uri,
                               header: String?,
                               previewLink: Uri?,
                               catName: String?): Single<Uri> {
+    val error = IOException("Error in deeplink create")
     return Single.create<Uri> { emitter ->
         Firebase.dynamicLinks.shortLinkAsync(ShortDynamicLink.Suffix.SHORT) {
             link = downloadLink
@@ -159,9 +160,9 @@ private fun createDynamicLink(downloadLink: Uri,
                 previewLink?.let { imageUrl = it }
             }
         }.addOnSuccessListener { result ->
-            emitter.onSuccess(result.shortLink)
+            result.shortLink?.let { emitter.onSuccess(it) } ?: emitter.onError(error)
         }.addOnFailureListener {
-            emitter.onError(IOException("Error in deeplink create"))
+            emitter.onError(error)
         }
     }
 }
@@ -176,15 +177,14 @@ private fun makeIntent(link: Uri): Intent {
 }
 
 private fun extractDownloadLink(intent: Intent): Single<Uri> {
+    val error = IOException("Extract link error")
     return Single.create<Uri> { emitter ->
         Firebase.dynamicLinks
             .getDynamicLink(intent)
-            .addOnSuccessListener { pendingDynamicLinkData ->
-                if (pendingDynamicLinkData != null) {
-                    emitter.onSuccess(pendingDynamicLinkData.link)
-                }
+            .addOnSuccessListener { pendingLinkData ->
+                pendingLinkData?.link?.let { emitter.onSuccess(it) }?: emitter.onError(error)
             }
-            .addOnFailureListener { emitter.onError(IOException("Extract link error")) }
+            .addOnFailureListener { emitter.onError(error) }
     }
 }
 
