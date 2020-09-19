@@ -42,7 +42,7 @@ class CatsListViewModel(
 
     init {
         // Cleanup not in Application, because Application is created only after device reload
-        sharingManager.cleanup().subscribe()
+        addDisposable(sharingManager.cleanup().subscribe())
         cleanUpUnusedContent()
 
         addDisposable(catDataRepository.read().subscribe { catMap ->
