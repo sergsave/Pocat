@@ -5,6 +5,9 @@ import android.net.Uri
 import com.sergsave.purryourcat.helpers.FileUtils
 import com.sergsave.purryourcat.models.extractContent
 import com.sergsave.purryourcat.models.withUpdatedContent
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.json.JsonLiteral
@@ -54,13 +57,13 @@ private fun readPackFromBundleFile(file: File): Pack? {
     }
 }
 
-class ZipDataPacker(private val context: Context): DataPacker {
+private class ZipDataPacker(tempDir: File, private val context: Context): DataPacker(tempDir) {
 
-    override fun pack(pack: Pack, dir: File): File? {
-        if(dir.exists().not()) dir.mkdirs()
+    private fun packSync(pack: Pack): File? {
+        if(tempDir.exists().not()) tempDir.mkdirs()
 
         val name = pack.cat.name ?: "Cat"
-        val zipPath = dir.path + "/$name.zip"
+        val zipPath = tempDir.path + "/$name.zip"
 
         val contentUris = pack.cat.extractContent().map { it }
         val withFixedUris = pack.cat.withUpdatedContent { uri ->
@@ -68,7 +71,7 @@ class ZipDataPacker(private val context: Context): DataPacker {
             _name?.let { Uri.parse(it) }
         }
 
-        val bundleFile = File(dir, BUNDLE_FILE_NAME)
+        val bundleFile = File(tempDir, BUNDLE_FILE_NAME)
         savePackToBundleFile(Pack(withFixedUris), bundleFile)
 
         val zipped = contentUris + Uri.fromFile(bundleFile)
@@ -77,12 +80,10 @@ class ZipDataPacker(private val context: Context): DataPacker {
         return File(zipPath)
     }
 
-    override fun unpack(file: File): Pack? {
-        if(file.exists().not())
-            return null
+    private fun unpackSync(file: File): Pack? {
+        if(tempDir.exists().not()) tempDir.mkdirs()
 
-        val tempDir = file.parentFile
-        if(tempDir == null)
+        if(file.exists().not())
             return null
 
         FileUtils.unzip(file.path, tempDir.path)
@@ -96,5 +97,31 @@ class ZipDataPacker(private val context: Context): DataPacker {
             uri?.let { Uri.fromFile(File(tempDir, it.toString())) }
         }
         return Pack(withFixedUris)
+    }
+
+    private val error = Exception("Packing error")
+
+    override fun pack(pack: Pack): Single<File> {
+        return Single.create<File> { emitter ->
+            val file = packSync(pack)
+            if(file != null) emitter.onSuccess(file) else emitter.onError(error)
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun unpack(file: File): Single<Pack> {
+        return Single.create<Pack> { emitter ->
+            val pack = unpackSync(file)
+            if(pack != null) emitter.onSuccess(pack) else emitter.onError(error)
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+}
+
+class ZipDataPackerFactory(private val context: Context): DataPackerFactory {
+    override fun make(tempDir: File): DataPacker {
+        return ZipDataPacker(tempDir, context)
     }
 }

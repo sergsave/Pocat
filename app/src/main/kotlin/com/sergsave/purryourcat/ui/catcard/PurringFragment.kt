@@ -27,8 +27,6 @@ import com.sergsave.purryourcat.vibration.RythmOfSoundVibrator
 import com.sergsave.purryourcat.vibration.SoundBeatDetector
 import kotlinx.android.synthetic.main.fragment_purring.*
 
-// TODO: Implement sound listener version without permission.
-
 class PurringFragment : Fragment() {
 
     private val navigation: NavigationViewModel by activityViewModels()

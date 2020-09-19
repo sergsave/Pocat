@@ -31,11 +31,11 @@ class SharingDataExtractViewModel(
 
     // Use intent is safe here because we don't save reference to any context.
     fun startExtract(intent: Intent) {
-        val single = sharingManager.makeGiveObservable(intent)
-        if(single == null)
-            return
+        _sharingState.value = true
 
-        val disposable = single.subscribe(
+        val disposable = sharingManager.makeGiveObservable(intent)
+            .doOnEvent { _, _ -> _sharingState.value = false }
+            .subscribe(
             { data -> updateContent(data.cat) },
             { _extractFailedStringIdEvent.value = Event(errorStringId) }
         )

@@ -11,14 +11,12 @@ import com.sergsave.purryourcat.helpers.Event
 import com.sergsave.purryourcat.helpers.Long2StringIdMapper
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.models.extractContent
-import com.sergsave.purryourcat.sharing.SharingManager
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.kotlin.Flowables
 
-class CatsListViewModel(
+class CatsListFragmentViewModel(
     private val catDataRepository: CatDataRepository,
-    private val contentRepository: ContentRepository,
-    sharingManager: SharingManager
+    private val contentRepository: ContentRepository
 ): DisposableViewModel() {
     private var selection = listOf<Long>()
     private val idMapper = Long2StringIdMapper()
@@ -41,8 +39,6 @@ class CatsListViewModel(
         get() = _clearSelectionEvent
 
     init {
-        // Cleanup not in Application, because Application is created only after device reload
-        sharingManager.cleanup()
         cleanUpUnusedContent()
 
         addDisposable(catDataRepository.read().subscribe { catMap ->
