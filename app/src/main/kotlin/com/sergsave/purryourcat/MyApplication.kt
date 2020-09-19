@@ -20,8 +20,7 @@ import com.sergsave.purryourcat.sharing.ZipDataPackerFactory
 import com.sergsave.purryourcat.ui.catcard.FormViewModel
 import com.sergsave.purryourcat.ui.catcard.PurringViewModel
 import com.sergsave.purryourcat.ui.catcard.SharingDataExtractViewModel
-import com.sergsave.purryourcat.ui.catslist.CatsListActivityViewModel
-import com.sergsave.purryourcat.ui.catslist.CatsListFragmentViewModel
+import com.sergsave.purryourcat.ui.catslist.CatsListViewModel
 import io.reactivex.rxjava3.core.Observable
 
 // Manual dependency injection
@@ -44,14 +43,9 @@ class AppContainer(context: Context) {
 
     init { addSamples(context) }
 
-    fun provideCatsListActivityViewModelFactory() =
-        ViewModelFactory(CatsListActivityViewModel::class.java, {
-            CatsListActivityViewModel(sharingManager)
-        })
-
-    fun provideCatsListFragmentViewModelFactory() =
-        ViewModelFactory(CatsListFragmentViewModel::class.java, {
-            CatsListFragmentViewModel(catDataRepo, contentRepo)
+    fun provideCatsListViewModelFactory() =
+        ViewModelFactory(CatsListViewModel::class.java, {
+            CatsListViewModel(catDataRepo, contentRepo, sharingManager)
         })
 
     fun provideFormViewModelFactory(catId: String?) =

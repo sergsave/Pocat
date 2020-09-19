@@ -48,6 +48,10 @@ class SharingDataExtractFragment: Fragment() {
         if(savedInstanceState == null)
             arguments?.getParcelable<Intent>(ARG_INTENT)?.let { viewModel.startExtract(it) }
 
+        navigation.backPressedEvent.observe(viewLifecycleOwner, EventObserver {
+            navigation.goToBackScreen()
+        })
+
         viewModel.apply {
             sharingState.observe(viewLifecycleOwner, Observer {
                 progressBar.visibility = if(it) View.VISIBLE else View.INVISIBLE

@@ -23,6 +23,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import java.io.IOException
 import java.util.*
 import com.sergsave.purryourcat.R
+import io.reactivex.rxjava3.subjects.BehaviorSubject
 
 class FirebaseCloudSharingManager(
     private val context: Context,
@@ -30,18 +31,29 @@ class FirebaseCloudSharingManager(
 ): SharingManager {
     private val cacheDir = File(context.cacheDir, "sharing")
     private val packer = packerFactory.make(cacheDir)
+    private val cleanupInProcess = BehaviorSubject.createDefault(false)
 
     override fun cleanup(): Completable {
         return Completable.fromCallable {
             cacheDir.deleteRecursively()
             cacheDir.mkdirs()
         }
+            .doOnSubscribe { cleanupInProcess.onNext(true) }
+            .doOnDispose { cleanupInProcess.onNext(false) }
+            .doOnComplete { cleanupInProcess.onNext(false) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
+    private fun waitCleanupFinish(): Completable {
+        return Completable.fromSingle(
+            cleanupInProcess.filter { it == false }.first(false)
+        )
+    }
+
     override fun makeTakeObservable(pack: Pack): Single<Intent> {
-        return packer.pack(pack)
+        return waitCleanupFinish()
+            .andThen(packer.pack(pack))
             .flatMap { checkConnection(context).andThen(uploadDataFile(it)) }
             .flatMap {
                 createSharingIntent(it, pack.cat.photoUri, pack.cat.name)
@@ -64,7 +76,8 @@ class FirebaseCloudSharingManager(
     }
 
     override fun makeGiveObservable(intent: Intent): Single<Pack> {
-        return extractDownloadLink(intent)
+        return waitCleanupFinish()
+            .andThen(extractDownloadLink(intent))
             .flatMap { checkConnection(context).andThen(downloadFile(it, cacheDir)) }
             .flatMap { packer.unpack(it) }
     }
@@ -111,9 +124,9 @@ private fun uploadDataFile(file: File): Single<Uri> {
 
 private fun resizePreview(previewUri: Uri, tempDir: File, context: Context): Single<File> {
     val resizedFile = File(tempDir, "preview.jpg")
-    // Size for firebase deeplink preview
-    val width = 300
-    val height = 200
+    // Size for firebase deeplink preview should be greater than 300 x 200
+    val width = 640
+    val height = 360
 
     return Single.create<File> { emitter ->
         if(tempDir.exists().not()) tempDir.mkdirs()

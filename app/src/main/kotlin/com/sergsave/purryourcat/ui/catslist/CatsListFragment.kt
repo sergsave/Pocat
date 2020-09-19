@@ -30,9 +30,8 @@ import kotlinx.android.synthetic.main.fragment_cats_list.*
 
 class CatsListFragment : Fragment() {
 
-    private val viewModel: CatsListFragmentViewModel by viewModels {
-        (requireActivity().application as MyApplication)
-            .appContainer.provideCatsListFragmentViewModelFactory()
+    private val viewModel: CatsListViewModel by viewModels {
+        (requireActivity().application as MyApplication).appContainer.provideCatsListViewModelFactory()
     }
     private var actionModeController = ActionModeController()
     private lateinit var catsListAdapter: CatsListAdapter

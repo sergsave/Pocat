@@ -2,12 +2,9 @@ package com.sergsave.purryourcat.ui.catslist
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.sergsave.purryourcat.Constants
-import com.sergsave.purryourcat.MyApplication
 import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.helpers.EventObserver
 import com.sergsave.purryourcat.ui.catcard.CatCardActivity
 
 // TODO: Check sdk version of all function
@@ -17,10 +14,6 @@ import com.sergsave.purryourcat.ui.catcard.CatCardActivity
 // TODO: Require context and requireActivity
 
 class CatsListActivity : AppCompatActivity() {
-
-    private val viewModel: CatsListActivityViewModel by viewModels {
-        (application as MyApplication).appContainer.provideCatsListActivityViewModelFactory()
-    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -38,9 +31,7 @@ class CatsListActivity : AppCompatActivity() {
             .add(R.id.container, CatsListFragment())
             .commit()
 
-        viewModel.readyForHandleSharingDataEvent.observe(this, EventObserver {
-            checkInputSharingIntent()
-        })
+        checkInputSharingIntent()
     }
 
     private fun checkInputSharingIntent() {
