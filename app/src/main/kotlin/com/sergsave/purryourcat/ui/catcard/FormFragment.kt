@@ -25,9 +25,10 @@ import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
 import com.sergsave.purryourcat.MyApplication
 import com.sergsave.purryourcat.R
+import com.sergsave.purryourcat.helpers.EventObserver
 import com.sergsave.purryourcat.helpers.ImageUtils
 import com.sergsave.purryourcat.helpers.PermissionUtils
-import com.sergsave.purryourcat.helpers.EventObserver
+import com.sergsave.purryourcat.ui.catcard.FormViewModel.SoundButtonType
 import kotlinx.android.synthetic.main.fragment_cat_form.*
 import kotlinx.android.synthetic.main.view_form_fields.view.*
 
@@ -81,11 +82,19 @@ class FormFragment : Fragment() {
             })
 
             photoUri.observe(viewLifecycleOwner, Observer {
-                ImageUtils.loadInto(context, it, photo_image as ImageView)
+                ImageUtils.loadInto(context, it, photo_image)
             })
 
-            audioName.observe(viewLifecycleOwner, Observer {
-                form_layout.sound_edit_text.setText(it)
+            soundButtonType.observe(viewLifecycleOwner, Observer {
+                form_layout.add_sound_button.visibility = View.GONE
+                form_layout.sound_is_added_button.visibility = View.GONE
+
+                val currentButton: View? = when(it) {
+                    SoundButtonType.ADD_SOUND -> form_layout.add_sound_button
+                    SoundButtonType.SOUND_IS_ADDED -> form_layout.sound_is_added_button
+                    else -> null
+                }
+                currentButton?.visibility = View.VISIBLE
             })
 
             unsavedChangesMessageEvent.observe(viewLifecycleOwner, EventObserver {
@@ -155,7 +164,10 @@ class FormFragment : Fragment() {
             }
         })
 
-        form_layout.sound_edit_text.setOnClickListener { addAudio() }
+        // Hack. 2 buttons because it's impossible change app:iconGravity from code
+        form_layout.add_sound_button.setOnClickListener { addAudio() }
+        form_layout.sound_is_added_button.setOnClickListener { addAudio() }
+
         form_layout.apply_button.setOnClickListener {
             viewModel.onApplyPressed()
         }

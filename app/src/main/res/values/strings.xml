@@ -9,7 +9,8 @@
     <string name="add_new_cat">Add a new cat</string>
     <string name="name">Name</string>
     <string name="go_to_purr">Apply</string>
-    <string name="choose_sound">Add a purring sound</string>
+    <string name="add_sound">Add a purring sound</string>
+    <string name="sound_is_added">Purring sound is added</string>
     <string name="purring_title">Touch for a purr</string>
     <string name="wait">Data loading</string>
     <string name="edit_cat">Edit a cat card</string>

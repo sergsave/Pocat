@@ -10,10 +10,9 @@
     android:orientation="vertical">
 
     <ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true"
-    tools:context=".CatProfileActivity">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/body_layout"
@@ -21,42 +20,51 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-<!--            TODO: Adjust scaling mode and size-->
-            <ImageView
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/photo_image"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginTop="4dp"
+
+                android:layout_marginLeft="56dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="20dp"
+                android:paddingRight="36dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/cat"
-                app:layout_constraintBottom_toTopOf="@+id/form_layout"
+                app:layout_constraintDimensionRatio="1.0"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_weight="4" />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="20dp"
-                android:src="@drawable/ic_add_a_photo_black_24dp"
-                app:layout_constraintBottom_toTopOf="@+id/form_layout"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <include
                 android:id="@+id/form_layout"
                 layout="@layout/view_form_fields"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="50dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/photo_image"
-                app:layout_constraintVertical_weight="4" />
+                app:layout_constraintTop_toBottomOf="@+id/photo_image" />
+
+            <FrameLayout
+                android:id="@+id/fab_protection_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/circle_background"
+                app:layout_constraintBottom_toBottomOf="@+id/photo_image"
+                app:layout_constraintEnd_toEndOf="@+id/photo_image"
+                app:layout_constraintTop_toTopOf="@+id/photo_image">
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:src="@drawable/ic_add_a_photo_black_24dp"
+                    app:elevation="0dp" />
+            </FrameLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

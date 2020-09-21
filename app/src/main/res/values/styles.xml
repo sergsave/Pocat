@@ -62,6 +62,14 @@
         <item name="android:textColor">?attr/colorOnBackground</item>
     </style>
 
+    <style name="OutlinedEditTextLikeButtonStyle" parent="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon">
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Subtitle1</item>
+        <item name="strokeColor">@color/mtrl_outlined_stroke_color</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
     <color name="background">#ffffe5</color>
     <color name="text">#000000</color>
 </resources>

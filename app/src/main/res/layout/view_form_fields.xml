@@ -11,6 +11,7 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColorHint="@color/material_on_background_disabled"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -24,37 +25,47 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/sound_text_layout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-
-        android:layout_width="match_parent"
+    <FrameLayout
+        android:id="@+id/add_sound_layout"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/name_text_layout">
+        app:layout_constraintTop_toBottomOf="@+id/name_text_layout"
+        >
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/sound_edit_text"
+        <Button
+            android:id="@+id/add_sound_button"
+            style="@style/OutlinedEditTextLikeButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableRight="@drawable/ic_attach_file_black_24dp"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:hint="@string/choose_sound" />
+            app:iconGravity="textStart"
+            app:iconTint="@color/mtrl_outlined_icon_tint"
+            android:text="@string/add_sound"
+            app:icon="@drawable/ic_music_note_black_24dp"/>
 
-    </com.google.android.material.textfield.TextInputLayout>
+        <Button
+            android:id="@+id/sound_is_added_button"
+            style="@style/OutlinedEditTextLikeButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:iconGravity="textStart"
+            app:iconTint="?attr/colorSecondary"
+            android:text="@string/sound_is_added"
+            app:icon="@drawable/ic_check_circle_black_24dp"/>
+
+    </FrameLayout>
 
     <Button
         android:id="@+id/apply_button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sound_text_layout"
-        app:layout_constraintVertical_bias="0.0"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="@string/go_to_purr" />
+        android:layout_marginTop="16dp"
+        android:text="@string/go_to_purr"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/add_sound_layout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,27 +9,38 @@
     android:focusableInTouchMode="true"
     android:orientation="horizontal">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/photo_image"
         android:layout_width="0dp"
         android:layout_height="0dp"
 
         android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
         android:scaleType="centerCrop"
         android:src="@drawable/cat"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/form_layout"
-        app:layout_constraintHorizontal_weight="2"
+        app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/fab_protection_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/circle_background"
+        app:layout_constraintBottom_toBottomOf="@+id/photo_image"
+        app:layout_constraintEnd_toEndOf="@+id/photo_image">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:src="@drawable/ic_add_a_photo_black_24dp"
+            app:elevation="0dp" />
+    </FrameLayout>
 
     <include
         android:id="@+id/form_layout"
@@ -39,7 +50,7 @@
         android:layout_margin="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_weight="3"
+        app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toEndOf="@+id/photo_image"
         app:layout_constraintTop_toTopOf="parent" />
 

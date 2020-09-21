@@ -37,8 +37,13 @@ class FormViewModel(
     val audioUri: LiveData<Uri>
         get() = _audioUri
 
-    val audioName: LiveData<String> = Transformations.map(_audioUri) { uri ->
-        uri?.let { helper.getFileName(it) }
+    enum class SoundButtonType { ADD_SOUND, SOUND_IS_ADDED }
+
+    val soundButtonType: LiveData<SoundButtonType> = Transformations.map(_audioUri) { uri ->
+        if(uri == null)
+            SoundButtonType.ADD_SOUND
+        else
+            SoundButtonType.SOUND_IS_ADDED
     }
 
     private val _fileSizeExceededMessageEvent = MutableLiveData<Event<Long>>()
