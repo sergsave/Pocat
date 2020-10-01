@@ -34,5 +34,9 @@
     <string name="vibration_summary">Vibration occurs when you touch a cat</string>
     <string name="sample_1_name">Demo Cat</string>
     <string name="not_valid_data">Not valid cat</string>
+    <string name="choose_sound">Choose a sound</string>
+    <string name="sound_from_device">Sound from device</string>
+    <string name="samples_title">Samples:</string>
+    <string name="user_file_title">User file:</string>
 
 </resources>

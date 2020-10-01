@@ -14,14 +14,9 @@ import com.sergsave.purryourcat.models.CatData
 class FormViewModel(
     private val catDataRepository: CatDataRepository,
     private val contentRepository: ContentRepository,
-    private val helper: FileHelper,
+    private val fileSizeCalculator: (Uri) -> Long,
     private val catId: String? = null
 ) : DisposableViewModel() {
-
-    interface FileHelper {
-        fun getFileSize(uri: Uri): Long
-        fun getFileName(uri: Uri): String?
-    }
 
     private var backup: CatData? = null
 
@@ -99,16 +94,8 @@ class FormViewModel(
     }
 
     fun changeAudio(uri: Uri) {
-        if(checkFileSize(uri, contentRepository.maxAudioFileSize).not()) {
-            _audioUri.value = _audioUri.value
-            return
-        }
-
-        if(uri != _audioUri.value) {
-            addDisposable(contentRepository.addAudio(uri).subscribe { newUri ->
-                _audioUri.value = newUri
-            })
-        }
+        // SoundSelectionActivity provide a valid audio
+        _audioUri.value = uri
     }
 
     fun onApplyPressed() {
@@ -133,7 +120,7 @@ class FormViewModel(
     }
 
     private fun checkFileSize(uri: Uri, maxSize: Long): Boolean {
-        val size = helper.getFileSize(uri)
+        val size = fileSizeCalculator(uri)
 
         if(size < maxSize)
             return true

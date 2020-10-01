@@ -23,6 +23,7 @@
         <activity android:name=".ui.about.AboutActivity" />
         <activity android:name=".ui.donate.DonateActivity" />
         <activity android:name=".ui.catcard.CatCardActivity" />
+        <activity android:name=".ui.soundselection.SoundSelectionActivity" />
         <activity android:name=".IntentForwardingActivity"
             android:launchMode="singleTop"
             android:theme="@android:style/Theme.Translucent.NoTitleBar">

@@ -6,7 +6,7 @@
         <!--colorPrimary colors map to components and elements, such as app bars and buttons. -->
         <!--colorSecondary colors are most often used as accents on components, such as FABs and -->
         <!--selection controls.-->
-        <item name="colorPrimary">#ffecb3</item>
+        <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">#cbba83</item>
         <item name="colorSecondary">#ffccbc</item>
         <item name="colorSecondaryVariant">#cb9b8c</item>
@@ -71,5 +71,6 @@
     </style>
 
     <color name="background">#ffffe5</color>
+    <color name="primary">#ffecb3</color>
     <color name="text">#000000</color>
 </resources>

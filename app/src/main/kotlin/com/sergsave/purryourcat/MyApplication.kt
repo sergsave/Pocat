@@ -13,7 +13,8 @@ import com.sergsave.purryourcat.helpers.FileUtils
 import com.sergsave.purryourcat.helpers.FirstLaunchChecker
 import com.sergsave.purryourcat.helpers.ViewModelFactory
 import com.sergsave.purryourcat.preference.PreferenceReader
-import com.sergsave.purryourcat.sampleprovider.SampleProvider
+import com.sergsave.purryourcat.samples.CatSampleProvider
+import com.sergsave.purryourcat.samples.SoundSampleProvider
 import com.sergsave.purryourcat.sharing.FirebaseCloudSharingManager
 import com.sergsave.purryourcat.sharing.SharingManager
 import com.sergsave.purryourcat.sharing.ZipDataPackerFactory
@@ -21,6 +22,7 @@ import com.sergsave.purryourcat.ui.catcard.FormViewModel
 import com.sergsave.purryourcat.ui.catcard.PurringViewModel
 import com.sergsave.purryourcat.ui.catcard.SharingDataExtractViewModel
 import com.sergsave.purryourcat.ui.catslist.CatsListViewModel
+import com.sergsave.purryourcat.ui.soundselection.SoundSelectionViewModel
 import io.reactivex.Observable
 
 // Manual dependency injection
@@ -29,6 +31,8 @@ class AppContainer(context: Context) {
     private val imageStorage = LocalFilesContentStorage(context, ImageResizeSavingStrategy(context))
     private val audioStorage = LocalFilesContentStorage(context, CopySavingStrategy(context))
     private val preferences = PreferenceReader(context)
+    private val soundSampleProvider = SoundSampleProvider(context)
+    private val fileSizeCalculator: (Uri) -> Long = { FileUtils.getContentFileSize(context, it) }
 
     private val contentRepo = ContentRepository(
         imageStorage,
@@ -50,7 +54,7 @@ class AppContainer(context: Context) {
 
     fun provideFormViewModelFactory(catId: String?) =
         ViewModelFactory(FormViewModel::class.java, {
-            FormViewModel(catDataRepo, contentRepo, fileHelper, catId)
+            FormViewModel(catDataRepo, contentRepo, fileSizeCalculator, catId)
         })
 
     fun providePurringViewModelFactory(cat: PurringViewModel.Cat) =
@@ -63,16 +67,16 @@ class AppContainer(context: Context) {
             SharingDataExtractViewModel(sharingManager, contentRepo, sharingErrorStringId)
         })
 
-    private val fileHelper = object: FormViewModel.FileHelper {
-        override fun getFileName(uri: Uri) = FileUtils.getContentFileName(context, uri)
-        override fun getFileSize(uri: Uri) = FileUtils.getContentFileSize(context, uri)
-    }
+    fun provideSoundSelectionViewModelFactory(audioUri: Uri?) =
+        ViewModelFactory(SoundSelectionViewModel::class.java, {
+            SoundSelectionViewModel(contentRepo, fileSizeCalculator, soundSampleProvider, audioUri)
+        })
 
     private fun addSamples(context: Context) {
         val preferences = context.getSharedPreferences(Constants.FIRST_LAUNCH_SHARED_PREFS_NAME, 0)
         if(FirstLaunchChecker(preferences).check()) {
             // TODO: Synchronous add to avoid recycler view shuffle on first start
-            val samples = SampleProvider(context).provide().toMutableList()
+            val samples = CatSampleProvider(context).provide().toMutableList()
             Observable.fromIterable(samples).concatMapSingle{ catDataRepo.add(it) }.subscribe{ }
         }
     }

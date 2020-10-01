@@ -23,12 +23,14 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
+import com.sergsave.purryourcat.Constants
 import com.sergsave.purryourcat.MyApplication
 import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.helpers.EventObserver
 import com.sergsave.purryourcat.helpers.ImageUtils
 import com.sergsave.purryourcat.helpers.PermissionUtils
 import com.sergsave.purryourcat.ui.catcard.FormViewModel.SoundButtonType
+import com.sergsave.purryourcat.ui.soundselection.SoundSelectionActivity
 import kotlinx.android.synthetic.main.fragment_cat_form.*
 import kotlinx.android.synthetic.main.view_form_fields.view.*
 
@@ -190,13 +192,9 @@ class FormFragment : Fragment() {
         if(context == null)
             return
 
-        val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.RECORD_AUDIO)
-
-        if(permissions.any { !PermissionUtils.checkPermission(requireContext(), it) })
-            PermissionUtils.requestPermissions(this, permissions, PERMISSIONS_AUDIO_CODE)
-        else
-            sendAudioIntent()
+        val intent = Intent(requireContext(), SoundSelectionActivity::class.java)
+        intent.putExtra(Constants.AUDIO_URI_INTENT_KEY, viewModel.audioUri.value)
+        startActivityForResult(intent, PICK_AUDIO_CODE)
     }
 
     override fun onRequestPermissionsResult(
@@ -209,10 +207,8 @@ class FormFragment : Fragment() {
         if(!PermissionUtils.checkRequestResult(grantResults))
             return
 
-        when(requestCode){
-            PERMISSIONS_IMAGE_CODE -> sendPhotoIntent()
-            PERMISSIONS_AUDIO_CODE -> sendAudioIntent()
-        }
+        if(requestCode == PERMISSIONS_IMAGE_CODE)
+            sendPhotoIntent()
     }
 
     private fun sendPhotoIntent()
@@ -237,28 +233,8 @@ class FormFragment : Fragment() {
         startActivityForResult(chooser, PICK_IMAGE_CODE)
     }
 
-    private fun sendAudioIntent() {
-        val pickIntent = Intent(Intent.ACTION_PICK)
-        pickIntent.type = "audio/*"
-
-        // TODO? Rename file
-        val values = ContentValues()
-        values.put(MediaStore.Images.Media.TITLE, "New Audio")
-        values.put(MediaStore.Images.Media.DESCRIPTION, "From the Recorder")
-
-        val recorderAudioUri = activity?.contentResolver?.insert(
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-
-        val recorderIntent = Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION)
-        recorderIntent.putExtra(MediaStore.EXTRA_OUTPUT, recorderAudioUri)
-
-        val title = resources.getString(R.string.add_audio_with)
-        val chooser = Intent.createChooser(pickIntent, title)
-        chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(recorderIntent))
-        startActivityForResult(chooser, PICK_AUDIO_CODE)
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         if (resultCode != Activity.RESULT_OK)
             return
 
@@ -269,7 +245,7 @@ class FormFragment : Fragment() {
                 uri?.let{ viewModel.changePhoto(it) }
             }
             PICK_AUDIO_CODE -> {
-                data?.data?.let{ viewModel.changeAudio(it) }
+                data?.data?.let { viewModel.changeAudio(it) }
             }
         }
     }
@@ -294,9 +270,8 @@ class FormFragment : Fragment() {
         private const val BUNDLE_KEY_CAMERA_IMAGE_URI = "BundleCameraImageUri"
 
         private const val PERMISSIONS_IMAGE_CODE = 1000
-        private const val PERMISSIONS_AUDIO_CODE = 1001
-        private const val PICK_IMAGE_CODE = 1002
-        private const val PICK_AUDIO_CODE = 1003
+        private const val PICK_IMAGE_CODE = 1001
+        private const val PICK_AUDIO_CODE = 1002
 
         private const val UNSAVED_DIALOG_TAG = "UnsavedDialog"
         private const val ARG_CAT_ID = "ArgCatId"
