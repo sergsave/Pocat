@@ -32,11 +32,19 @@
     <string name="about">About</string>
     <string name="vibration">Enable vibration</string>
     <string name="vibration_summary">Vibration occurs when you touch a cat</string>
-    <string name="sample_1_name">Demo Cat</string>
+    <string name="sample_cat_1_name">Demo Cat</string>
+    <string name="sample_audio_1_name">Purr 1</string>
+    <string name="sample_audio_2_name">Purr 2</string>
+    <string name="sample_audio_3_name">Purr 3</string>
+    <string name="sample_audio_4_name">Purr 4</string>
+    <string name="sample_audio_5_name">Purr 5</string>
     <string name="not_valid_data">Not valid cat</string>
     <string name="choose_sound">Choose a sound</string>
-    <string name="sound_from_device">Sound from device</string>
-    <string name="samples_title">Samples:</string>
-    <string name="user_file_title">User file:</string>
+    <string name="samples_title">Samples</string>
+    <string name="samples_summary">Choose from prepared application files</string>
+    <string name="recorder_title">Recorder</string>
+    <string name="recorder_summary">Record your sound. File size limited to %1$s (approx. %2$d min)</string>
+    <string name="pick_audio_title">Device files</string>
+    <string name="pick_audio_summary">Add your file from the device memory. File size limited to %1$s</string>
 
 </resources>

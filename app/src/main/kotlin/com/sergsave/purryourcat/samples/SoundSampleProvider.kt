@@ -6,14 +6,14 @@ import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.helpers.uriOfResource
 
 class SoundSampleProvider(private val context: Context) {
-    fun provide(): List<Uri> {
-        val ids = listOf(
-            R.raw.sample_1_audio,
-            R.raw.sample_2_audio,
-            R.raw.sample_3_audio,
-            R.raw.sample_4_audio,
-            R.raw.sample_5_audio
+    fun provide(): List<Pair<String, Uri>> {
+        val ids = listOf<Pair<Int, Int>>(
+            Pair(R.string.sample_audio_1_name, R.raw.sample_audio_1),
+            Pair(R.string.sample_audio_2_name, R.raw.sample_audio_2),
+            Pair(R.string.sample_audio_3_name, R.raw.sample_audio_3),
+            Pair(R.string.sample_audio_4_name, R.raw.sample_audio_4),
+            Pair(R.string.sample_audio_5_name, R.raw.sample_audio_5)
         )
-        return ids.map { uriOfResource(it, context) }
+        return ids.map { Pair(context.getString(it.first), uriOfResource(it.second, context)) }
     }
 }

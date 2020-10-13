@@ -8,7 +8,7 @@ class PreferenceReader(private val context: Context) {
 
     init {
         // With "readAgain = false" it's safe to create this class any times
-        PreferenceManager.setDefaultValues(context, R.xml.preferences, false)
+        PreferenceManager.setDefaultValues(context, R.xml.settings_preferences, false)
     }
 
     val isVibrationEnabled: Boolean

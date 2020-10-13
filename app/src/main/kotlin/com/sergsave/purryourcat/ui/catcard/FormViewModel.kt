@@ -94,8 +94,16 @@ class FormViewModel(
     }
 
     fun changeAudio(uri: Uri) {
-        // SoundSelectionActivity provide a valid audio
-        _audioUri.value = uri
+        if(checkFileSize(uri, contentRepository.maxAudioFileSize).not()) {
+            _audioUri.value = _audioUri.value
+            return
+        }
+
+        if(uri != _audioUri.value) {
+            addDisposable(contentRepository.addAudio(uri).subscribe { newUri ->
+                _audioUri.value = newUri
+            })
+        }
     }
 
     fun onApplyPressed() {

@@ -193,7 +193,6 @@ class FormFragment : Fragment() {
             return
 
         val intent = Intent(requireContext(), SoundSelectionActivity::class.java)
-        intent.putExtra(Constants.AUDIO_URI_INTENT_KEY, viewModel.audioUri.value)
         startActivityForResult(intent, PICK_AUDIO_CODE)
     }
 

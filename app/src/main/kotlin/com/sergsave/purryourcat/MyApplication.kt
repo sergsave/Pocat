@@ -26,12 +26,11 @@ import com.sergsave.purryourcat.ui.soundselection.SoundSelectionViewModel
 import io.reactivex.Observable
 
 // Manual dependency injection
-class AppContainer(context: Context) {
+class AppContainer(private val context: Context) {
     private val catDataRepo = CatDataRepository(RoomCatDataStorage(context))
     private val imageStorage = LocalFilesContentStorage(context, ImageResizeSavingStrategy(context))
     private val audioStorage = LocalFilesContentStorage(context, CopySavingStrategy(context))
     private val preferences = PreferenceReader(context)
-    private val soundSampleProvider = SoundSampleProvider(context)
     private val fileSizeCalculator: (Uri) -> Long = { FileUtils.getContentFileSize(context, it) }
 
     private val contentRepo = ContentRepository(
@@ -44,6 +43,8 @@ class AppContainer(context: Context) {
     private val sharingManager: SharingManager =
          FirebaseCloudSharingManager(context, ZipDataPackerFactory(context))
     private val sharingErrorStringId = R.string.connection_error
+
+    val soundSampleProvider = SoundSampleProvider(context)
 
     init { addSamples(context) }
 
@@ -67,9 +68,9 @@ class AppContainer(context: Context) {
             SharingDataExtractViewModel(sharingManager, contentRepo, sharingErrorStringId)
         })
 
-    fun provideSoundSelectionViewModelFactory(audioUri: Uri?) =
+    fun provideSoundSelectionViewModelFactory() =
         ViewModelFactory(SoundSelectionViewModel::class.java, {
-            SoundSelectionViewModel(contentRepo, fileSizeCalculator, soundSampleProvider, audioUri)
+            SoundSelectionViewModel(context, contentRepo.maxAudioFileSize)
         })
 
     private fun addSamples(context: Context) {
