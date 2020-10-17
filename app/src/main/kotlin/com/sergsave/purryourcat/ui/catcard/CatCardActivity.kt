@@ -39,11 +39,11 @@ class CatCardActivity : AppCompatActivity() {
     }
 
     private fun setupNavigation() {
+        val makeFade = { MaterialFadeThrough.create(this) }
 
         val openFormFragment = { id: String? ->
-            val fragment = FormFragment.newInstance(id)
-            fragment.enterTransition = MaterialFadeThrough.create(this)
-            showFragment(fragment)
+            val fragment = FormFragment.newInstance(id).apply { enterTransition = makeFade() }
+            setContentFragment(fragment)
         }
 
         navigation.apply {
@@ -58,23 +58,35 @@ class CatCardActivity : AppCompatActivity() {
             })
 
             openSavedCatEvent.observe(lifecycleOwner, EventObserver {
-                val fragment = PurringFragment.newInstance(it, getTransitionName(intent))
-                fragment.enterTransition = MaterialFadeThrough.create(this@CatCardActivity)
-                showFragment(fragment)
+                val fragment = PurringFragment.newInstance(it, getTransitionName(intent)).apply {
+                    enterTransition = makeFade()
+                }
+                setContentFragment(fragment)
             })
 
             openUnsavedCatEvent.observe(lifecycleOwner, EventObserver {
                 val fragment = PurringFragment.newInstance(it, getTransitionName(intent))
-                showFragment(fragment)
+                setContentFragment(fragment)
             })
 
             startExtractSharingDataEvent.observe(lifecycleOwner, EventObserver {
                 val fragment = SharingDataExtractFragment.newInstance(getSharingIntent(intent))
-                showFragment(fragment)
+                setContentFragment(fragment)
             })
 
             finishEvent.observe(lifecycleOwner, EventObserver {
                 super.onBackPressed()
+            })
+
+            showTutorialEvent.observe(lifecycleOwner, EventObserver {
+                val fragment = PurringTutorialFragment().apply {
+                    enterTransition = makeFade().apply { duration = 750 }
+                }
+                supportFragmentManager
+                    .beginTransaction()
+                    .add(android.R.id.content, fragment)
+                    .addToBackStack(null)
+                    .commit()
             })
         }
     }
@@ -85,7 +97,7 @@ class CatCardActivity : AppCompatActivity() {
     private fun getTransitionName(intent: Intent) =
         intent.getStringExtra(Constants.SHARED_TRANSITION_NAME_INTENT_KEY)
 
-    private fun showFragment(fragment: Fragment, tag: String? = null) {
+    private fun setContentFragment(fragment: Fragment, tag: String? = null) {
         supportFragmentManager.beginTransaction().replace(R.id.container, fragment, tag).commit()
     }
 

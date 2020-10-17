@@ -7,14 +7,14 @@ import com.sergsave.purryourcat.data.CatDataRepository
 import com.sergsave.purryourcat.helpers.DisposableViewModel
 import com.sergsave.purryourcat.helpers.Event
 import com.sergsave.purryourcat.models.CatData
-import com.sergsave.purryourcat.preference.PreferenceReader
+import com.sergsave.purryourcat.preference.PreferenceManager
 import com.sergsave.purryourcat.sharing.Pack
 import com.sergsave.purryourcat.sharing.SharingManager
 
 class PurringViewModel(
     private val catDataRepository: CatDataRepository,
     private val sharingManager: SharingManager,
-    private val preferences: PreferenceReader,
+    private val preferences: PreferenceManager,
     private val sharingErrorStringId: Int,
     private var cat: Cat
 ) : DisposableViewModel() {
@@ -106,7 +106,8 @@ class PurringViewModel(
         (cat as? Cat.Saved)?.catId?.let { _editCatEvent.value = Event(it) }
     }
 
-    fun isVibrationEnabled(): Boolean {
-        return preferences.isVibrationEnabled
-    }
+    val isVibrationEnabled = preferences.isVibrationEnabled
+    var isTutorialAchieved: Boolean
+        get() = preferences.isPurringTutorialAchieved
+        set(value) { preferences.isPurringTutorialAchieved = value }
 }

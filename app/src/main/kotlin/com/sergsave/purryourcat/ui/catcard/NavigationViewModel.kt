@@ -47,6 +47,14 @@ class NavigationViewModel(catId: String?, isThereSharingInputData: Boolean)
     val finishEvent: LiveData<Event<Unit>>
         get() = _finishEvent
 
+    private val _showTutorialEvent = MutableLiveData<Event<Unit>>()
+    val showTutorialEvent: LiveData<Event<Unit>>
+        get() = _showTutorialEvent
+
+    private val _tutorialFinishedEvent = MutableLiveData<Event<Unit>>()
+    val tutorialFinishedEvent: LiveData<Event<Unit>>
+        get() = _tutorialFinishedEvent
+
     init {
         when {
             catId != null -> goToPage(Page.OpenById(catId))
@@ -81,6 +89,14 @@ class NavigationViewModel(catId: String?, isThereSharingInputData: Boolean)
 
     fun onBackButtonPressed() {
         _backPressedEvent.value = Event(Unit)
+    }
+
+    fun showTutorial() {
+        _showTutorialEvent.value = Event(Unit)
+    }
+
+    fun onTutorialFinished() {
+        _tutorialFinishedEvent.value = Event(Unit)
     }
 
     fun goToBackScreen() {

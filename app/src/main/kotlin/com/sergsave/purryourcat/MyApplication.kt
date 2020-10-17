@@ -12,7 +12,7 @@ import com.sergsave.purryourcat.data.RoomCatDataStorage
 import com.sergsave.purryourcat.helpers.FileUtils
 import com.sergsave.purryourcat.helpers.FirstLaunchChecker
 import com.sergsave.purryourcat.helpers.ViewModelFactory
-import com.sergsave.purryourcat.preference.PreferenceReader
+import com.sergsave.purryourcat.preference.PreferenceManager
 import com.sergsave.purryourcat.samples.CatSampleProvider
 import com.sergsave.purryourcat.samples.SoundSampleProvider
 import com.sergsave.purryourcat.sharing.FirebaseCloudSharingManager
@@ -30,7 +30,7 @@ class AppContainer(private val context: Context) {
     private val catDataRepo = CatDataRepository(RoomCatDataStorage(context))
     private val imageStorage = LocalFilesContentStorage(context, ImageResizeSavingStrategy(context))
     private val audioStorage = LocalFilesContentStorage(context, CopySavingStrategy(context))
-    private val preferences = PreferenceReader(context)
+    private val preferences = PreferenceManager(context)
     private val fileSizeCalculator: (Uri) -> Long = { FileUtils.getContentFileSize(context, it) }
 
     private val contentRepo = ContentRepository(

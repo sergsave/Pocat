@@ -7,4 +7,6 @@
     <string name="samples_preference_key">samples</string>
     <string name="recorder_preference_key">recorder</string>
     <string name="pick_audio_preference_key">pick_audio</string>
+
+    <string name="purring_tutorial_achieve_preference_key">purring_tutorial_achieve</string>
 </resources>

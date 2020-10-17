@@ -1,6 +1,7 @@
 package com.sergsave.purryourcat.ui.catcard
 
 import android.Manifest
+import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.net.Uri
@@ -8,8 +9,10 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.*
+import android.view.MotionEvent.ACTION_DOWN
 import android.view.MotionEvent.ACTION_MOVE
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.transition.doOnEnd
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -74,32 +77,27 @@ class PurringFragment : Fragment() {
 
         // Shared element transition
         photo_image.transitionName = arguments?.getString(ARG_TRANSITION_NAME)
-        photo_image.setOnTouchListener { _, event ->
-            if(event.action == ACTION_MOVE)
-                playAudio()
-            true
-        }
+        photo_image.setOnTouchListener { _, event -> onTouchEvent(event) }
 
         setHasOptionsMenu(true)
 
-        (activity as? AppCompatActivity)?.supportActionBar?.title =
-            resources.getString(R.string.purring_title)
+        navigation.apply {
+            backPressedEvent.observe(viewLifecycleOwner, EventObserver {
+                navigation.goToBackScreen()
+            })
 
-        navigation.backPressedEvent.observe(viewLifecycleOwner, EventObserver {
-            navigation.goToBackScreen()
-        })
-
-        val showSnackbar = { message: String ->
-            Snackbar.make(main_layout, message, Snackbar.LENGTH_LONG).show()
+            tutorialFinishedEvent.observe(viewLifecycleOwner, EventObserver {
+                viewModel.isTutorialAchieved = true
+            })
         }
 
         viewModel.apply {
             catData.observe(viewLifecycleOwner, Observer {
                 ImageUtils.loadInto(context, it.photoUri, photo_image) {
-                    activity?.supportStartPostponedEnterTransition()
+                    startTransition()
                 }
-
                 initAudio(it.purrAudioUri)
+                setTitle(it.name)
             })
 
             editCatEvent.observe(viewLifecycleOwner, EventObserver { id ->
@@ -123,6 +121,42 @@ class PurringFragment : Fragment() {
                 showSnackbar(message)
             })
         }
+    }
+
+    private fun setTitle(title: String?) {
+        title?.let { (activity as? AppCompatActivity)?.supportActionBar?.title = it }
+    }
+
+    private fun startTransition() {
+        activity?.supportStartPostponedEnterTransition()
+
+        val transition = activity?.window?.sharedElementEnterTransition
+        transition?.doOnEnd {
+            if(viewModel.isTutorialAchieved.not())
+                navigation.showTutorial()
+        }
+    }
+
+    private fun showSnackbar(message: String) {
+        Snackbar.make(main_layout, message, Snackbar.LENGTH_LONG).show()
+    }
+
+    private fun checkVolumeLevel(): Boolean {
+        val audioManager = activity?.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
+        return audioManager?.getStreamVolume(AudioManager.STREAM_MUSIC) != 0
+    }
+
+    private fun onTouchEvent(event: MotionEvent): Boolean {
+        if(event.action != ACTION_DOWN && event.action != ACTION_MOVE)
+            return false
+
+        if(event.action == ACTION_DOWN && checkVolumeLevel().not()) {
+            showSnackbar(getString(R.string.make_louder))
+            return true
+        }
+
+        playAudio()
+        return true
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -162,7 +196,7 @@ class PurringFragment : Fragment() {
         activity?.volumeControlStream = AudioManager.STREAM_MUSIC
         mediaPlayer = MediaPlayer.create(requireContext(), audioUri)?.apply { isLooping = true }
 
-        if(viewModel.isVibrationEnabled().not())
+        if(viewModel.isVibrationEnabled.not())
             return
 
         prepareBeatDetectorAsync{ detector ->
