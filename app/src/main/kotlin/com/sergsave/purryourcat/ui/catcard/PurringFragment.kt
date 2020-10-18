@@ -8,11 +8,12 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.transition.Transition.TransitionListener
+import android.transition.Transition
 import android.view.*
 import android.view.MotionEvent.ACTION_DOWN
 import android.view.MotionEvent.ACTION_MOVE
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.transition.doOnEnd
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -20,9 +21,7 @@ import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
 import com.sergsave.purryourcat.MyApplication
 import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.helpers.EventObserver
-import com.sergsave.purryourcat.helpers.ImageUtils
-import com.sergsave.purryourcat.helpers.PermissionUtils
+import com.sergsave.purryourcat.helpers.*
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.ui.catcard.PurringViewModel.MenuState
 import com.sergsave.purryourcat.vibration.AndroidVisualizerBeatDetector
@@ -47,6 +46,7 @@ class PurringFragment : Fragment() {
     private var mediaPlayer: MediaPlayer? = null
     private var playerTimeoutHandler: Handler? = null
     private var vibrator: RythmOfSoundVibrator? = null
+    private var transitionListener: TransitionListener? = null
 
     override fun onDestroy() {
         super.onDestroy()
@@ -64,6 +64,14 @@ class PurringFragment : Fragment() {
         initAudio(viewModel.catData.value?.purrAudioUri)
     }
 
+    override fun onDetach() {
+        // Avoid fragment leakage
+        transitionListener?.let {
+            activity?.window?.sharedElementEnterTransition?.removeListener(it)
+        }
+        super.onDetach()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -76,7 +84,12 @@ class PurringFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Shared element transition
-        photo_image.transitionName = arguments?.getString(ARG_TRANSITION_NAME)
+        val transitionName = arguments?.getString(ARG_TRANSITION_NAME)
+        photo_image.transitionName = transitionName
+        // Otherwise show tutorial later, on transition end
+        if(transitionName == null)
+            showTutorialIfNeeded()
+
         photo_image.setOnTouchListener { _, event -> onTouchEvent(event) }
 
         setHasOptionsMenu(true)
@@ -130,11 +143,11 @@ class PurringFragment : Fragment() {
     private fun startTransition() {
         activity?.supportStartPostponedEnterTransition()
 
-        val transition = activity?.window?.sharedElementEnterTransition
-        transition?.doOnEnd {
-            if(viewModel.isTutorialAchieved.not())
-                navigation.showTutorial()
+        transitionListener = object: SupportTransitionListenerAdapter() {
+            override fun onTransitionEnd(transition: Transition?) = showTutorialIfNeeded()
         }
+
+        activity?.window?.sharedElementEnterTransition?.addListener(transitionListener)
     }
 
     private fun showSnackbar(message: String) {
@@ -157,6 +170,11 @@ class PurringFragment : Fragment() {
 
         playAudio()
         return true
+    }
+
+    private fun showTutorialIfNeeded() {
+        if(viewModel.isTutorialAchieved.not())
+            navigation.showTutorial()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
