@@ -106,7 +106,9 @@ class PurringViewModel(
         (cat as? Cat.Saved)?.catId?.let { _editCatEvent.value = Event(it) }
     }
 
-    val isVibrationEnabled = preferences.isVibrationEnabled
+    val isVibrationEnabled: Boolean
+        get() = preferences.isVibrationEnabled
+
     var isTutorialAchieved: Boolean
         get() = preferences.isPurringTutorialAchieved
         set(value) { preferences.isPurringTutorialAchieved = value }
