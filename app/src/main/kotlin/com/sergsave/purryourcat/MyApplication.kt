@@ -9,7 +9,6 @@ import com.sergsave.purryourcat.content.ImageResizeSavingStrategy
 import com.sergsave.purryourcat.content.LocalFilesContentStorage
 import com.sergsave.purryourcat.data.CatDataRepository
 import com.sergsave.purryourcat.data.RoomCatDataStorage
-import com.sergsave.purryourcat.helpers.FileUtils
 import com.sergsave.purryourcat.helpers.FirstLaunchChecker
 import com.sergsave.purryourcat.helpers.ViewModelFactory
 import com.sergsave.purryourcat.preference.PreferenceManager
@@ -30,15 +29,9 @@ class AppContainer(private val context: Context) {
     private val catDataRepo = CatDataRepository(RoomCatDataStorage(context))
     private val imageStorage = LocalFilesContentStorage(context, ImageResizeSavingStrategy(context))
     private val audioStorage = LocalFilesContentStorage(context, CopySavingStrategy(context))
+    private val contentRepo = ContentRepository(imageStorage, audioStorage)
     private val preferences = PreferenceManager(context)
-    private val fileSizeCalculator: (Uri) -> Long = { FileUtils.getContentFileSize(context, it) }
-
-    private val contentRepo = ContentRepository(
-        imageStorage,
-        audioStorage,
-        maxImageFileSize = Long.MAX_VALUE,
-        maxAudioFileSize = 2 * 1024 * 1024
-    )
+    private val maxAudioFileSizeMB = 2L
 
     private val sharingManager: SharingManager =
          FirebaseCloudSharingManager(context, ZipDataPackerFactory(context))
@@ -55,7 +48,7 @@ class AppContainer(private val context: Context) {
 
     fun provideFormViewModelFactory(catId: String?) =
         ViewModelFactory(FormViewModel::class.java, {
-            FormViewModel(catDataRepo, contentRepo, fileSizeCalculator, catId)
+            FormViewModel(catDataRepo, contentRepo, catId)
         })
 
     fun providePurringViewModelFactory(cat: PurringViewModel.Cat) =
@@ -70,7 +63,7 @@ class AppContainer(private val context: Context) {
 
     fun provideSoundSelectionViewModelFactory() =
         ViewModelFactory(SoundSelectionViewModel::class.java, {
-            SoundSelectionViewModel(context, contentRepo.maxAudioFileSize)
+            SoundSelectionViewModel(context, maxAudioFileSizeMB)
         })
 
     private fun addSamples(context: Context) {

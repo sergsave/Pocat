@@ -11,9 +11,7 @@ import java.io.IOException
 // Files will added with same names
 class ContentRepository (
     private val imageStorage: ContentStorage,
-    private val audioStorage: ContentStorage,
-    val maxImageFileSize: Long,
-    val maxAudioFileSize: Long)
+    private val audioStorage: ContentStorage)
 {
     fun read(): Flowable<List<Uri>> {
         return Flowables.zip(audioStorage.read(), imageStorage.read())

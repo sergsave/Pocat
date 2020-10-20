@@ -1,5 +1,6 @@
 package com.sergsave.purryourcat.ui.catcard
 
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,7 +15,6 @@ import com.sergsave.purryourcat.models.CatData
 class FormViewModel(
     private val catDataRepository: CatDataRepository,
     private val contentRepository: ContentRepository,
-    private val fileSizeCalculator: (Uri) -> Long,
     private val catId: String? = null
 ) : DisposableViewModel() {
 
@@ -41,10 +41,6 @@ class FormViewModel(
             SoundButtonType.SOUND_IS_ADDED
     }
 
-    private val _fileSizeExceededMessageEvent = MutableLiveData<Event<Long>>()
-    val fileSizeExceededMessageEvent: LiveData<Event<Long>>
-        get() = _fileSizeExceededMessageEvent
-
     private val _unsavedChangesMessageEvent = MutableLiveData<Event<Unit>>()
     val unsavedChangesMessageEvent: LiveData<Event<Unit>>
         get() = _unsavedChangesMessageEvent
@@ -52,6 +48,10 @@ class FormViewModel(
     private val _notValidDataMessageEvent = MutableLiveData<Event<Unit>>()
     val notValidDataMessageEvent: LiveData<Event<Unit>>
         get() = _notValidDataMessageEvent
+
+    private val _audioChangedMessageEvent = MutableLiveData<Event<Unit>>()
+    val audioChangedMessageEvent: LiveData<Event<Unit>>
+        get() = _audioChangedMessageEvent
 
     private val _openCardEvent = MutableLiveData<Event<String>>()
     val openCardEvent: LiveData<Event<String>>
@@ -81,11 +81,6 @@ class FormViewModel(
     }
 
     fun changePhoto(uri: Uri) {
-        if(checkFileSize(uri, contentRepository.maxImageFileSize).not()) {
-            _photoUri.value = _photoUri.value
-            return
-        }
-
         if(uri != _photoUri.value) {
             addDisposable(contentRepository.addImage(uri).subscribe { newUri ->
                 _photoUri.value = newUri
@@ -94,10 +89,8 @@ class FormViewModel(
     }
 
     fun changeAudio(uri: Uri) {
-        if(checkFileSize(uri, contentRepository.maxAudioFileSize).not()) {
-            _audioUri.value = _audioUri.value
-            return
-        }
+        if(_audioUri.value != null)
+            _audioChangedMessageEvent.value = Event(Unit)
 
         if(uri != _audioUri.value) {
             addDisposable(contentRepository.addAudio(uri).subscribe { newUri ->
@@ -125,16 +118,6 @@ class FormViewModel(
 
     fun onDiscardChanges() {
         restoreFromBackup()
-    }
-
-    private fun checkFileSize(uri: Uri, maxSize: Long): Boolean {
-        val size = fileSizeCalculator(uri)
-
-        if(size < maxSize)
-            return true
-
-        _fileSizeExceededMessageEvent.value = Event(maxSize)
-        return false
     }
 
     private fun syncDataWithRepo() {

@@ -22,10 +22,10 @@
     <string name="_continue">Continue editing</string>
     <string name="discard">Discard</string>
     <string name="changes_not_saved">Changes not saved.\nDiscard them?</string>
-    <string name="fill_the_form">Please choose a photo\nand fill in all fields.</string>
+    <string name="fill_the_form">Please choose a photo, name and sound</string>
     <string name="close">Close</string>
     <string name="save_snackbar_message_text">Cat successfully added to your collection</string>
-    <string name="file_size_exceeded_message_text">The file is too large. Please select a file less than %1$s</string>
+    <string name="file_size_exceeded_message_text">The file is too large. Please select a file less than %1$d MB</string>
     <string name="connection_error">Loading failed. Please check internet connection</string>
     <string name="settings">Settings</string>
     <string name="donate">Donate</string>
@@ -43,10 +43,11 @@
     <string name="samples_title">Samples</string>
     <string name="samples_summary">Choose from prepared application files</string>
     <string name="recorder_title">Recorder</string>
-    <string name="recorder_summary">Record your sound. File size limited to %1$s (approx. %2$d min)</string>
+    <string name="recorder_summary">Record your sound. File size limited to %1$d MB (~%2$d min)</string>
     <string name="pick_audio_title">Device files</string>
-    <string name="pick_audio_summary">Add your file from the device memory. File size limited to %1$s</string>
+    <string name="pick_audio_summary">Add your file from the device memory. File size limited to %1$d MB</string>
     <string name="tutorial_text">Pet the cat for purring</string>
     <string name="make_louder">Please turn up the volume</string>
+    <string name="audio_changed">Audio was changed</string>
 
 </resources>

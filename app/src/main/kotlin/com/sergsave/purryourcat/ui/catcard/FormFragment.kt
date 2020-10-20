@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
-import android.text.format.Formatter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -54,7 +53,7 @@ class FormFragment : Fragment() {
 
         savedInstanceState?.let {
             cameraImageUri = it.getParcelable(BUNDLE_KEY_CAMERA_IMAGE_URI)
-            restoreDialogsState()
+            restoreDialogState()
         }
     }
 
@@ -106,26 +105,22 @@ class FormFragment : Fragment() {
                 }
             })
 
+            val showSnackbar = { messageStringId: Int ->
+                val message = resources.getString(messageStringId)
+                Snackbar.make(main_layout, message, Snackbar.LENGTH_LONG).show()
+            }
+
             notValidDataMessageEvent.observe(viewLifecycleOwner, EventObserver {
-                NotValidDataDialog().show(childFragmentManager, null)
+                showSnackbar(R.string.fill_the_form)
             })
 
-            fileSizeExceededMessageEvent.observe(viewLifecycleOwner, EventObserver {
-                if(context != null) {
-                    val formattedSize = Formatter.formatShortFileSize(requireContext(), it)
-                    val message = requireContext().resources.getString(
-                        R.string.file_size_exceeded_message_text,
-                        formattedSize
-                    )
-
-                    Snackbar.make(main_layout, message, Snackbar.LENGTH_LONG).show()
-                }
+            audioChangedMessageEvent.observe(viewLifecycleOwner, EventObserver {
+                showSnackbar(R.string.audio_changed)
             })
 
             openCardEvent.observe(viewLifecycleOwner, EventObserver {
                 navigation.openCat(it)
             })
-
         }
         (activity as? AppCompatActivity)?.supportActionBar?.title =
             resources.getString(viewModel.toolbarTitleStringId)
@@ -259,7 +254,7 @@ class FormFragment : Fragment() {
         outState.putParcelable(BUNDLE_KEY_CAMERA_IMAGE_URI, cameraImageUri)
     }
 
-    private fun restoreDialogsState() {
+    private fun restoreDialogState() {
         val dialog = childFragmentManager.findFragmentByTag(UNSAVED_DIALOG_TAG)
                 as? UnsavedChangesDialog
         dialog?.let{ initUnsavedChangesDialog(it) }

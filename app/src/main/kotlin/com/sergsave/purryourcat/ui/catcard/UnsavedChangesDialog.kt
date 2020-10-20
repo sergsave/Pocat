@@ -25,16 +25,3 @@ class UnsavedChangesDialog: DialogFragment() {
         return builder.create()
     }
 }
-
-class NotValidDataDialog: DialogFragment() {
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        super.onCreateDialog(savedInstanceState)
-        val resources = requireContext().resources
-
-        val builder = MaterialAlertDialogBuilder(context)
-        builder.setTitle(resources.getString(R.string.fill_the_form)).apply {
-            setPositiveButton(R.string.ok, { _, _ -> })
-        }
-        return builder.create()
-    }
-}
