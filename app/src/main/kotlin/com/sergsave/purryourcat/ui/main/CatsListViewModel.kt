@@ -7,16 +7,18 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.sergsave.purryourcat.helpers.Event
 import com.sergsave.purryourcat.helpers.Long2StringIdMapper
+import com.sergsave.purryourcat.models.Cat
 import com.sergsave.purryourcat.models.CatData
+import java.util.*
 
 class CatsListViewModel: ViewModel() {
     private var selection = listOf<Long>()
     private val idMapper = Long2StringIdMapper()
     private var wasClickedRecently = false
 
-    private val _cats = MutableLiveData<List<Pair<Long, CatData>>>()
-    val cats: LiveData<List<Pair<Long, CatData>>>
-        get() = _cats
+    private val _catsWithLongId = MutableLiveData<List<Pair<Long, CatData>>>()
+    val catsWithLongId: LiveData<List<Pair<Long, CatData>>>
+        get() = _catsWithLongId
 
     private val _actionModeState = MutableLiveData<Boolean>()
     val actionModeState: LiveData<Boolean>
@@ -30,24 +32,26 @@ class CatsListViewModel: ViewModel() {
     val clearSelectionEvent: LiveData<Event<Unit>>
         get() = _clearSelectionEvent
 
-    private val _removeRequestedEvent = MutableLiveData<Event<List<String>>>()
-    val removeRequestedEvent: LiveData<Event<List<String>>>
+    private val _removeRequestedEvent = MutableLiveData<Event<List<UUID>>>()
+    val removeRequestedEvent: LiveData<Event<List<UUID>>>
         get() = _removeRequestedEvent
 
     val invalidId = Long2StringIdMapper.INVALID_ID
 
-    var catsWithStringId: List<Pair<String, CatData>>
+    var cats: List<Cat>
         get() {
-            val mapped = _cats.value?.mapNotNull {
-                idMapper.stringIdFrom(it.first)?.let { id -> Pair(id, it.second) }
+            val mapped = _catsWithLongId.value?.mapNotNull {
+                uuidFrom(it.first)?.let { id -> Cat(id, it.second) }
             }
             return mapped ?: emptyList()
         }
         set(value) {
-            _cats.value = value.map { Pair(idMapper.longIdFrom(it.first), it.second) }
+            _catsWithLongId.value = value.map { Pair(longIdFrom(it.id), it.data) }
         }
 
-    fun stringCatIdFrom(longId: Long) = idMapper.stringIdFrom(longId)
+    fun uuidFrom(longId: Long) = idMapper.stringIdFrom(longId)?.let { UUID.fromString(it) }
+
+    private fun longIdFrom(uuid: UUID) = idMapper.longIdFrom(uuid.toString())
 
     fun handleOnItemClick(): Boolean {
         if(actionModeState.value == true)
@@ -95,7 +99,7 @@ class CatsListViewModel: ViewModel() {
     }
 
     fun onRemoveConfirmed() {
-        _removeRequestedEvent.value = Event(selection.mapNotNull { idMapper.stringIdFrom(it) })
+        _removeRequestedEvent.value = Event(selection.mapNotNull { uuidFrom(it) })
         changeActionModeState(false)
     }
 }

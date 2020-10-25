@@ -4,36 +4,31 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.sergsave.purryourcat.helpers.Event
-import com.sergsave.purryourcat.models.CatData
+import com.sergsave.purryourcat.models.Card
 
-class NavigationViewModel(catId: String?, isThereSharingInputData: Boolean)
+class NavigationViewModel(card: Card?, isThereSharingInputData: Boolean)
     : ViewModel() {
 
     sealed class Page {
         object AddNew : Page()
-        class Edit(val id: String): Page()
-        class OpenById(val id: String): Page()
-        class OpenByData(val data: CatData): Page()
+        class Edit(val card: Card): Page()
+        class Open(val card: Card): Page()
         object Extract : Page()
     }
 
     private lateinit var page: Page
 
-    private val _editCatEvent = MutableLiveData<Event<String>>()
-    val editCatEvent: LiveData<Event<String>>
+    private val _editCatEvent = MutableLiveData<Event<Card>>()
+    val editCatEvent: LiveData<Event<Card>>
         get() = _editCatEvent
 
     private val _addNewCatEvent = MutableLiveData<Event<Unit>>()
     val addNewCatEvent: LiveData<Event<Unit>>
         get() = _addNewCatEvent
 
-    private val _openSavedCatEvent = MutableLiveData<Event<String>>()
-    val openSavedCatEvent: LiveData<Event<String>>
-        get() = _openSavedCatEvent
-
-    private val _openUnsavedCatEvent = MutableLiveData<Event<CatData>>()
-    val openUnsavedCatEvent: LiveData<Event<CatData>>
-        get() = _openUnsavedCatEvent
+    private val _openCatEvent = MutableLiveData<Event<Card>>()
+    val openCatEvent: LiveData<Event<Card>>
+        get() = _openCatEvent
 
     private val _startExtractSharingDataEvent = MutableLiveData<Event<Unit>>()
     val startExtractSharingDataEvent: LiveData<Event<Unit>>
@@ -57,7 +52,7 @@ class NavigationViewModel(catId: String?, isThereSharingInputData: Boolean)
 
     init {
         when {
-            catId != null -> goToPage(Page.OpenById(catId))
+            card != null -> goToPage(Page.Open(card))
             isThereSharingInputData -> goToPage(Page.Extract)
             else -> goToPage(Page.AddNew)
         }
@@ -68,23 +63,19 @@ class NavigationViewModel(catId: String?, isThereSharingInputData: Boolean)
 
         when(page) {
             is Page.AddNew -> _addNewCatEvent.value = Event(Unit)
-            is Page.Edit -> _editCatEvent.value = Event(page.id)
-            is Page.OpenById -> _openSavedCatEvent.value = Event(page.id)
-            is Page.OpenByData -> _openUnsavedCatEvent.value = Event(page.data)
+            is Page.Edit -> _editCatEvent.value = Event(page.card)
+            is Page.Open -> _openCatEvent.value = Event(page.card)
             is Page.Extract -> _startExtractSharingDataEvent.value = Event(Unit)
         }
     }
 
-    fun editCat(id: String) {
-        goToPage(Page.Edit(id))
+    // Available only for cats saved in persistent repo
+    fun editCat(card: Card) {
+        goToPage(Page.Edit(card))
     }
 
-    fun openCat(id: String) {
-        goToPage(Page.OpenById(id))
-    }
-
-    fun openCat(catData: CatData) {
-        goToPage(Page.OpenByData(catData))
+    fun openCat(card: Card) {
+        goToPage(Page.Open(card))
     }
 
     fun onBackButtonPressed() {
@@ -102,7 +93,7 @@ class NavigationViewModel(catId: String?, isThereSharingInputData: Boolean)
     fun goToBackScreen() {
         val page = this.page
         if(page is Page.Edit)
-            goToPage(Page.OpenById(page.id))
+            goToPage(Page.Open(page.card))
         else
             _finishEvent.value = Event(Unit)
     }

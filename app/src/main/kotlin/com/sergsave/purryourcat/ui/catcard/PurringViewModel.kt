@@ -3,32 +3,31 @@ package com.sergsave.purryourcat.ui.catcard
 import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.sergsave.purryourcat.data.CatDataRepository
+import com.sergsave.purryourcat.persistent.CatRepository
 import com.sergsave.purryourcat.helpers.DisposableViewModel
 import com.sergsave.purryourcat.helpers.Event
 import com.sergsave.purryourcat.models.CatData
+import com.sergsave.purryourcat.models.Card
 import com.sergsave.purryourcat.preference.PreferenceManager
 import com.sergsave.purryourcat.sharing.Pack
 import com.sergsave.purryourcat.sharing.SharingManager
+import com.sergsave.purryourcat.R
 
 class PurringViewModel(
-    private val catDataRepository: CatDataRepository,
+    private val catRepository: CatRepository,
     private val sharingManager: SharingManager,
     private val preferences: PreferenceManager,
     private val sharingErrorStringId: Int,
-    private var cat: Cat
+    private var card: Card
 ) : DisposableViewModel() {
 
-    sealed class Cat {
-        data class Saved(val catId: String): Cat()
-        data class Unsaved(val catData: CatData): Cat()
-    }
+    private var isCatSaved = false
 
-    enum class MenuState {
-        SHOW_SAVED,
-        SHOW_UNSAVED,
-        SHARING
-    }
+    val menuId = R.menu.menu_purring
+    val shareActionId = R.id.action_share
+
+    data class MenuState(val visibleActionIds: List<Int>,
+                         val hidedActionIds: List<Int>)
 
     private val _catData = MutableLiveData<CatData>()
     val catData: LiveData<CatData>
@@ -42,6 +41,10 @@ class PurringViewModel(
     val dataSavedEvent: LiveData<Event<Unit>>
         get() = _dataSavedEvent
 
+    private val _sharingLoaderIsVisible = MutableLiveData<Boolean>()
+    val sharingLoaderIsVisible: LiveData<Boolean>
+        get() = _sharingLoaderIsVisible
+
     private val _sharingFailedStringIdEvent = MutableLiveData<Event<Int>>()
     val sharingFailedStringIdEvent: LiveData<Event<Int>>
         get() = _sharingFailedStringIdEvent
@@ -51,38 +54,50 @@ class PurringViewModel(
     val sharingSuccessEvent: LiveData<Event<Intent>>
         get() = _sharingSuccessEvent
 
-    private val _editCatEvent = MutableLiveData<Event<String>>()
-    val editCatEvent: LiveData<Event<String>>
+    private val _editCatEvent = MutableLiveData<Event<Card>>()
+    val editCatEvent: LiveData<Event<Card>>
         get() = _editCatEvent
 
     init {
-        when(cat) {
-            is Cat.Saved -> _menuState.value = MenuState.SHOW_SAVED
-            is Cat.Unsaved -> {
-                _menuState.value = MenuState.SHOW_UNSAVED
-                _catData.value = (cat as? Cat.Unsaved)?.catData
-            }
-        }
+        _catData.value = card.cat.data
 
-        val disposable = catDataRepository.read().subscribe { cats ->
-            val id = (cat as? Cat.Saved)?.catId
-
-            if(id != null)
-                cats.get(id)?.let { _catData.value = it.data }
+        val disposable = catRepository.read().subscribe { cats ->
+            isCatSaved = cats.any { it.cat.id == card.cat.id }
+            updateMenu()
         }
         addDisposable(disposable)
     }
 
-    fun onSharePressed() {
+    private fun updateMenu() {
+        val actions = mutableListOf<Int>()
+        if (isCatSaved)
+            actions += R.id.action_edit
+
+        if (isCatSaved && card.isShareable)
+            actions += R.id.action_share
+
+        if (isCatSaved.not() && card.isSaveable)
+            actions += R.id.action_save
+
+        setVisibleMenuItems(actions.toList())
+    }
+
+    private fun setVisibleMenuItems(ids: List<Int>) {
+        val allIds = listOf(R.id.action_edit, R.id.action_save, R.id.action_share)
+        val hidedIds = allIds - ids
+        _menuState.value = MenuState(ids, hidedIds)
+    }
+
+    private fun onSharePressed() {
         val pack = _catData.value?.let { Pack(it) }
         val single = pack?.let { sharingManager.makeTakeObservable(it) }
         if(single == null)
             return
 
-        _menuState.value = MenuState.SHARING
+        _sharingLoaderIsVisible.value = true
 
         val disposable = single
-            .doOnEvent{ _,_ -> _menuState.value = MenuState.SHOW_SAVED }
+            .doOnEvent{ _,_ -> _sharingLoaderIsVisible.value = false }
             .subscribe(
                 { data -> _sharingSuccessEvent.value = Event(data) },
                 { _sharingFailedStringIdEvent.value = Event(sharingErrorStringId) }
@@ -91,19 +106,27 @@ class PurringViewModel(
         addDisposable(disposable)
     }
 
-    fun onSavePressed() {
-        _menuState.value = MenuState.SHOW_SAVED
-        _dataSavedEvent.value = Event(Unit)
-        val data = (cat as? Cat.Unsaved)?.catData
-        if(data != null) {
-            addDisposable(catDataRepository.add(data).subscribe { id ->
-                cat = Cat.Saved(id)
-            })
-        }
+    private fun onSavePressed() {
+        addDisposable(catRepository.add(card.cat).subscribe {
+            isCatSaved = true
+            updateMenu()
+            _dataSavedEvent.value = Event(Unit)
+        })
     }
 
-    fun onEditPressed() {
-        (cat as? Cat.Saved)?.catId?.let { _editCatEvent.value = Event(it) }
+    private fun onEditPressed() {
+        if(isCatSaved)
+            _editCatEvent.value = Event(card)
+    }
+
+    fun onActionSelected(id: Int): Boolean {
+        when(id) {
+            R.id.action_save -> onSavePressed()
+            R.id.action_share -> onSharePressed()
+            R.id.action_edit -> onEditPressed()
+            else -> return false
+        }
+        return true
     }
 
     val isVibrationEnabled: Boolean

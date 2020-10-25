@@ -6,8 +6,8 @@ import com.sergsave.purryourcat.content.ContentRepository
 import com.sergsave.purryourcat.content.CopySavingStrategy
 import com.sergsave.purryourcat.content.ImageResizeSavingStrategy
 import com.sergsave.purryourcat.content.LocalFilesContentStorage
-import com.sergsave.purryourcat.data.CatDataRepository
-import com.sergsave.purryourcat.data.RoomCatDataStorage
+import com.sergsave.purryourcat.persistent.CatRepository
+import com.sergsave.purryourcat.persistent.RoomCatStorage
 import com.sergsave.purryourcat.helpers.ViewModelFactory
 import com.sergsave.purryourcat.preference.PreferenceManager
 import com.sergsave.purryourcat.samples.CatSampleProvider
@@ -15,6 +15,7 @@ import com.sergsave.purryourcat.samples.SoundSampleProvider
 import com.sergsave.purryourcat.sharing.FirebaseCloudSharingManager
 import com.sergsave.purryourcat.sharing.SharingManager
 import com.sergsave.purryourcat.sharing.ZipDataPackerFactory
+import com.sergsave.purryourcat.models.Card
 import com.sergsave.purryourcat.ui.catcard.FormViewModel
 import com.sergsave.purryourcat.ui.catcard.PurringViewModel
 import com.sergsave.purryourcat.ui.catcard.SharingDataExtractViewModel
@@ -25,7 +26,7 @@ import com.sergsave.purryourcat.ui.soundselection.SoundSelectionViewModel
 
 // Manual dependency injection
 class AppContainer(private val context: Context) {
-    private val catDataRepo = CatDataRepository(RoomCatDataStorage(context))
+    private val catRepo = CatRepository(RoomCatStorage(context))
     private val imageStorage = LocalFilesContentStorage(context, ImageResizeSavingStrategy(context))
     private val audioStorage = LocalFilesContentStorage(context, CopySavingStrategy(context))
     private val contentRepo = ContentRepository(imageStorage, audioStorage)
@@ -40,7 +41,7 @@ class AppContainer(private val context: Context) {
 
     fun provideMainViewModelFactory() =
         ViewModelFactory(MainViewModel::class.java, {
-            MainViewModel(catDataRepo, contentRepo, sharingManager)
+            MainViewModel(catRepo, contentRepo, sharingManager)
         })
 
     fun provideSamplesViewModelFactory() =
@@ -50,17 +51,17 @@ class AppContainer(private val context: Context) {
 
     fun provideUserCatsViewModelFactory() =
         ViewModelFactory(UserCatsViewModel::class.java, {
-            UserCatsViewModel(catDataRepo)
+            UserCatsViewModel(catRepo)
         })
 
-    fun provideFormViewModelFactory(catId: String?) =
+    fun provideFormViewModelFactory(card: Card?) =
         ViewModelFactory(FormViewModel::class.java, {
-            FormViewModel(catDataRepo, contentRepo, catId)
+            FormViewModel(catRepo, contentRepo, card)
         })
 
-    fun providePurringViewModelFactory(cat: PurringViewModel.Cat) =
+    fun providePurringViewModelFactory(card: Card) =
         ViewModelFactory(PurringViewModel::class.java, {
-            PurringViewModel(catDataRepo, sharingManager, preferences, sharingErrorStringId, cat)
+            PurringViewModel(catRepo, sharingManager, preferences, sharingErrorStringId, card)
         })
 
     fun provideSharingDataExtractViewModelFactory() =

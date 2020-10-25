@@ -2,33 +2,34 @@ package com.sergsave.purryourcat.ui.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.sergsave.purryourcat.data.CatDataRepository
+import com.sergsave.purryourcat.persistent.CatRepository
 import com.sergsave.purryourcat.helpers.DisposableViewModel
 import com.sergsave.purryourcat.helpers.Event
-import com.sergsave.purryourcat.models.CatData
+import com.sergsave.purryourcat.models.Cat
 import io.reactivex.Observable
+import java.util.*
 
-class UserCatsViewModel(private val catDataRepository: CatDataRepository): DisposableViewModel() {
+class UserCatsViewModel(private val catRepository: CatRepository): DisposableViewModel() {
 
-    private val _cats = MutableLiveData<List<Pair<String, CatData>>>()
-    val cats: LiveData<List<Pair<String, CatData>>>
+    private val _cats = MutableLiveData<List<Cat>>()
+    val cats: LiveData<List<Cat>>
         get() = _cats
 
     init {
-        addDisposable(catDataRepository.read().subscribe { catMap ->
-            val sortedByTime = catMap.toList().sortedByDescending { it.second.timeOfCreateMillis }
-            _cats.value = sortedByTime.map { (id, timed) -> Pair(id, timed.data) }
+        addDisposable(catRepository.read().subscribe { timedCats ->
+            val sortedByTime = timedCats.sortedByDescending { it.timestamp }
+            _cats.value = sortedByTime.map { it.cat }
         })
     }
 
-    fun onRemoveRequested(ids: List<String>) {
+    fun onRemoveRequested(ids: List<UUID>) {
         remove(ids)
     }
 
-    private fun remove(catIds: List<String>) {
+    private fun remove(catIds: List<UUID>) {
         addDisposable(
             Observable.fromIterable(catIds)
-                .concatMapCompletable { catDataRepository.remove(it) }
+                .concatMapCompletable { catRepository.remove(it) }
                 .subscribe{}
         )
     }

@@ -7,10 +7,12 @@ import androidx.fragment.app.viewModels
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.MyApplication
 import com.sergsave.purryourcat.helpers.EventObserver
+import com.sergsave.purryourcat.models.Cat
+import com.sergsave.purryourcat.models.Card
 import kotlinx.android.synthetic.main.fragment_user_cats.*
+import java.util.*
 
 class UserCatsFragment : Fragment() {
     private val viewModel: UserCatsViewModel by viewModels {
@@ -50,20 +52,18 @@ class UserCatsFragment : Fragment() {
         })
 
         val removeListener = object : CatsListFragment.OnRemoveSelectionRequestedListener {
-            override fun onRemoveRequested(selectedIds: List<String>) {
+            override fun onRemoveRequested(selectedIds: List<UUID>) {
                 viewModel.onRemoveRequested(selectedIds)
             }
         }
 
         val clickListener = object : CatsListFragment.OnItemClickListener {
-            override fun onItemClick(
-                id: String,
-                data: CatData,
+            override fun onItemClick(cat: Cat,
                 sharedElement: View,
                 sharedElementTransitionName: String
             ) {
-                // TODO: Saveable, shareable
-                activity?.launchCatCard(id, sharedElement, sharedElementTransitionName)
+                val card = Card(cat, isSaveable = true, isShareable = true)
+                activity?.launchCatCard(card, sharedElement, sharedElementTransitionName)
             }
         }
 

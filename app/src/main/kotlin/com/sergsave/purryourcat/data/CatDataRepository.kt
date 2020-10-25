@@ -1,29 +1,25 @@
-package com.sergsave.purryourcat.data
+package com.sergsave.purryourcat.persistent
 
-import com.sergsave.purryourcat.models.CatData
+import com.sergsave.purryourcat.models.Cat
 import io.reactivex.Completable
 import io.reactivex.Flowable
-import io.reactivex.Single
 import java.util.*
 
-class CatDataRepository(private val storage: CatDataStorage)
+class CatRepository(private val storage: CatStorage)
 {
-    fun read(): Flowable<Map<String, TimedCatData>> {
+    fun read(): Flowable<List<TimedCat>> {
         return storage.read()
     }
 
-    fun add(cat: CatData): Single<String> {
-        val timestamp = System.currentTimeMillis()
-        val id = UUID.randomUUID().toString()
-        val timed = TimedCatData(timestamp, cat)
-        return storage.add(Pair(id, timed)).toSingle { id }
+    fun add(cat: Cat): Completable {
+        return storage.add(TimedCat(Date(), cat))
     }
 
-    fun update(id: String, cat: CatData): Completable {
-        return storage.update(Pair(id, cat))
+    fun update(cat: Cat): Completable {
+        return storage.update(cat)
     }
 
-    fun remove(id: String): Completable {
+    fun remove(id: UUID): Completable {
         return storage.remove(id)
     }
 }
