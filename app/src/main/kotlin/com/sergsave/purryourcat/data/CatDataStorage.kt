@@ -1,13 +1,12 @@
-package com.sergsave.purryourcat.persistent
+package com.sergsave.purryourcat.data
 
-import com.sergsave.purryourcat.models.Cat
+import com.sergsave.purryourcat.models.CatData
 import io.reactivex.Completable
 import io.reactivex.Flowable
-import java.util.*
 
-interface CatStorage {
-    fun read(): Flowable<List<TimedCat>>
-    fun add(cat: TimedCat): Completable
-    fun update(cat: Cat): Completable
-    fun remove(id: UUID): Completable
+interface CatDataStorage {
+    fun read(): Flowable<Map<String, TimedCatData>>
+    fun add(cat: Pair<String, TimedCatData>): Completable
+    fun update(cat: Pair<String, CatData>): Completable
+    fun remove(id: String): Completable
 }

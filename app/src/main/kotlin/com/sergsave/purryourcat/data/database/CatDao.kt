@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.persistent.database
+package com.sergsave.purryourcat.data.database
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -12,16 +12,16 @@ import io.reactivex.Flowable
 @Dao
 interface CatDao {
     @Query("SELECT * FROM cats")
-    fun getAll(): Flowable<List<TimedCatEntity>>
+    fun getAll(): Flowable<List<Cat>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(cat: TimedCatEntity): Completable
+    fun insert(cat: Cat): Completable
 
-    @Update(entity = TimedCatEntity::class)
-    fun update(cat: CatEntity): Completable
+    @Update(entity = Cat::class)
+    fun update(cat: CatWithoutTime): Completable
 
     @Delete
-    fun delete(cat: TimedCatEntity): Completable
+    fun delete(cat: Cat): Completable
 
     @Query("DELETE FROM cats WHERE id = :catId")
     fun deleteById(catId: String): Completable

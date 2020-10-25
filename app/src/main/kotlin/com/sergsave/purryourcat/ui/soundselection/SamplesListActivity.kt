@@ -88,7 +88,7 @@ class SamplesListActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_sound_samples_list, menu)
+        menuInflater.inflate(R.menu.menu_samples_list, menu)
         menu?.findItem(R.id.action_ok)?.isVisible = adapter.selected != null
         return true
     }

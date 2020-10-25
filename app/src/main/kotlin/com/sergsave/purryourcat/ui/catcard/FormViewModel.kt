@@ -6,18 +6,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.persistent.CatRepository
+import com.sergsave.purryourcat.data.CatDataRepository
 import com.sergsave.purryourcat.content.ContentRepository
 import com.sergsave.purryourcat.helpers.Event
 import com.sergsave.purryourcat.helpers.DisposableViewModel
 import com.sergsave.purryourcat.models.CatData
-import com.sergsave.purryourcat.models.Card
-import com.sergsave.purryourcat.models.Cat
 
 class FormViewModel(
-    private val catRepository: CatRepository,
+    private val catDataRepository: CatDataRepository,
     private val contentRepository: ContentRepository,
-    private val card: Card? = null
+    private val catId: String? = null
 ) : DisposableViewModel() {
 
     private var backup: CatData? = null
@@ -55,21 +53,26 @@ class FormViewModel(
     val audioChangedMessageEvent: LiveData<Event<Unit>>
         get() = _audioChangedMessageEvent
 
-    private val _openCardEvent = MutableLiveData<Event<Card>>()
-    val openCardEvent: LiveData<Event<Card>>
+    private val _openCardEvent = MutableLiveData<Event<String>>()
+    val openCardEvent: LiveData<Event<String>>
         get() = _openCardEvent
 
     init {
-        val data = card?.cat?.data ?: CatData()
-        updateData(data)
-        backup = data
+        val disposable = catDataRepository.read().subscribe { cats ->
+            val data = catId?.let{ cats.get(it)?.data } ?: CatData()
+
+            updateData(data)
+            if(backup == null)
+                backup = data
+        }
+        addDisposable(disposable)
     }
 
     private fun currentData() = CatData(_name.value, _photoUri.value, _audioUri.value)
 
     val toolbarTitleStringId: Int
         get() {
-            return if(card == null) R.string.add_new_cat else R.string.edit_cat
+            return if(catId == null) R.string.add_new_cat else R.string.edit_cat
         }
 
     fun changeName(name: String) {
@@ -118,17 +121,13 @@ class FormViewModel(
     }
 
     private fun syncDataWithRepo() {
-        card?.let {
-            val disposable = catRepository.update(it.cat).subscribe(
-                { _openCardEvent.value = Event(card) },
-                { assert(false) }
-            )
-
-            addDisposable(disposable)
+        catId?.let { id ->
+            addDisposable(catDataRepository.update(id, currentData()).subscribe {
+                _openCardEvent.value = Event(id)
+            })
         } ?: run {
-            val newCat = Cat(data = currentData())
-            addDisposable(catRepository.add(newCat).subscribe {
-                _openCardEvent.value = Event(Card(newCat, true, true))
+            addDisposable(catDataRepository.add(currentData()).subscribe { id ->
+                _openCardEvent.value = Event(id)
             })
         }
     }

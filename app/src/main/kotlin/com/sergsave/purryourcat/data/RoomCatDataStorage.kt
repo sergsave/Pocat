@@ -1,20 +1,19 @@
-package com.sergsave.purryourcat.persistent
+package com.sergsave.purryourcat.data
 
 import android.content.Context
 import android.net.Uri
 import androidx.room.Room
-import com.sergsave.purryourcat.persistent.database.TimedCatEntity
-import com.sergsave.purryourcat.persistent.database.CatEntity
-import com.sergsave.purryourcat.persistent.database.CatDatabase
-import com.sergsave.purryourcat.models.Cat
+import com.sergsave.purryourcat.data.database.BaseCatEntity
+import com.sergsave.purryourcat.data.database.Cat
+import com.sergsave.purryourcat.data.database.CatDatabase
+import com.sergsave.purryourcat.data.database.CatWithoutTime
 import com.sergsave.purryourcat.models.CatData
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.schedulers.Schedulers
-import java.util.*
 
-class RoomCatStorage(context: Context): CatStorage {
+class RoomCatDataStorage(context: Context): CatDataStorage {
 
     private val database = Room.databaseBuilder(
         context.applicationContext,
@@ -22,54 +21,51 @@ class RoomCatStorage(context: Context): CatStorage {
     )
         .build()
 
-    override fun read(): Flowable<List<TimedCat>> {
-        return database.catDao().getAll().map { entities ->
-            entities.map { timedCatFrom(it) }
+    override fun read(): Flowable<Map<String, TimedCatData>> {
+        return database.catDao().getAll().map { cats ->
+            cats.associate { cat ->
+                val catData = CatData(
+                    name = cat.entity.name,
+                    photoUri = cat.entity.photoUri?.let { Uri.parse(it) },
+                    purrAudioUri = cat.entity.audioUri?.let { Uri.parse(it) }
+                )
+
+                Pair(cat.id, TimedCatData(cat.createdTime, catData))
+            }
         }
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun add(cat: TimedCat): Completable {
-        return database.catDao().insert(timedCatEntityFrom(cat))
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-    }
-
-    override fun update(cat: Cat): Completable {
-        return database.catDao().update(catEntityFrom(cat))
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-    }
-
-    override fun remove(id: UUID): Completable {
-        return database.catDao().deleteById(id.toString())
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-    }
-
-    private fun catEntityFrom(cat: Cat) = CatEntity(
-        id = cat.id.toString(),
-        name = cat.data.name,
-        photoUri = cat.data.photoUri?.toString(),
-        audioUri = cat.data.purrAudioUri?.toString()
-    )
-
-    private fun timedCatEntityFrom(timedCat: TimedCat) = TimedCatEntity (
-        createdTime = timedCat.timestamp.time,
-        base = catEntityFrom(timedCat.cat)
-    )
-
-    private fun catFrom(entity: CatEntity): Cat {
-        val data = CatData(
-            name = entity.name,
-            photoUri = entity.photoUri?.let { Uri.parse(it) },
-            purrAudioUri = entity.audioUri?.let { Uri.parse(it) }
+    override fun add(cat: Pair<String, TimedCatData>): Completable {
+        val catEntity = Cat(
+            id = cat.first,
+            createdTime = cat.second.timeOfCreateMillis,
+            entity = baseEntityFrom(cat.second.data)
         )
-        return Cat(UUID.fromString(entity.id), data)
+        return database.catDao().insert(catEntity)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
     }
 
-    private fun timedCatFrom(entity: TimedCatEntity) = TimedCat (
-        timestamp = Date(entity.createdTime),
-        cat = catFrom(entity.base)
+    override fun update(cat: Pair<String, CatData>): Completable {
+        val catEntity = CatWithoutTime(
+            id = cat.first,
+            entity = baseEntityFrom(cat.second)
+        )
+        return database.catDao().update(catEntity)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun remove(id: String): Completable {
+        return database.catDao().deleteById(id)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    private fun baseEntityFrom(catData: CatData) = BaseCatEntity(
+        catData.name,
+        catData.photoUri?.toString(),
+        catData.purrAudioUri?.toString()
     )
 }

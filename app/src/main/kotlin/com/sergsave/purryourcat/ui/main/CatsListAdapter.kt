@@ -16,8 +16,8 @@ import kotlinx.android.synthetic.main.view_cat_item.*
 class CatsListAdapter : RecyclerView.Adapter<CatsListAdapter.ViewHolder>() {
 
     interface OnClickListener {
-        fun onClick(cat: Pair<Long, CatData>,
-            sharedElement: View, sharedElementTransitionName: String)
+        fun onClick(catWithId: Pair<Long, CatData>,
+                    sharedElement: View, sharedElementTransitionName: String)
     }
 
     var tracker: SelectionTracker<Long>? = null

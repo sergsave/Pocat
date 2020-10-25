@@ -2,7 +2,6 @@ package com.sergsave.purryourcat.samples
 
 import android.content.Context
 import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.models.Cat
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.helpers.uriOfResource
 
@@ -17,13 +16,13 @@ private val samples = listOf(
 )
 
 class CatSampleProvider(private val context: Context) {
-    fun provide(): List<Cat> {
-        return samples.map { Cat(data = dataFrom(it)) }
+    fun provide(): List<CatData> {
+        return samples.map {
+            CatData(
+                context.getString(it.nameResource),
+                uriOfResource(it.photoResource, context),
+                uriOfResource(it.audioResource, context)
+            )
+        }
     }
-
-    private fun dataFrom(sample: Sample) = CatData(
-        context.getString(sample.nameResource),
-        uriOfResource(sample.photoResource, context),
-        uriOfResource(sample.audioResource, context)
-    )
 }

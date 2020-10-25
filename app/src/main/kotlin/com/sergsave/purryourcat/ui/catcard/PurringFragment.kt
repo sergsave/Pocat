@@ -22,8 +22,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.sergsave.purryourcat.MyApplication
 import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.helpers.*
-import com.sergsave.purryourcat.models.Card
-import com.sergsave.purryourcat.models.Cat
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.ui.catcard.PurringViewModel.MenuState
 import com.sergsave.purryourcat.vibration.AndroidVisualizerBeatDetector
@@ -35,11 +33,14 @@ class PurringFragment : Fragment() {
 
     private val navigation: NavigationViewModel by activityViewModels()
     private val viewModel: PurringViewModel by viewModels {
-        val card = arguments?.getParcelable<Card>(ARG_CARD)
-        assert(card != null)
-        val dummy = Card(Cat(data = CatData()), false, false)
+        val cat = arguments?.getString(ARG_CAT_ID)?.let {
+            PurringViewModel.Cat.Saved(it)
+        } ?: run {
+            val data = arguments?.getParcelable(ARG_CAT_DATA) ?: CatData()
+            PurringViewModel.Cat.Unsaved(data)
+        }
         (requireActivity().application as MyApplication).appContainer
-            .providePurringViewModelFactory(card ?: dummy)
+            .providePurringViewModelFactory(cat)
     }
 
     private var mediaPlayer: MediaPlayer? = null
@@ -120,10 +121,6 @@ class PurringFragment : Fragment() {
                 activity?.invalidateOptionsMenu()
             })
 
-            sharingLoaderIsVisible.observe(viewLifecycleOwner, Observer {
-                activity?.invalidateOptionsMenu()
-            })
-
             sharingSuccessEvent.observe(viewLifecycleOwner, EventObserver {
                 startActivity(it)
             })
@@ -183,24 +180,31 @@ class PurringFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
 
-        inflater.inflate(viewModel.menuId, menu)
+        val menuId = when(viewModel.menuState.value) {
+            MenuState.SHOW_SAVED, MenuState.SHARING -> R.menu.menu_show_saved_cat
+            MenuState.SHOW_UNSAVED -> R.menu.menu_show_not_saved_cat
+            else -> return
+        }
 
-        viewModel.menuState.value?.hidedActionIds?.forEach { menu.findItem(it)?.isVisible = false  }
-        viewModel.menuState.value?.visibleActionIds?.forEach { menu.findItem(it)?.isVisible = true  }
+        inflater.inflate(menuId, menu)
 
-        menu.findItem(viewModel.shareActionId)?.let {
-            if(viewModel.sharingLoaderIsVisible.value == true)
-                it.setActionView(R.layout.view_loader)
+        menu.findItem(R.id.action_share)?.apply {
+            if(viewModel.menuState.value == MenuState.SHARING)
+                setActionView(R.layout.view_loader)
             else
-                it.setActionView(null)
+                setActionView(null)
         }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(viewModel.onActionSelected(item.itemId))
-            return true
-        else
-            return super.onOptionsItemSelected(item)
+        when (item.itemId) {
+            R.id.action_edit -> viewModel.onEditPressed()
+            R.id.action_share -> viewModel.onSharePressed()
+            R.id.action_save -> viewModel.onSavePressed()
+            else -> return super.onOptionsItemSelected(item)
+        }
+
+        return true
     }
 
     private fun initAudio(audioUri: Uri?) {
@@ -290,15 +294,24 @@ class PurringFragment : Fragment() {
         private const val PERMISSION_RECORD_AUDIO_CODE = 1000
 
         private const val ARG_TRANSITION_NAME = "TransitionName"
-        private const val ARG_CARD = "CatCard"
+        private const val ARG_CAT_DATA = "CatData"
+        private const val ARG_CAT_ID = "CatId"
 
-        @JvmStatic
-        fun newInstance(card: Card, sharedElementTransitionName: String?) =
+        private fun makeFragment(catId: String?, catData: CatData?, transition: String?) =
             PurringFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_TRANSITION_NAME, sharedElementTransitionName)
-                    putParcelable(ARG_CARD, card)
+                    putString(ARG_TRANSITION_NAME, transition)
+                    putParcelable(ARG_CAT_DATA, catData)
+                    putString(ARG_CAT_ID, catId)
                 }
             }
+
+        @JvmStatic
+        fun newInstance(catData: CatData, sharedElementTransitionName: String?) =
+            makeFragment(null, catData, sharedElementTransitionName)
+
+        @JvmStatic
+        fun newInstance(catId: String, sharedElementTransitionName: String?) =
+            makeFragment(catId, null, sharedElementTransitionName)
     }
 }

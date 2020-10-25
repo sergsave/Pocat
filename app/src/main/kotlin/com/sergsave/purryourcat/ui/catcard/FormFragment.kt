@@ -28,7 +28,6 @@ import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.helpers.EventObserver
 import com.sergsave.purryourcat.helpers.ImageUtils
 import com.sergsave.purryourcat.helpers.PermissionUtils
-import com.sergsave.purryourcat.models.Card
 import com.sergsave.purryourcat.ui.catcard.FormViewModel.SoundButtonType
 import com.sergsave.purryourcat.ui.soundselection.SoundSelectionActivity
 import kotlinx.android.synthetic.main.fragment_cat_form.*
@@ -40,7 +39,7 @@ class FormFragment : Fragment() {
     private val navigation: NavigationViewModel by activityViewModels()
     private val viewModel: FormViewModel by viewModels {
         (requireActivity().application as MyApplication).appContainer
-            .provideFormViewModelFactory(arguments?.getParcelable<Card>(ARG_CARD))
+            .provideFormViewModelFactory(arguments?.getString(ARG_CAT_ID))
     }
 
     override fun onDestroy() {
@@ -269,14 +268,13 @@ class FormFragment : Fragment() {
         private const val PICK_AUDIO_CODE = 1002
 
         private const val UNSAVED_DIALOG_TAG = "UnsavedDialog"
-        private const val ARG_CARD = "ArgCard"
+        private const val ARG_CAT_ID = "ArgCatId"
 
-        // Cat from card should be saved in persistent repo
         @JvmStatic
-        fun newInstance(card: Card?) =
+        fun newInstance(catId: String?) =
             FormFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(ARG_CARD, card)
+                    putString(ARG_CAT_ID, catId)
                 }
             }
     }

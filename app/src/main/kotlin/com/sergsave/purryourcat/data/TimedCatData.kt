@@ -1,6 +1,5 @@
-package com.sergsave.purryourcat.persistent
+package com.sergsave.purryourcat.data
 
-import java.util.Date
-import com.sergsave.purryourcat.models.Cat
+import com.sergsave.purryourcat.models.CatData
 
-data class TimedCat(val timestamp: Date, val cat: Cat)
+data class TimedCatData(val timeOfCreateMillis: Long, val data: CatData)

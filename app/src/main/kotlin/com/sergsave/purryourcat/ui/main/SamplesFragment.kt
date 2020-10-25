@@ -6,8 +6,7 @@ import android.view.*
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.models.Cat
-import com.sergsave.purryourcat.models.Card
+import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.MyApplication
 import kotlinx.android.synthetic.main.fragment_samples.*
 
@@ -42,12 +41,13 @@ class SamplesFragment : Fragment() {
 
         fragment.onItemClickListener = object : CatsListFragment.OnItemClickListener {
             override fun onItemClick(
-                cat: Cat,
+                id: String,
+                data: CatData,
                 sharedElement: View,
                 sharedElementTransitionName: String
             ) {
-                val card = Card(cat, isSaveable = false, isShareable = false)
-                activity?.launchCatCard(card, sharedElement, sharedElementTransitionName)
+                // TODO: Saveable, shareable
+                activity?.launchCatCard(null, sharedElement, sharedElementTransitionName)
             }
         }
 

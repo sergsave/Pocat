@@ -6,8 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import io.reactivex.rxkotlin.Singles
 import com.sergsave.purryourcat.content.ContentRepository
 import com.sergsave.purryourcat.models.CatData
-import com.sergsave.purryourcat.models.Cat
-import com.sergsave.purryourcat.models.Card
 import com.sergsave.purryourcat.helpers.Event
 import com.sergsave.purryourcat.helpers.DisposableViewModel
 import com.sergsave.purryourcat.sharing.SharingManager
@@ -27,8 +25,8 @@ class SharingDataExtractViewModel(
     val extractFailedStringIdEvent: LiveData<Event<Int>>
         get() = _extractFailedStringIdEvent
 
-    private val _extractSuccessEvent = MutableLiveData<Event<Card>>()
-    val extractSuccessEvent: LiveData<Event<Card>>
+    private val _extractSuccessEvent = MutableLiveData<Event<CatData>>()
+    val extractSuccessEvent: LiveData<Event<CatData>>
         get() = _extractSuccessEvent
 
     // Use intent is safe here because we don't save reference to any context.
@@ -53,8 +51,8 @@ class SharingDataExtractViewModel(
             )
                 .subscribe(
                     { (photo, audio) ->
-                        val cat = Cat(data = data.copy(photoUri = photo, purrAudioUri = audio))
-                        _extractSuccessEvent.value = Event(Card(cat, true, true))
+                        val updated = data.copy(photoUri = photo, purrAudioUri = audio)
+                        _extractSuccessEvent.value = Event(updated)
                     },
                     { _extractFailedStringIdEvent.value = Event(R.string.not_valid_data) }
                 )

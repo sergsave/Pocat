@@ -13,27 +13,26 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.helpers.*
 import com.sergsave.purryourcat.models.CatData
-import com.sergsave.purryourcat.models.Cat
 import com.sergsave.purryourcat.ui.catcard.RemoveConfirmationDialog
 import kotlinx.android.synthetic.main.fragment_cats_list.*
-import java.util.*
 
 class CatsListFragment : Fragment() {
 
     interface OnRemoveSelectionRequestedListener {
-        fun onRemoveRequested(selectedIds: List<UUID>)
+        fun onRemoveRequested(selectedIds: List<String>)
     }
 
     interface OnItemClickListener {
-        fun onItemClick(cat: Cat, sharedElement: View, sharedElementTransitionName: String)
+        fun onItemClick(id: String, data: CatData,
+            sharedElement: View, sharedElementTransitionName: String)
     }
 
     var onRemoveSelectionRequestedListener: OnRemoveSelectionRequestedListener? = null
     var onItemClickListener: OnItemClickListener? = null
 
-    var cats: List<Cat>
-        get() = viewModel.cats
-        set(value) { viewModel.cats = value }
+    var cats: List<Pair<String, CatData>>
+        get() = viewModel.catsWithStringId
+        set(value) { viewModel.catsWithStringId = value }
 
     fun clearSelection() = viewModel.clearSelection()
 
@@ -55,7 +54,7 @@ class CatsListFragment : Fragment() {
         setupCatsList(savedInstanceState)
 
         viewModel.apply {
-            catsWithLongId.observe(viewLifecycleOwner, Observer {
+            cats.observe(viewLifecycleOwner, Observer {
                 catsListAdapter.cats = it
             })
 
@@ -111,16 +110,16 @@ class CatsListFragment : Fragment() {
 
         catsListAdapter.onClickListener = object : CatsListAdapter.OnClickListener {
             override fun onClick(
-                cat: Pair<Long, CatData>,
+                catWithId: Pair<Long, CatData>,
                 sharedElement: View,
                 sharedElementTransitionName: String
             ) {
-                val uuid = viewModel.uuidFrom(cat.first)
-                val data = cat.second
-                if(uuid == null || viewModel.handleOnItemClick().not())
+                val id = viewModel.stringCatIdFrom(catWithId.first)
+                val data = catWithId.second
+                if(id == null || viewModel.handleOnItemClick().not())
                     return
 
-                onItemClickListener?.onItemClick(Cat(uuid, data), sharedElement,
+                onItemClickListener?.onItemClick(id, data, sharedElement,
                     sharedElementTransitionName)
             }
         }

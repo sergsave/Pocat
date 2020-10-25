@@ -3,7 +3,7 @@ package com.sergsave.purryourcat.ui.main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sergsave.purryourcat.content.ContentRepository
-import com.sergsave.purryourcat.persistent.CatRepository
+import com.sergsave.purryourcat.data.CatDataRepository
 import com.sergsave.purryourcat.helpers.DisposableViewModel
 import com.sergsave.purryourcat.helpers.Event
 import com.sergsave.purryourcat.models.extractContent
@@ -12,7 +12,7 @@ import io.reactivex.Observable
 import io.reactivex.rxkotlin.Flowables
 
 class MainViewModel(
-    private val catRepository: CatRepository,
+    private val catDataRepository: CatDataRepository,
     private val contentRepository: ContentRepository,
     sharingManager: SharingManager
 ): DisposableViewModel() {
@@ -36,10 +36,10 @@ class MainViewModel(
     }
 
     private fun cleanUpUnusedContent() {
-        val disposable = Flowables.zip(catRepository.read(), contentRepository.read())
+        val disposable = Flowables.zip(catDataRepository.read(), contentRepository.read())
             .take(1)
-            .subscribe { (cats, content) ->
-                val usedContent = cats.flatMap { it.cat.data.extractContent() }
+            .subscribe { (data, content) ->
+                val usedContent = data.flatMap { (_, cat) -> cat.data.extractContent() }
                 val unusedContent = content - usedContent
 
                 addDisposable(
