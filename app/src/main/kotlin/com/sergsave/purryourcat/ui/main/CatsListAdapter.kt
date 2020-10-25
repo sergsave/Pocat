@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.ui.catslist
+package com.sergsave.purryourcat.ui.main
 
 import android.view.LayoutInflater
 import android.view.View
@@ -50,8 +50,11 @@ class CatsListAdapter : RecyclerView.Adapter<CatsListAdapter.ViewHolder>() {
             val view = photo_image
             val transitionName = "photo_image$position"
             ViewCompat.setTransitionName(view, transitionName)
-            containerView.setOnClickListener{
-                onClickListener?.onClick(Pair(itemId, cat), view, transitionName)
+            containerView.apply {
+                setOnClickListener {
+                    onClickListener?.onClick(Pair(itemId, cat), view, transitionName)
+                }
+                setOnLongClickListener { true } // no click event after long click
             }
         }
 

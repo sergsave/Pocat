@@ -20,7 +20,9 @@ import com.sergsave.purryourcat.sharing.ZipDataPackerFactory
 import com.sergsave.purryourcat.ui.catcard.FormViewModel
 import com.sergsave.purryourcat.ui.catcard.PurringViewModel
 import com.sergsave.purryourcat.ui.catcard.SharingDataExtractViewModel
-import com.sergsave.purryourcat.ui.catslist.CatsListViewModel
+import com.sergsave.purryourcat.ui.main.MainViewModel
+import com.sergsave.purryourcat.ui.main.UserCatsViewModel
+import com.sergsave.purryourcat.ui.main.SamplesViewModel
 import com.sergsave.purryourcat.ui.soundselection.SoundSelectionViewModel
 import io.reactivex.Observable
 
@@ -39,11 +41,19 @@ class AppContainer(private val context: Context) {
 
     val soundSampleProvider = SoundSampleProvider(context)
 
-    init { addSamples(context) }
+    fun provideMainViewModelFactory() =
+        ViewModelFactory(MainViewModel::class.java, {
+            MainViewModel(catDataRepo, contentRepo, sharingManager)
+        })
 
-    fun provideCatsListViewModelFactory() =
-        ViewModelFactory(CatsListViewModel::class.java, {
-            CatsListViewModel(catDataRepo, contentRepo, sharingManager)
+    fun provideSamplesViewModelFactory() =
+        ViewModelFactory(SamplesViewModel::class.java, {
+            SamplesViewModel(CatSampleProvider(context))
+        })
+
+    fun provideUserCatsViewModelFactory() =
+        ViewModelFactory(UserCatsViewModel::class.java, {
+            UserCatsViewModel(catDataRepo)
         })
 
     fun provideFormViewModelFactory(catId: String?) =
@@ -65,15 +75,6 @@ class AppContainer(private val context: Context) {
         ViewModelFactory(SoundSelectionViewModel::class.java, {
             SoundSelectionViewModel(context, maxAudioFileSizeMB)
         })
-
-    private fun addSamples(context: Context) {
-        val preferences = context.getSharedPreferences(Constants.FIRST_LAUNCH_SHARED_PREFS_NAME, 0)
-        if(FirstLaunchChecker(preferences).check()) {
-            // TODO: Synchronous add to avoid recycler view shuffle on first start
-            val samples = CatSampleProvider(context).provide().toMutableList()
-            Observable.fromIterable(samples).concatMapSingle{ catDataRepo.add(it) }.subscribe{ }
-        }
-    }
 }
 
 class MyApplication : Application() {
@@ -85,3 +86,14 @@ class MyApplication : Application() {
         appContainer // init
     }
 }
+
+//    init { addSamples(context) }
+
+//    private fun addSamples(context: Context) {
+//        val preferences = context.getSharedPreferences(Constants.FIRST_LAUNCH_SHARED_PREFS_NAME, 0)
+//        if(FirstLaunchChecker(preferences).check()) {
+//            // TODO: Synchronous add to avoid recycler view shuffle on first start
+//            val samples = CatSampleProvider(context).provide().toMutableList()
+//            Observable.fromIterable(samples).concatMapSingle{ catDataRepo.add(it) }.subscribe{ }
+//        }
+//    }

@@ -52,7 +52,6 @@ class ActionModeController : ActionMode.Callback {
 
     override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
         onActionItemClickListener?.onItemClick(item)
-        mode.finish()
         return true
     }
 

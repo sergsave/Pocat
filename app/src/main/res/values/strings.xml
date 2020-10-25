@@ -49,5 +49,10 @@
     <string name="tutorial_text">Pet the cat for purring</string>
     <string name="make_louder">Please turn up the volume</string>
     <string name="audio_changed">Audio was changed</string>
+    <string name="samples_tab">Samples</string>
+    <string name="user_cats_tab">My cats</string>
+    <string name="remove_confirmation">Do you really want to remove?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
 </resources>

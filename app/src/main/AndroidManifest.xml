@@ -39,7 +39,7 @@
                 <data android:pathPrefix="/v0/b/purr-your-cat.appspot.com" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.catslist.CatsListActivity">
+        <activity android:name=".ui.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
