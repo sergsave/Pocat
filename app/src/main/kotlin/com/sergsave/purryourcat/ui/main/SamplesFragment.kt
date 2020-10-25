@@ -8,7 +8,6 @@ import androidx.lifecycle.Observer
 import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.MyApplication
-import com.sergsave.purryourcat.models.CatCard
 import kotlinx.android.synthetic.main.fragment_samples.*
 
 class SamplesFragment : Fragment() {
@@ -47,9 +46,8 @@ class SamplesFragment : Fragment() {
                 sharedElement: View,
                 sharedElementTransitionName: String
             ) {
-                // TODO: dataRepoId wtf??
-                val card = CatCard(data, null, isShareable = true, isSaveable = true)
-                activity?.launchCatCard(card, sharedElement, sharedElementTransitionName)
+                // TODO: Saveable, shareable
+                activity?.launchCatCard(null, sharedElement, sharedElementTransitionName)
             }
         }
 

@@ -2,14 +2,12 @@ package com.sergsave.purryourcat
 
 import android.app.Application
 import android.content.Context
-import android.net.Uri
 import com.sergsave.purryourcat.content.ContentRepository
 import com.sergsave.purryourcat.content.CopySavingStrategy
 import com.sergsave.purryourcat.content.ImageResizeSavingStrategy
 import com.sergsave.purryourcat.content.LocalFilesContentStorage
 import com.sergsave.purryourcat.data.CatDataRepository
 import com.sergsave.purryourcat.data.RoomCatDataStorage
-import com.sergsave.purryourcat.helpers.FirstLaunchChecker
 import com.sergsave.purryourcat.helpers.ViewModelFactory
 import com.sergsave.purryourcat.preference.PreferenceManager
 import com.sergsave.purryourcat.samples.CatSampleProvider
@@ -24,7 +22,6 @@ import com.sergsave.purryourcat.ui.main.MainViewModel
 import com.sergsave.purryourcat.ui.main.UserCatsViewModel
 import com.sergsave.purryourcat.ui.main.SamplesViewModel
 import com.sergsave.purryourcat.ui.soundselection.SoundSelectionViewModel
-import io.reactivex.Observable
 
 // Manual dependency injection
 class AppContainer(private val context: Context) {
@@ -86,14 +83,3 @@ class MyApplication : Application() {
         appContainer // init
     }
 }
-
-//    init { addSamples(context) }
-
-//    private fun addSamples(context: Context) {
-//        val preferences = context.getSharedPreferences(Constants.FIRST_LAUNCH_SHARED_PREFS_NAME, 0)
-//        if(FirstLaunchChecker(preferences).check()) {
-//            // TODO: Synchronous add to avoid recycler view shuffle on first start
-//            val samples = CatSampleProvider(context).provide().toMutableList()
-//            Observable.fromIterable(samples).concatMapSingle{ catDataRepo.add(it) }.subscribe{ }
-//        }
-//    }

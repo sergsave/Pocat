@@ -10,7 +10,6 @@ import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.MyApplication
 import com.sergsave.purryourcat.helpers.EventObserver
-import com.sergsave.purryourcat.models.CatCard
 import kotlinx.android.synthetic.main.fragment_user_cats.*
 
 class UserCatsFragment : Fragment() {
@@ -63,9 +62,8 @@ class UserCatsFragment : Fragment() {
                 sharedElement: View,
                 sharedElementTransitionName: String
             ) {
-                // TODO: dataRepoId wtf??
-                val card = CatCard(data, id, isShareable = true, isSaveable = true)
-                activity?.launchCatCard(card, sharedElement, sharedElementTransitionName)
+                // TODO: Saveable, shareable
+                activity?.launchCatCard(id, sharedElement, sharedElementTransitionName)
             }
         }
 

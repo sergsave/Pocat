@@ -1,5 +1,5 @@
 package com.sergsave.purryourcat.helpers
-//
+
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent

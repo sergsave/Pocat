@@ -15,7 +15,6 @@ import com.sergsave.purryourcat.helpers.*
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.ui.catcard.RemoveConfirmationDialog
 import kotlinx.android.synthetic.main.fragment_cats_list.*
-import kotlin.math.abs
 
 class CatsListFragment : Fragment() {
 
@@ -140,47 +139,6 @@ class CatsListFragment : Fragment() {
             addItemDecoration(itemDecoration)
             setScrollBarVisibleOnlyOnTouch()
         }
-
-//        recycler_view.addOnItemTouchListener(object: RecyclerView.SimpleOnItemTouchListener() {
-//            override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
-//                println("onTouch")
-//                super.onTouchEvent(rv, e)
-//            }
-//
-//            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
-//                println("onIntercept")
-//                return super.onInterceptTouchEvent(rv, e)
-//            }
-//
-//            override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
-//                println("onRequest")
-//                super.onRequestDisallowInterceptTouchEvent(disallowIntercept)
-//            }
-//        })
-//        recycler_view.setOnTouchListener(object: View.OnTouchListener {
-//            private var lastX = 0f
-//            private var lastY = 0f
-//
-//            override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-//                if(event == null)
-//                    return false
-//
-//                return when(event.action) {
-//                    MotionEvent.ACTION_DOWN -> {
-//                        lastX = event.x
-//                        lastY = event.y
-//                        false
-//                    }
-//                    MotionEvent.ACTION_MOVE, MotionEvent.ACTION_UP -> {
-//                        val diffX = abs(event.x - lastX)
-//                        val diffY = abs(event.y - lastY)
-//                        println("Recycler diff: $diffX $diffY ${diffX > diffY}")
-//                        diffX > diffY
-//                    }
-//                    else -> false
-//                }
-//            }
-//        })
 
         if(isSelectionEnabled.not())
             return
