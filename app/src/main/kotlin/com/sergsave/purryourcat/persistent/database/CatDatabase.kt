@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.data.database
+package com.sergsave.purryourcat.persistent.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

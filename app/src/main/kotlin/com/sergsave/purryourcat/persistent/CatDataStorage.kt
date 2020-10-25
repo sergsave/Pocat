@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.data
+package com.sergsave.purryourcat.persistent
 
 import com.sergsave.purryourcat.models.CatData
 import io.reactivex.Completable

@@ -62,8 +62,8 @@ class UserCatsFragment : Fragment() {
                 sharedElement: View,
                 sharedElementTransitionName: String
             ) {
-                // TODO: Saveable, shareable
-                activity?.launchCatCard(id, sharedElement, sharedElementTransitionName)
+                val card = viewModel.makeCard(id, data)
+                activity?.launchCatCard(card, sharedElement, sharedElementTransitionName)
             }
         }
 

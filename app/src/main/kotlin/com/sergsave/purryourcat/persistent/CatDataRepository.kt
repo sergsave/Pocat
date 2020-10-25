@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.data
+package com.sergsave.purryourcat.persistent
 
 import com.sergsave.purryourcat.models.CatData
 import io.reactivex.Completable
@@ -13,9 +13,8 @@ class CatDataRepository(private val storage: CatDataStorage)
     }
 
     fun add(cat: CatData): Single<String> {
-        val timestamp = System.currentTimeMillis()
         val id = UUID.randomUUID().toString()
-        val timed = TimedCatData(timestamp, cat)
+        val timed = TimedCatData(Date(), cat)
         return storage.add(Pair(id, timed)).toSingle { id }
     }
 

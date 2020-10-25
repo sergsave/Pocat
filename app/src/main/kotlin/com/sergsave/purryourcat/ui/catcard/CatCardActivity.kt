@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialFadeThrough
 import com.sergsave.purryourcat.Constants
 import com.sergsave.purryourcat.R
+import com.sergsave.purryourcat.models.Card
 import com.sergsave.purryourcat.helpers.EventObserver
 import com.sergsave.purryourcat.helpers.ViewModelFactory
 import com.sergsave.purryourcat.helpers.setToolbarAsActionBar
@@ -15,9 +16,8 @@ import kotlinx.android.synthetic.main.activity_cat_card.*
 
 class CatCardActivity : AppCompatActivity() {
     private val navigation: NavigationViewModel by viewModels {
-        val id = intent.getStringExtra(Constants.CAT_ID_INTENT_KEY)
         ViewModelFactory(NavigationViewModel::class.java, {
-            NavigationViewModel(id, getSharingIntent(intent) != null)
+            NavigationViewModel(getCard(intent), getSharingIntent(intent) != null)
         })
     }
 
@@ -41,8 +41,8 @@ class CatCardActivity : AppCompatActivity() {
     private fun setupNavigation() {
         val makeFade = { MaterialFadeThrough.create(this) }
 
-        val openFormFragment = { id: String? ->
-            val fragment = FormFragment.newInstance(id).apply { enterTransition = makeFade() }
+        val openFormFragment = { card: Card? ->
+            val fragment = FormFragment.newInstance(card).apply { enterTransition = makeFade() }
             setContentFragment(fragment)
         }
 
@@ -57,15 +57,10 @@ class CatCardActivity : AppCompatActivity() {
                 openFormFragment(null)
             })
 
-            openSavedCatEvent.observe(lifecycleOwner, EventObserver {
+            openCatEvent.observe(lifecycleOwner, EventObserver {
                 val fragment = PurringFragment.newInstance(it, getTransitionName(intent)).apply {
                     enterTransition = makeFade()
                 }
-                setContentFragment(fragment)
-            })
-
-            openUnsavedCatEvent.observe(lifecycleOwner, EventObserver {
-                val fragment = PurringFragment.newInstance(it, getTransitionName(intent))
                 setContentFragment(fragment)
             })
 
@@ -90,6 +85,9 @@ class CatCardActivity : AppCompatActivity() {
             })
         }
     }
+
+    private fun getCard(intent: Intent) =
+        intent.getParcelableExtra<Card>(Constants.CARD_INTENT_KEY)
 
     private fun getSharingIntent(intent: Intent) =
         intent.getParcelableExtra<Intent>(Constants.SHARING_INPUT_INTENT_KEY)

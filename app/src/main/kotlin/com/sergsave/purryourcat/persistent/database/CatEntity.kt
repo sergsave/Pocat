@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.data.database
+package com.sergsave.purryourcat.persistent.database
 
 import androidx.room.ColumnInfo
 import androidx.room.Embedded

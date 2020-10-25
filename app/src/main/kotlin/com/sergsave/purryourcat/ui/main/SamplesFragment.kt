@@ -46,8 +46,8 @@ class SamplesFragment : Fragment() {
                 sharedElement: View,
                 sharedElementTransitionName: String
             ) {
-                // TODO: Saveable, shareable
-                activity?.launchCatCard(null, sharedElement, sharedElementTransitionName)
+                val card = viewModel.makeCard(data)
+                activity?.launchCatCard(card, sharedElement, sharedElementTransitionName)
             }
         }
 

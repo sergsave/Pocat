@@ -24,6 +24,11 @@ import kotlin.math.abs
 
 class MainActivity : AppCompatActivity() {
 
+    private enum class Tab(val pageNumber: Int, val titleStringId: Int) {
+        SAMPLES(0, R.string.samples_tab),
+        USER_CATS(1, R.string.user_cats_tab)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
     }
@@ -55,8 +60,8 @@ class MainActivity : AppCompatActivity() {
 
         TabLayoutMediator(tab_layout, pager) { tab, position ->
             when(position) {
-                0 -> tab.text = getString(R.string.samples_tab)
-                1 -> tab.text = getString(R.string.user_cats_tab)
+                Tab.SAMPLES.pageNumber -> tab.text = getString(Tab.SAMPLES.titleStringId)
+                Tab.USER_CATS.pageNumber -> tab.text = getString(Tab.USER_CATS.titleStringId)
             }
         }.attach()
     }
@@ -65,6 +70,8 @@ class MainActivity : AppCompatActivity() {
         val isForwarded = intent?.getBooleanExtra(Constants.IS_FORWARDED_INTENT_KEY, false) ?: false
         if(isForwarded.not())
             return
+
+        pager.setCurrentItem(Tab.USER_CATS.pageNumber, false)
 
         // Forward further
         launchCatCard(this.intent)

@@ -6,8 +6,8 @@ import com.sergsave.purryourcat.content.ContentRepository
 import com.sergsave.purryourcat.content.CopySavingStrategy
 import com.sergsave.purryourcat.content.ImageResizeSavingStrategy
 import com.sergsave.purryourcat.content.LocalFilesContentStorage
-import com.sergsave.purryourcat.data.CatDataRepository
-import com.sergsave.purryourcat.data.RoomCatDataStorage
+import com.sergsave.purryourcat.persistent.CatDataRepository
+import com.sergsave.purryourcat.persistent.RoomCatDataStorage
 import com.sergsave.purryourcat.helpers.ViewModelFactory
 import com.sergsave.purryourcat.preference.PreferenceManager
 import com.sergsave.purryourcat.samples.CatSampleProvider
@@ -15,6 +15,7 @@ import com.sergsave.purryourcat.samples.SoundSampleProvider
 import com.sergsave.purryourcat.sharing.FirebaseCloudSharingManager
 import com.sergsave.purryourcat.sharing.SharingManager
 import com.sergsave.purryourcat.sharing.ZipDataPackerFactory
+import com.sergsave.purryourcat.models.Card
 import com.sergsave.purryourcat.ui.catcard.FormViewModel
 import com.sergsave.purryourcat.ui.catcard.PurringViewModel
 import com.sergsave.purryourcat.ui.catcard.SharingDataExtractViewModel
@@ -22,6 +23,8 @@ import com.sergsave.purryourcat.ui.main.MainViewModel
 import com.sergsave.purryourcat.ui.main.UserCatsViewModel
 import com.sergsave.purryourcat.ui.main.SamplesViewModel
 import com.sergsave.purryourcat.ui.soundselection.SoundSelectionViewModel
+
+// TODO RENAME TO PERSISTENT
 
 // Manual dependency injection
 class AppContainer(private val context: Context) {
@@ -53,14 +56,14 @@ class AppContainer(private val context: Context) {
             UserCatsViewModel(catDataRepo)
         })
 
-    fun provideFormViewModelFactory(catId: String?) =
+    fun provideFormViewModelFactory(card: Card?) =
         ViewModelFactory(FormViewModel::class.java, {
-            FormViewModel(catDataRepo, contentRepo, catId)
+            FormViewModel(catDataRepo, contentRepo, card)
         })
 
-    fun providePurringViewModelFactory(cat: PurringViewModel.Cat) =
+    fun providePurringViewModelFactory(card: Card) =
         ViewModelFactory(PurringViewModel::class.java, {
-            PurringViewModel(catDataRepo, sharingManager, preferences, sharingErrorStringId, cat)
+            PurringViewModel(catDataRepo, sharingManager, preferences, sharingErrorStringId, card)
         })
 
     fun provideSharingDataExtractViewModelFactory() =

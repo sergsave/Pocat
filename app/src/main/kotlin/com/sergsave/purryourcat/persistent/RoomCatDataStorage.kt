@@ -1,17 +1,18 @@
-package com.sergsave.purryourcat.data
+package com.sergsave.purryourcat.persistent
 
 import android.content.Context
 import android.net.Uri
 import androidx.room.Room
-import com.sergsave.purryourcat.data.database.BaseCatEntity
-import com.sergsave.purryourcat.data.database.Cat
-import com.sergsave.purryourcat.data.database.CatDatabase
-import com.sergsave.purryourcat.data.database.CatWithoutTime
+import com.sergsave.purryourcat.persistent.database.BaseCatEntity
+import com.sergsave.purryourcat.persistent.database.Cat
+import com.sergsave.purryourcat.persistent.database.CatDatabase
+import com.sergsave.purryourcat.persistent.database.CatWithoutTime
 import com.sergsave.purryourcat.models.CatData
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.schedulers.Schedulers
+import java.util.*
 
 class RoomCatDataStorage(context: Context): CatDataStorage {
 
@@ -30,7 +31,7 @@ class RoomCatDataStorage(context: Context): CatDataStorage {
                     purrAudioUri = cat.entity.audioUri?.let { Uri.parse(it) }
                 )
 
-                Pair(cat.id, TimedCatData(cat.createdTime, catData))
+                Pair(cat.id, TimedCatData(Date(cat.createdTime), catData))
             }
         }
             .observeOn(AndroidSchedulers.mainThread())
@@ -39,7 +40,7 @@ class RoomCatDataStorage(context: Context): CatDataStorage {
     override fun add(cat: Pair<String, TimedCatData>): Completable {
         val catEntity = Cat(
             id = cat.first,
-            createdTime = cat.second.timeOfCreateMillis,
+            createdTime = cat.second.timestamp.time,
             entity = baseEntityFrom(cat.second.data)
         )
         return database.catDao().insert(catEntity)

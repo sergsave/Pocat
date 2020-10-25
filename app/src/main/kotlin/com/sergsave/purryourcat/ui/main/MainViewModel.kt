@@ -3,7 +3,7 @@ package com.sergsave.purryourcat.ui.main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sergsave.purryourcat.content.ContentRepository
-import com.sergsave.purryourcat.data.CatDataRepository
+import com.sergsave.purryourcat.persistent.CatDataRepository
 import com.sergsave.purryourcat.helpers.DisposableViewModel
 import com.sergsave.purryourcat.helpers.Event
 import com.sergsave.purryourcat.models.extractContent

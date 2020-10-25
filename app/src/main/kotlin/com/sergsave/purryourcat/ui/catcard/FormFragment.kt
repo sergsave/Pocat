@@ -25,6 +25,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.sergsave.purryourcat.Constants
 import com.sergsave.purryourcat.MyApplication
 import com.sergsave.purryourcat.R
+import com.sergsave.purryourcat.models.Card
 import com.sergsave.purryourcat.helpers.EventObserver
 import com.sergsave.purryourcat.helpers.ImageUtils
 import com.sergsave.purryourcat.helpers.PermissionUtils
@@ -39,7 +40,7 @@ class FormFragment : Fragment() {
     private val navigation: NavigationViewModel by activityViewModels()
     private val viewModel: FormViewModel by viewModels {
         (requireActivity().application as MyApplication).appContainer
-            .provideFormViewModelFactory(arguments?.getString(ARG_CAT_ID))
+            .provideFormViewModelFactory(arguments?.getParcelable<Card>(ARG_CARD))
     }
 
     override fun onDestroy() {
@@ -268,13 +269,14 @@ class FormFragment : Fragment() {
         private const val PICK_AUDIO_CODE = 1002
 
         private const val UNSAVED_DIALOG_TAG = "UnsavedDialog"
-        private const val ARG_CAT_ID = "ArgCatId"
+        private const val ARG_CARD = "ArgCard"
 
+        // Cat from card should be saved in persistent repo
         @JvmStatic
-        fun newInstance(catId: String?) =
+        fun newInstance(card: Card?) =
             FormFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_CAT_ID, catId)
+                    putParcelable(ARG_CARD, card)
                 }
             }
     }
