@@ -45,7 +45,7 @@ class UserCatsFragment : Fragment() {
         })
 
         viewModel.cats.observe(viewLifecycleOwner, Observer {
-            empty_list_image.visibility = if(it.isEmpty()) View.VISIBLE else View.GONE
+            empty_list_stub.visibility = if(it.isEmpty()) View.VISIBLE else View.GONE
             fragment.cats = it
         })
 

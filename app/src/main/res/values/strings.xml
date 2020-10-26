@@ -32,7 +32,11 @@
     <string name="about">About</string>
     <string name="vibration">Enable vibration</string>
     <string name="vibration_summary">Vibration occurs when you touch a cat</string>
-    <string name="sample_cat_1_name">Demo Cat</string>
+    <string name="sample_cat_1_name">Cat 1</string>
+    <string name="sample_cat_2_name">Cat 2</string>
+    <string name="sample_cat_3_name">Cat 3</string>
+    <string name="sample_cat_4_name">Cat 4</string>
+    <string name="sample_cat_5_name">Cat 5</string>
     <string name="sample_audio_1_name">Purr 1</string>
     <string name="sample_audio_2_name">Purr 2</string>
     <string name="sample_audio_3_name">Purr 3</string>
@@ -54,5 +58,6 @@
     <string name="remove_confirmation">Do you really want to remove?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="empty_users_cats_dummy">There are no cats yet,\nadd the first one</string>
 
 </resources>

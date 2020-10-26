@@ -67,11 +67,7 @@ class CatsListFragment : Fragment() {
             })
 
             clearSelectionEvent.observe(viewLifecycleOwner, EventObserver {
-                catsListAdapter.tracker?.let {
-                    it.clearSelection()
-                    // Workaround. Force update of recycler view. Without this not all items deselect.
-                    catsListAdapter.notifyDataSetChanged()
-                }
+                setAllItemSelectionState(false)
             })
 
             removeRequestedEvent.observe(viewLifecycleOwner, EventObserver {
@@ -85,11 +81,13 @@ class CatsListFragment : Fragment() {
     private fun startActionMode() {
         val onActionItemClickListener = object: ActionModeController.OnActionItemClickListener {
             override fun onItemClick(item: MenuItem) {
-                if(item.itemId != R.id.action_remove)
-                    return
-
-                RemoveConfirmationDialog().also { initDialog(it) }
-                    .show(childFragmentManager, REMOVE_DIALOG_TAG)
+                when(item.itemId) {
+                    R.id.action_remove -> {
+                        RemoveConfirmationDialog().also { initDialog(it) }
+                            .show(childFragmentManager, REMOVE_DIALOG_TAG)
+                    }
+                    R.id.action_select_all -> setAllItemSelectionState(true)
+                }
             }
         }
 
@@ -145,6 +143,14 @@ class CatsListFragment : Fragment() {
 
         catsListAdapter.tracker = createSelectionTracker().apply {
             onRestoreInstanceState(savedInstanceState)
+        }
+    }
+
+    private fun setAllItemSelectionState(isSelected: Boolean) {
+        catsListAdapter.tracker?.let {
+            it.setItemsSelected(viewModel.allSelectionIds, isSelected)
+            // Workaround. Force update of recycler view. Without this not all items deselect.
+            catsListAdapter.notifyDataSetChanged()
         }
     }
 

@@ -27,9 +27,6 @@ class PurringViewModel(
     data class MenuState(val visibleActionIds: List<Int>,
                          val hidedActionIds: List<Int>)
 
-    private val isCatSaved: Boolean
-        get() = card.persistentId != null
-
     private val _catData = MutableLiveData<CatData>()
     val catData: LiveData<CatData>
         get() = _catData
@@ -61,10 +58,10 @@ class PurringViewModel(
 
     init {
         _catData.value = card.data
-        updateMenu()
+        updateMenu(card.persistentId != null)
     }
 
-    private fun updateMenu() {
+    private fun updateMenu(isCatSaved: Boolean) {
         val actions = mutableListOf<Int>()
         if (isCatSaved)
             actions += R.id.action_edit
@@ -105,13 +102,13 @@ class PurringViewModel(
     private fun onSavePressed() {
         addDisposable(catDataRepository.add(card.data).subscribe { id ->
             card = card.copy(persistentId = id)
-            updateMenu()
+            updateMenu(true)
             _dataSavedEvent.value = Event(Unit)
         })
     }
 
     private fun onEditPressed() {
-        if(isCatSaved)
+        if(card.persistentId != null)
             _editCatEvent.value = Event(card)
     }
 

@@ -47,6 +47,9 @@ class CatsListViewModel: ViewModel() {
             _cats.value = value.map { Pair(idMapper.longIdFrom(it.first), it.second) }
         }
 
+    val allSelectionIds: List<Long>
+        get() = cats.value?.map { it.first} ?: emptyList()
+
     fun stringCatIdFrom(longId: Long) = idMapper.stringIdFrom(longId)
 
     fun handleOnItemClick(): Boolean {

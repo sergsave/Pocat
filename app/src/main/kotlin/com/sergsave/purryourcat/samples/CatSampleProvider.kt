@@ -8,14 +8,15 @@ import java.util.*
 
 data class CatSample(val id: String, val data: CatData)
 
-private data class Resource(val nameId: Int, val photoId: Int, val audioId: Int)
+private data class ResourcePack(val nameId: Int, val photoId: Int, val audioId: Int)
 
+// Warning! Images can be cached by the user. Be careful when changing the image without changing the file name
 private val resources = listOf(
-    Resource(R.string.sample_cat_1_name, R.raw.sample_cat_1_photo, R.raw.sample_cat_1_audio),
-    Resource(R.string.sample_cat_1_name, R.raw.sample_cat_1_photo, R.raw.sample_cat_1_audio),
-    Resource(R.string.sample_cat_1_name, R.raw.sample_cat_1_photo, R.raw.sample_cat_1_audio),
-    Resource(R.string.sample_cat_1_name, R.raw.sample_cat_1_photo, R.raw.sample_cat_1_audio),
-    Resource(R.string.sample_cat_1_name, R.raw.sample_cat_1_photo, R.raw.sample_cat_1_audio)
+    ResourcePack(R.string.sample_cat_1_name, R.raw.sample_photo_1, R.raw.sample_audio_1),
+    ResourcePack(R.string.sample_cat_2_name, R.raw.sample_photo_2, R.raw.sample_audio_2),
+    ResourcePack(R.string.sample_cat_3_name, R.raw.sample_photo_3, R.raw.sample_audio_3),
+    ResourcePack(R.string.sample_cat_4_name, R.raw.sample_photo_4, R.raw.sample_audio_4),
+    ResourcePack(R.string.sample_cat_5_name, R.raw.sample_photo_5, R.raw.sample_audio_5)
 )
 
 class CatSampleProvider(private val context: Context) {
@@ -23,7 +24,7 @@ class CatSampleProvider(private val context: Context) {
         return resources.map { CatSample(UUID.randomUUID().toString(), dataFrom(it)) }
     }
 
-    private fun dataFrom(resource: Resource) = CatData(
+    private fun dataFrom(resource: ResourcePack) = CatData(
         context.getString(resource.nameId),
         uriOfResource(resource.photoId, context),
         uriOfResource(resource.audioId, context)

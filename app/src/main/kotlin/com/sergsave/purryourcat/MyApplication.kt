@@ -24,8 +24,6 @@ import com.sergsave.purryourcat.ui.main.UserCatsViewModel
 import com.sergsave.purryourcat.ui.main.SamplesViewModel
 import com.sergsave.purryourcat.ui.soundselection.SoundSelectionViewModel
 
-// TODO RENAME TO PERSISTENT
-
 // Manual dependency injection
 class AppContainer(private val context: Context) {
     private val catDataRepo = CatDataRepository(RoomCatDataStorage(context))

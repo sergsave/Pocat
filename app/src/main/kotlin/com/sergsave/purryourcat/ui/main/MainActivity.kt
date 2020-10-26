@@ -24,7 +24,7 @@ import kotlin.math.abs
 
 class MainActivity : AppCompatActivity() {
 
-    private enum class Tab(val pageNumber: Int, val titleStringId: Int) {
+    private enum class TabInfo(val pageNumber: Int, val titleStringId: Int) {
         SAMPLES(0, R.string.samples_tab),
         USER_CATS(1, R.string.user_cats_tab)
     }
@@ -59,10 +59,10 @@ class MainActivity : AppCompatActivity() {
         })
 
         TabLayoutMediator(tab_layout, pager) { tab, position ->
-            when(position) {
-                Tab.SAMPLES.pageNumber -> tab.text = getString(Tab.SAMPLES.titleStringId)
-                Tab.USER_CATS.pageNumber -> tab.text = getString(Tab.USER_CATS.titleStringId)
+            val tabInfo = listOf(TabInfo.SAMPLES, TabInfo.USER_CATS).find {
+                it.pageNumber == position
             }
+            tabInfo?.let { tab.text = getString(it.titleStringId) }
         }.attach()
     }
 
@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
         if(isForwarded.not())
             return
 
-        pager.setCurrentItem(Tab.USER_CATS.pageNumber, false)
+        pager.setCurrentItem(TabInfo.USER_CATS.pageNumber, false)
 
         // Forward further
         launchCatCard(this.intent)

@@ -119,18 +119,20 @@ class FormViewModel(
     }
 
     private fun syncDataWithRepo() {
-        val id = card?.persistentId
         val data = currentData()
+        val currentCard = card?.copy(data = data)
+        val id = currentCard?.persistentId
 
-        if(card != null && id != null) {
-            addDisposable(catDataRepository.update(id, data).subscribe{
-                _openCardEvent.value = Event(card)
+        if(currentCard != null && id != null) {
+            addDisposable(catDataRepository.update(id, currentCard.data).subscribe{
+                _openCardEvent.value = Event(currentCard)
             })
-        } else {
-            addDisposable(catDataRepository.add(data).subscribe { newId ->
-                _openCardEvent.value = Event(Card(newId, data, true, true))
-            })
+            return
         }
+
+        addDisposable(catDataRepository.add(data).subscribe { newId ->
+            _openCardEvent.value = Event(Card(newId, data, true, true))
+        })
     }
 
     private fun updateData(data: CatData?) {
