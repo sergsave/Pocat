@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#C0FFFFFF"
-    android:backgroundTint="@android:color/darker_gray"
+    android:backgroundTint="#383428"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
@@ -24,7 +24,7 @@
         <ImageView
             android:id="@+id/image"
             android:layout_width="wrap_content"
-            android:layout_height="200dp"
+            android:layout_height="128dp"
             android:adjustViewBounds="true"
             android:tint="@android:color/white"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -39,8 +39,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/tutorial_text"
-            android:textAppearance="?attr/textAppearanceHeadline6"
-            android:tint="@android:color/white"
+            android:textAppearance="?attr/textAppearanceHeadline5"
+            android:textColor="@android:color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
