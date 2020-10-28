@@ -9,9 +9,11 @@ import androidx.appcompat.view.menu.MenuBuilder
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
+import com.sergsave.purryourcat.BuildConfig
 import com.sergsave.purryourcat.Constants
 import com.sergsave.purryourcat.MyApplication
 import com.sergsave.purryourcat.R
+import com.sergsave.purryourcat.helpers.FirstTimeLaunchBugWorkaround
 import com.sergsave.purryourcat.helpers.setToolbarAsActionBar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlin.math.abs
@@ -35,6 +37,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (FirstTimeLaunchBugWorkaround.needFinishOnCreate(this)){
+            finish()
+            return
+        }
+
         setContentView(R.layout.activity_main)
 
         // Don't use "by viewModels()" here, beacause it's a lazy
