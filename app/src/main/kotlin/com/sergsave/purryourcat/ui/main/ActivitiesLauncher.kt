@@ -10,6 +10,7 @@ import com.sergsave.purryourcat.ui.about.AboutActivity
 import com.sergsave.purryourcat.ui.catcard.CatCardActivity
 import com.sergsave.purryourcat.ui.donate.DonateActivity
 import com.sergsave.purryourcat.ui.settings.SettingsActivity
+import com.sergsave.purryourcat.ui.testing.TestingActivity
 
 fun Activity.launchCatCard() {
     startActivity(Intent(this, CatCardActivity::class.java))
@@ -43,4 +44,8 @@ fun Activity.launchAbout() {
 
 fun Activity.launchDonate() {
     startActivity(Intent(this, DonateActivity::class.java))
+}
+
+fun Activity.launchTesting() {
+    startActivity(Intent(this, TestingActivity::class.java))
 }

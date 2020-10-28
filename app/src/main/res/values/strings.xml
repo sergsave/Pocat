@@ -60,5 +60,8 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="empty_users_cats_dummy">There are no cats yet,\nadd the first one</string>
+    <string name="testing">Testing</string>
+    <string name="copy_cats">Clone all cats</string>
+    <string name="copy_in_progress">Сloning in progress…</string>
 
 </resources>

@@ -16,4 +16,10 @@
         android:icon="@drawable/ic_favorite_border_black_24dp"
         app:showAsAction="never"
         android:title="@string/donate"/>
+    <item
+        android:id="@+id/action_testing"
+        android:icon="@drawable/ic_bug_report_black_24dp"
+        app:showAsAction="never"
+        android:visible="false"
+        android:title="@string/testing"/>
 </menu>

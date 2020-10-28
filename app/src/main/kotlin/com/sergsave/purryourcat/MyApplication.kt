@@ -22,6 +22,7 @@ import com.sergsave.purryourcat.ui.catcard.SharingDataExtractViewModel
 import com.sergsave.purryourcat.ui.main.MainViewModel
 import com.sergsave.purryourcat.ui.main.UserCatsViewModel
 import com.sergsave.purryourcat.ui.main.SamplesViewModel
+import com.sergsave.purryourcat.ui.testing.TestingViewModel
 import com.sergsave.purryourcat.ui.soundselection.SoundSelectionViewModel
 
 // Manual dependency injection
@@ -72,6 +73,11 @@ class AppContainer(private val context: Context) {
     fun provideSoundSelectionViewModelFactory() =
         ViewModelFactory(SoundSelectionViewModel::class.java, {
             SoundSelectionViewModel(context, maxAudioFileSizeMB)
+        })
+
+    fun provideTestingViewModelFactory() =
+        ViewModelFactory(TestingViewModel::class.java, {
+            TestingViewModel(catDataRepo, contentRepo)
         })
 }
 

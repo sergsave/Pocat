@@ -88,6 +88,8 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("RestrictedApi")
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
+        menu?.findItem(R.id.action_testing)?.isVisible = BuildConfig.DEBUG
+
         if (menu is MenuBuilder)
             menu.setOptionalIconsVisible(true)
 
@@ -98,7 +100,8 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.action_settings -> launchSettings()
             R.id.action_about -> launchAbout()
-            R.id.action_donate ->  launchDonate()
+            R.id.action_donate -> launchDonate()
+            R.id.action_testing -> launchTesting()
             else -> return super.onOptionsItemSelected(item)
         }
         return true
