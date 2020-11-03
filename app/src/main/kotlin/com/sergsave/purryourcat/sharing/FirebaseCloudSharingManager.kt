@@ -38,11 +38,11 @@ class FirebaseCloudSharingManager(
             cacheDir.deleteRecursively()
             cacheDir.mkdirs()
         }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { cleanupInProcess.onNext(true) }
             .doOnDispose { cleanupInProcess.onNext(false) }
             .doOnComplete { cleanupInProcess.onNext(false) }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
     }
 
     private fun waitCleanupFinish(): Completable {

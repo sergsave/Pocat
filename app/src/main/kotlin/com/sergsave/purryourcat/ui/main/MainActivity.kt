@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
-        // Don't use "by viewModels()" here, beacause it's a lazy
+        // Don't use "by viewModels()" here, because it's a lazy
         val factory = (application as MyApplication).appContainer.provideMainViewModelFactory()
         val viewModel = ViewModelProvider(this, factory).get(MainViewModel::class.java)
 
