@@ -13,7 +13,9 @@ import android.transition.Transition
 import android.view.*
 import android.view.MotionEvent.ACTION_DOWN
 import android.view.MotionEvent.ACTION_MOVE
+import android.webkit.MimeTypeMap
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -25,8 +27,9 @@ import com.sergsave.purryourcat.helpers.*
 import com.sergsave.purryourcat.models.Card
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.ui.catcard.PurringViewModel.MenuState
-import com.sergsave.purryourcat.vibration.AndroidVisualizerBeatDetector
+import com.sergsave.purryourcat.vibration.SemantiveSoundBeatDetector
 import com.sergsave.purryourcat.vibration.RythmOfSoundVibrator
+import com.sergsave.purryourcat.vibration.RythmOfSoundVibrator.OnPrepareFinishedListener
 import com.sergsave.purryourcat.vibration.SoundBeatDetector
 import kotlinx.android.synthetic.main.fragment_purring.*
 
@@ -212,10 +215,7 @@ class PurringFragment : Fragment() {
         if(viewModel.isVibrationEnabled.not())
             return
 
-        prepareBeatDetectorAsync{ detector ->
-            if(detector != null && context != null)
-                vibrator = RythmOfSoundVibrator(requireContext(), detector)
-        }
+        vibrator = createVibrator(audioUri).apply { prepareAsync() }
     }
 
     private fun deinitAudio() {
@@ -228,39 +228,11 @@ class PurringFragment : Fragment() {
         activity?.volumeControlStream = AudioManager.USE_DEFAULT_STREAM_TYPE
     }
 
-    private fun prepareBeatDetectorAsync(callback: (SoundBeatDetector?)->Unit ) {
-        val sessionId = mediaPlayer?.audioSessionId
-        if(sessionId == null || context == null) {
-            callback(null)
-            return
-        }
-
-        val make = { context?.let { AndroidVisualizerBeatDetector(it, sessionId) } }
-        val permission = Manifest.permission.RECORD_AUDIO
-        if(PermissionUtils.checkPermission(requireContext(), permission))
-            callback(make())
-        else {
-            PermissionUtils.requestPermissions(this, arrayOf(permission), PERMISSION_RECORD_AUDIO_CODE)
-            onPermissionResultCallback = { res -> callback(if(res) make() else null) }
-        }
-    }
-
-    private var onPermissionResultCallback: ((Boolean)->Unit)? = null
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if(requestCode == PERMISSION_RECORD_AUDIO_CODE &&
-            PermissionUtils.checkRequestResult(grantResults))
-            onPermissionResultCallback?.invoke(true)
-        else
-            onPermissionResultCallback?.invoke(false)
-
-        onPermissionResultCallback = null
+    private fun createVibrator(audioUri: Uri): RythmOfSoundVibrator {
+        val detector = SemantiveSoundBeatDetector(requireContext(), audioUri,
+            { mediaPlayer?.currentPosition }
+        )
+        return RythmOfSoundVibrator(requireContext(), detector)
     }
 
     private fun playAudio() {
@@ -286,7 +258,6 @@ class PurringFragment : Fragment() {
 
     companion object {
         private const val AUDIO_TIMEOUT = 2000L
-        private const val PERMISSION_RECORD_AUDIO_CODE = 1000
 
         private const val ARG_TRANSITION_NAME = "TransitionName"
         private const val ARG_CARD = "CatCard"

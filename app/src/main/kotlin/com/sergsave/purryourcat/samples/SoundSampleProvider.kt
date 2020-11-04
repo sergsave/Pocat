@@ -3,7 +3,7 @@ package com.sergsave.purryourcat.samples
 import android.content.Context
 import android.net.Uri
 import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.helpers.uriOfResource
+import com.sergsave.purryourcat.helpers.FileUtils
 
 class SoundSampleProvider(private val context: Context) {
     fun provide(): List<Pair<String, Uri>> {
@@ -14,6 +14,7 @@ class SoundSampleProvider(private val context: Context) {
             Pair(R.string.sample_audio_4_name, R.raw.sample_audio_4),
             Pair(R.string.sample_audio_5_name, R.raw.sample_audio_5)
         )
-        return ids.map { Pair(context.getString(it.first), uriOfResource(it.second, context)) }
+        return ids.map { Pair(context.getString(it.first),
+            FileUtils.uriOfResource(it.second,context)) }
     }
 }

@@ -2,8 +2,8 @@ package com.sergsave.purryourcat.samples
 
 import android.content.Context
 import com.sergsave.purryourcat.R
+import com.sergsave.purryourcat.helpers.FileUtils
 import com.sergsave.purryourcat.models.CatData
-import com.sergsave.purryourcat.helpers.uriOfResource
 import java.util.*
 
 data class CatSample(val id: String, val data: CatData)
@@ -26,7 +26,7 @@ class CatSampleProvider(private val context: Context) {
 
     private fun dataFrom(resource: ResourcePack) = CatData(
         context.getString(resource.nameId),
-        uriOfResource(resource.photoId, context),
-        uriOfResource(resource.audioId, context)
+        FileUtils.uriOfResource(resource.photoId, context),
+        FileUtils.uriOfResource(resource.audioId, context)
     )
 }

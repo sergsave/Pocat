@@ -1,9 +1,11 @@
 package com.sergsave.purryourcat.helpers
 
+import android.content.ContentResolver
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.provider.OpenableColumns
+import android.util.TypedValue
 import java.io.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
@@ -26,44 +28,88 @@ object FileUtils {
         }
     }
 
+    fun uriOfResource(resId: Int, context: Context): Uri {
+        return Uri.Builder()
+            .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+            .authority(context.resources.getResourcePackageName(resId))
+            .appendPath(resId.toString())
+            .build()
+    }
+
+    fun resourceIdFromUri(uri: Uri): Int? {
+        return if (uri.scheme.equals(ContentResolver.SCHEME_ANDROID_RESOURCE))
+            uri.lastPathSegment?.toIntOrNull()
+        else
+            null
+    }
+
     private fun getContentResolverQuery(context: Context, contentUri: Uri): Cursor? {
-        return if (contentUri.scheme.equals("content"))
+        return if (contentUri.scheme.equals(ContentResolver.SCHEME_CONTENT))
             context.contentResolver.query(contentUri, null, null, null, null)
         else
             null
     }
 
-    // https://stackoverflow.com/questions/5568874/how-to-extract-the-file-name-from-uri-returned-from-intent-action-get-content
-    fun getContentFileName(context: Context, contentUri: Uri): String? {
-        var result: String? = null
-        val cursor = getContentResolverQuery(context, contentUri)
-        cursor?.use {
-            if (it.moveToFirst())
-                result = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+    private fun getResourceName(resId: Int, context: Context): String? {
+        val typedValue = TypedValue()
+
+        try {
+            context.resources.getValue(resId, typedValue, true)
+        } catch(e: Exception) {
+            return null
         }
 
-        if (result == null) {
-            result = contentUri.path
-            val cut = result?.lastIndexOf('/')
-            if (cut != null && cut != -1) {
-                result = result?.substring(cut + 1)
-            }
-        }
-        return result
+        return cutLastSegment(typedValue.string.toString())
     }
 
-    fun getContentFileSize(context: Context, contentUri: Uri): Long {
-        var result: Long = 0
+    private fun getResourceSize(resId: Int, context: Context): Long {
+        val size = try {
+            context.resources.openRawResource(resId).use { it.available().toLong() }
+        } catch(e: Exception) {
+            0L
+        }
+        return size
+    }
+
+    private fun cutLastSegment(path: String): String? {
+        val cut = path.lastIndexOf('/')
+        if (cut != -1)
+            return path.substring(cut + 1)
+        return null
+    }
+
+    // Support schemes: content, file and android.resource (should be obtained from "uriOfResource")
+    fun getContentFileName(context: Context, contentUri: Uri): String? {
         val cursor = getContentResolverQuery(context, contentUri)
         cursor?.use {
             if (it.moveToFirst())
-                result = it.getLong(it.getColumnIndex(OpenableColumns.SIZE))
+                return it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
         }
 
-        if (result == 0L) {
-            result = contentUri.path?.let { File(it).length() } ?: 0
+        val resourceId = resourceIdFromUri(contentUri)
+        resourceId?.let { id ->
+            getResourceName(id, context)?.let { return it }
         }
-        return result
+
+        val path = contentUri.path
+        val cutted = path?.let { cutLastSegment(it) }
+        return if (cutted != null) cutted else path
+    }
+
+    // Support schemes: content, file and android.resource (should be obtained from "uriOfResource")
+    fun getContentFileSize(context: Context, contentUri: Uri): Long {
+        val cursor = getContentResolverQuery(context, contentUri)
+        cursor?.use {
+            if (it.moveToFirst())
+                return it.getLong(it.getColumnIndex(OpenableColumns.SIZE))
+        }
+
+        val resourceId = resourceIdFromUri(contentUri)
+        resourceId?.let { id ->
+            getResourceSize(id, context).let { if (it != 0L) return it }
+        }
+
+        return contentUri.path?.let { File(it).length() } ?: 0
     }
 
     // https://stackoverflow.com/questions/25562262/how-to-compress-files-into-zip-folder-in-android
