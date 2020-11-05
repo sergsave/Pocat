@@ -42,7 +42,7 @@ class AppContainer(private val context: Context) {
 
     fun provideMainViewModelFactory() =
         ViewModelFactory(MainViewModel::class.java, {
-            MainViewModel(catDataRepo, contentRepo, sharingManager)
+            MainViewModel(catDataRepo, contentRepo, sharingManager, preferences)
         })
 
     fun provideSamplesViewModelFactory() =

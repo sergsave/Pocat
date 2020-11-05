@@ -6,13 +6,14 @@ import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.menu.MenuBuilder
-import androidx.lifecycle.ViewModelProvider
+import androidx.activity.viewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import com.sergsave.purryourcat.BuildConfig
 import com.sergsave.purryourcat.Constants
 import com.sergsave.purryourcat.MyApplication
 import com.sergsave.purryourcat.R
+import com.sergsave.purryourcat.helpers.EventObserver
 import com.sergsave.purryourcat.helpers.FirstTimeLaunchBugWorkaround
 import com.sergsave.purryourcat.helpers.setToolbarAsActionBar
 import kotlinx.android.synthetic.main.activity_main.*
@@ -26,9 +27,8 @@ import kotlin.math.abs
 
 class MainActivity : AppCompatActivity() {
 
-    private enum class TabInfo(val pageNumber: Int, val titleStringId: Int) {
-        SAMPLES(0, R.string.samples_tab),
-        USER_CATS(1, R.string.user_cats_tab)
+    private val viewModel: MainViewModel by viewModels {
+        (application as MyApplication).appContainer.provideMainViewModelFactory()
     }
 
     override fun onDestroy() {
@@ -44,12 +44,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         setContentView(R.layout.activity_main)
+        // Cleanup not in Application, because Application is created only after device reload
+        viewModel.cleanUnusedFiles()
 
-        // Don't use "by viewModels()" here, because it's a lazy
-        val factory = (application as MyApplication).appContainer.provideMainViewModelFactory()
-        val viewModel = ViewModelProvider(this, factory).get(MainViewModel::class.java)
+        viewModel.requestPageChangeEvent.observe(this, EventObserver {
+            pager.setCurrentItem(it, false)
+        })
 
-        setupPager(viewModel)
+        setupPager()
 
         setToolbarAsActionBar(toolbar, showBackButton = false)
         supportActionBar?.elevation = 0f
@@ -57,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         checkInputSharingIntent()
     }
 
-    private fun setupPager(viewModel: MainViewModel) {
+    private fun setupPager() {
         pager.adapter = PagerAdapter(this)
         pager.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
@@ -67,9 +69,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         TabLayoutMediator(tab_layout, pager) { tab, position ->
-            val tabInfo = listOf(TabInfo.SAMPLES, TabInfo.USER_CATS).find {
-                it.pageNumber == position
-            }
+            val tabInfo = viewModel.tabInfoForPosition(position)
             tabInfo?.let { tab.text = getString(it.titleStringId) }
         }.attach()
     }
@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity() {
         if(isForwarded.not())
             return
 
-        pager.setCurrentItem(TabInfo.USER_CATS.pageNumber, false)
+        viewModel.onForwardIntent()
 
         // Forward further
         launchCatCard(this.intent)

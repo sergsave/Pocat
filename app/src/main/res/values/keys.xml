@@ -9,4 +9,6 @@
     <string name="pick_audio_preference_key">pick_audio</string>
 
     <string name="purring_tutorial_achieve_preference_key">purring_tutorial_achieve</string>
+
+    <string name="last_tab_tag_preference_key">last_tab_tag_preference_key</string>
 </resources>

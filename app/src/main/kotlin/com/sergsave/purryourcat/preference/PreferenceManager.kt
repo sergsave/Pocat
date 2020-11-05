@@ -23,4 +23,12 @@ class PreferenceManager(context: Context) {
             putBoolean(tutorialKey, value)
             apply()
         }
+
+    private val tabKey = context.getString(R.string.last_tab_tag_preference_key)
+    var lastTabTag: String?
+        get() = preferences.getString(tabKey, null)
+        set(value) = with(preferences.edit()) {
+            putString(tabKey, value)
+            apply()
+        }
 }
