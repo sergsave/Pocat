@@ -75,7 +75,7 @@ class SoundSelectionFragment: PreferenceFragmentCompat() {
     private fun addAudioFromRecorder() {
         val permission = Manifest.permission.RECORD_AUDIO
 
-        if(PermissionUtils.checkPermission(requireContext(), permission))
+        if(PermissionUtils.checkPermission(requireContext(), permission).not())
             PermissionUtils.requestPermissions(this, arrayOf(permission), PERMISSIONS_RECORDER_CODE)
         else
             sendRecorderIntent()
@@ -84,7 +84,7 @@ class SoundSelectionFragment: PreferenceFragmentCompat() {
     private fun addAudioFromDevice() {
         val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
 
-        if(PermissionUtils.checkPermission(requireContext(), permission))
+        if(PermissionUtils.checkPermission(requireContext(), permission).not())
             PermissionUtils.requestPermissions(this, arrayOf(permission), PERMISSIONS_STORAGE_CODE)
         else
             sendPickAudioIntent()
@@ -97,7 +97,7 @@ class SoundSelectionFragment: PreferenceFragmentCompat() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        if(!PermissionUtils.checkRequestResult(grantResults))
+        if(PermissionUtils.checkRequestResult(grantResults).not())
             return
 
         when(requestCode) {
