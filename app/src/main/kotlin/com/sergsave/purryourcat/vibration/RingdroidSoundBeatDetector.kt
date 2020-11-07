@@ -3,7 +3,7 @@ package com.sergsave.purryourcat.vibration
 import android.content.Context
 import android.net.Uri
 import androidx.core.net.toFile
-import com.semantive.waveformandroid.waveform.soundfile.CheapSoundFile
+import com.ringdroid.soundfile.SoundFile
 import com.sergsave.purryourcat.helpers.FileUtils
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -16,7 +16,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-class SemantiveSoundBeatDetector(
+class RingdroidSoundBeatDetector(
     private val context: Context,
     private val audioUri: Uri,
     private val playerPositionFetcher: () -> Int?
@@ -42,7 +42,7 @@ class SemantiveSoundBeatDetector(
             return null
 
         // TODO: To constants
-        val tempDir = File(context.cacheDir, "semantive_beat_detector")
+        val tempDir = File(context.cacheDir, "beat_detector")
         tempDir.mkdir()
 
         val suffix = fileName.substringAfterLast('.', "").let {
@@ -55,7 +55,8 @@ class SemantiveSoundBeatDetector(
     }
 
     private fun parseFile(file: File): FileData {
-        val soundFile = CheapSoundFile.create(file.absolutePath, null)
+//        val soundFile = CheapSoundFile.create(file.absolutePath, null)
+        val soundFile = SoundFile.create(file.absolutePath, null)
 
         val frameGains = soundFile.frameGains
         val trimmedGains = frameGains.toMutableList()

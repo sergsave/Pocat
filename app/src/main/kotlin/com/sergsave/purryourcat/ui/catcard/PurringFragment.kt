@@ -26,7 +26,7 @@ import com.sergsave.purryourcat.helpers.*
 import com.sergsave.purryourcat.models.Card
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.ui.catcard.PurringViewModel.MenuState
-import com.sergsave.purryourcat.vibration.SemantiveSoundBeatDetector
+import com.sergsave.purryourcat.vibration.RingdroidSoundBeatDetector
 import com.sergsave.purryourcat.vibration.RythmOfSoundVibrator
 import com.sergsave.purryourcat.vibration.RythmOfSoundVibrator.OnPrepareFinishedListener
 import com.sergsave.purryourcat.vibration.SoundBeatDetector
@@ -228,7 +228,7 @@ class PurringFragment : Fragment() {
     }
 
     private fun createVibrator(audioUri: Uri): RythmOfSoundVibrator {
-        val detector = SemantiveSoundBeatDetector(requireContext(), audioUri,
+        val detector = RingdroidSoundBeatDetector(requireContext(), audioUri,
             { mediaPlayer?.currentPosition }
         )
         return RythmOfSoundVibrator(requireContext(), detector)
