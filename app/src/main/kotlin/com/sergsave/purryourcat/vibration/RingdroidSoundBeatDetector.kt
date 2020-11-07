@@ -55,7 +55,6 @@ class RingdroidSoundBeatDetector(
     }
 
     private fun parseFile(file: File): FileData {
-//        val soundFile = CheapSoundFile.create(file.absolutePath, null)
         val soundFile = SoundFile.create(file.absolutePath, null)
 
         val frameGains = soundFile.frameGains
