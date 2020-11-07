@@ -2,6 +2,7 @@ package com.sergsave.purryourcat.ui.catcard
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -80,9 +81,10 @@ class FormViewModel(
 
     fun changePhoto(uri: Uri) {
         if(uri != _photoUri.value) {
-            addDisposable(contentRepository.addImage(uri).subscribe { newUri ->
-                _photoUri.value = newUri
-            })
+            addDisposable(contentRepository.addImage(uri).subscribe(
+                { newUri -> _photoUri.value = newUri },
+                { Log.e(TAG, "Adding failed", it) }
+            ))
         }
     }
 
@@ -91,9 +93,10 @@ class FormViewModel(
             _audioChangedMessageEvent.value = Event(Unit)
 
         if(uri != _audioUri.value) {
-            addDisposable(contentRepository.addAudio(uri).subscribe { newUri ->
-                _audioUri.value = newUri
-            })
+            addDisposable(contentRepository.addAudio(uri).subscribe(
+                { newUri -> _audioUri.value = newUri },
+                { Log.e(TAG, "Adding failed", it) }
+            ))
         }
     }
 
@@ -123,16 +126,20 @@ class FormViewModel(
         val currentCard = card?.copy(data = data)
         val id = currentCard?.persistentId
 
+        val message = "Sync failed"
+
         if(currentCard != null && id != null) {
-            addDisposable(catDataRepository.update(id, currentCard.data).subscribe{
-                _openCardEvent.value = Event(currentCard)
-            })
+            addDisposable(catDataRepository.update(id, currentCard.data).subscribe(
+                { _openCardEvent.value = Event(currentCard) },
+                { Log.e(TAG, message, it) }
+            ))
             return
         }
 
-        addDisposable(catDataRepository.add(data).subscribe { newId ->
-            _openCardEvent.value = Event(Card(newId, data, true, true))
-        })
+        addDisposable(catDataRepository.add(data).subscribe(
+            { newId -> _openCardEvent.value = Event(Card(newId, data, true, true)) },
+            { Log.e(TAG, message, it) }
+        ))
     }
 
     private fun updateData(data: CatData?) {
@@ -151,5 +158,9 @@ class FormViewModel(
 
     private fun wereChangesAfterBackup(): Boolean {
         return currentData() != backup
+    }
+
+    companion object {
+        private const val TAG = "FormViewModel"
     }
 }

@@ -1,5 +1,6 @@
 package com.sergsave.purryourcat.ui.main
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sergsave.purryourcat.persistent.CatDataRepository
@@ -16,10 +17,13 @@ class UserCatsViewModel(private val catDataRepository: CatDataRepository): Dispo
         get() = _cats
 
     init {
-        addDisposable(catDataRepository.read().subscribe { catMap ->
-            val sortedByTime = catMap.toList().sortedByDescending { it.second.timestamp.time }
-            _cats.value = sortedByTime.map { (id, timed) -> Pair(id, timed.data) }
-        })
+        addDisposable(catDataRepository.read().subscribe(
+            { catMap ->
+                val sortedByTime = catMap.toList().sortedByDescending { it.second.timestamp.time }
+                _cats.value = sortedByTime.map { (id, timed) -> Pair(id, timed.data) }
+            },
+            { Log.e(TAG, "Read failed", it) })
+        )
     }
 
     fun makeCard(listItemId: String, data: CatData): Card {
@@ -34,7 +38,11 @@ class UserCatsViewModel(private val catDataRepository: CatDataRepository): Dispo
         addDisposable(
             Observable.fromIterable(catIds)
                 .concatMapCompletable { catDataRepository.remove(it) }
-                .subscribe{}
+                .subscribe({}, { Log.e(TAG, "Remove failed", it) })
         )
+    }
+
+    companion object {
+        private const val TAG = "UserCatsViewModel"
     }
 }

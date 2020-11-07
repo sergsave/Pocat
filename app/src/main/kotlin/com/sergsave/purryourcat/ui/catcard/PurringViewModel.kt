@@ -1,6 +1,7 @@
 package com.sergsave.purryourcat.ui.catcard
 
 import android.content.Intent
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sergsave.purryourcat.persistent.CatDataRepository
@@ -100,11 +101,15 @@ class PurringViewModel(
     }
 
     private fun onSavePressed() {
-        addDisposable(catDataRepository.add(card.data).subscribe { id ->
-            card = card.copy(persistentId = id)
-            updateMenu(true)
-            _dataSavedEvent.value = Event(Unit)
-        })
+        val disposable = catDataRepository.add(card.data).subscribe(
+            { id ->
+                card = card.copy(persistentId = id)
+                updateMenu(true)
+                _dataSavedEvent.value = Event(Unit)
+            },
+            { Log.e("PurringViewModel", "Save failed", it) }
+        )
+        addDisposable(disposable)
     }
 
     private fun onEditPressed() {

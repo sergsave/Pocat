@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.util.Log
 import io.reactivex.disposables.Disposable
 
 class RythmOfSoundVibrator(
@@ -44,9 +45,10 @@ class RythmOfSoundVibrator(
             return
 
         val duration = beatDetector.detectionPeriodMs / 3
-        workDisposable = beatDetector.detect().subscribe {
-            vibrate(duration)
-        }
+        workDisposable = beatDetector.detect().subscribe(
+            { vibrate(duration) },
+            { Log.e("RythmOfSoundVibrator", "Detection failed", it) }
+        )
     }
 
     fun stop() {

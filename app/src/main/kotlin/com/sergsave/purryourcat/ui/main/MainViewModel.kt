@@ -2,6 +2,7 @@ package com.sergsave.purryourcat.ui.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import android.util.Log
 import com.sergsave.purryourcat.content.ContentRepository
 import com.sergsave.purryourcat.persistent.CatDataRepository
 import com.sergsave.purryourcat.helpers.DisposableViewModel
@@ -52,7 +53,7 @@ class MainViewModel(
     }
 
     fun cleanUnusedFiles() {
-        addDisposable(sharingManager.cleanup().subscribe())
+        addDisposable(sharingManager.cleanup().subscribe({}, { Log.e(TAG, "Cleanup failed", it) }))
         cleanUpUnusedContent()
     }
 
@@ -73,16 +74,20 @@ class MainViewModel(
     private fun cleanUpUnusedContent() {
         val disposable = Flowables.zip(catDataRepository.read(), contentRepository.read())
             .take(1)
-            .subscribe { (data, content) ->
+            .flatMap { (data, content) ->
                 val usedContent = data.flatMap { (_, cat) -> cat.data.extractContent() }
                 val unusedContent = content - usedContent
 
-                addDisposable(
-                    Observable.fromIterable(unusedContent)
+                Observable.fromIterable(unusedContent)
                     .concatMapCompletable { contentRepository.remove(it) }
-                    .subscribe{})
+                    .toFlowable<Unit>()
             }
+            .subscribe({}, { Log.e(TAG, "Cleanup failed", it) })
         addDisposable(disposable)
+    }
+
+    companion object {
+        private const val TAG = "MainViewModel"
     }
 }
 
