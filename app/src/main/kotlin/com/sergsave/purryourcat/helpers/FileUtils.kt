@@ -1,5 +1,6 @@
 package com.sergsave.purryourcat.helpers
 
+import android.provider.MediaStore
 import android.content.ContentResolver
 import android.content.Context
 import android.database.Cursor
@@ -71,19 +72,26 @@ object FileUtils {
         return size
     }
 
-    private fun cutLastSegment(path: String): String? {
+    private fun cutLastSegment(path: String): String {
         val cut = path.lastIndexOf('/')
         if (cut != -1)
             return path.substring(cut + 1)
-        return null
+        return path
     }
 
     // Support schemes: content, file and android.resource (should be obtained from "uriOfResource")
     fun getContentFileName(context: Context, contentUri: Uri): String? {
         val cursor = getContentResolverQuery(context, contentUri)
         cursor?.use {
-            if (it.moveToFirst())
-                return it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+            if (it.moveToFirst()) {
+                val indexName = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                it.getString(indexName)?.let { name -> return name }
+
+                // Using a deprecated constant. On files from Redmi voice recorders, DISPLAY_NAME returns null
+                @Suppress("DEPRECATION")
+                val indexData = it.getColumnIndex(MediaStore.MediaColumns.DATA)
+                it.getString(indexData)?.let { path -> return cutLastSegment(path) }
+            }
         }
 
         val resourceId = resourceIdFromUri(contentUri)
@@ -91,9 +99,7 @@ object FileUtils {
             getResourceName(id, context)?.let { return it }
         }
 
-        val path = contentUri.path
-        val cutted = path?.let { cutLastSegment(it) }
-        return if (cutted != null) cutted else path
+        return contentUri.lastPathSegment
     }
 
     // Support schemes: content, file and android.resource (should be obtained from "uriOfResource")
