@@ -2,7 +2,6 @@ package com.sergsave.purryourcat.ui.catcard
 
 import android.Manifest
 import android.app.Activity
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -22,13 +21,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
-import com.sergsave.purryourcat.Constants
+import com.sergsave.purryourcat.BuildConfig
 import com.sergsave.purryourcat.MyApplication
 import com.sergsave.purryourcat.R
+import com.sergsave.purryourcat.helpers.*
 import com.sergsave.purryourcat.models.Card
-import com.sergsave.purryourcat.helpers.EventObserver
-import com.sergsave.purryourcat.helpers.ImageUtils
-import com.sergsave.purryourcat.helpers.PermissionUtils
 import com.sergsave.purryourcat.ui.catcard.FormViewModel.SoundButtonType
 import com.sergsave.purryourcat.ui.soundselection.SoundSelectionActivity
 import kotlinx.android.synthetic.main.fragment_cat_form.*
@@ -175,8 +172,7 @@ class FormFragment : Fragment() {
         if(context == null)
             return
 
-        val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.CAMERA)
+        val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
         if(permissions.any { !PermissionUtils.checkPermission(requireContext(), it) })
             PermissionUtils.requestPermissions(this, permissions, PERMISSIONS_IMAGE_CODE)
@@ -206,26 +202,30 @@ class FormFragment : Fragment() {
             sendPhotoIntent()
     }
 
-    private fun sendPhotoIntent()
-    {
-        val pickIntent = Intent(Intent.ACTION_PICK)
-        pickIntent.type = "image/*"
+    private fun createPickIntent(): Intent? {
+        return Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
+            type = "image/*"
+        }
+    }
 
-        // TODO: Rename file? For accessibility in gallery
-        val values = ContentValues()
-        values.put(MediaStore.Images.Media.TITLE, "New Picture")
-        values.put(MediaStore.Images.Media.DESCRIPTION, "From the Camera")
+    private fun createCameraIntent(): Intent? {
+        val pictureSubPath = getString(R.string.app_name)
+        val providerAuth = "${BuildConfig.APPLICATION_ID}.fileprovider"
 
-        cameraImageUri = activity?.contentResolver?.insert(
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+        cameraImageUri = FileUtils.provideImageUriInPublicStorage(requireContext(),
+            pictureSubPath, providerAuth)
+        return cameraImageUri?.let { uri ->
+            Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply { putExtra(MediaStore.EXTRA_OUTPUT, uri) }
+        }
+    }
 
-        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraImageUri)
+    private fun sendPhotoIntent() {
+        val intents = listOf(createPickIntent(), createCameraIntent()).filterNotNull().filter {
+            it.resolveActivity(requireActivity().packageManager) != null
+        }
 
         val title = resources.getString(R.string.add_photo_with)
-        val chooser = Intent.createChooser(pickIntent, title)
-        chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(cameraIntent))
-        startActivityForResult(chooser, PICK_IMAGE_CODE)
+        createIntentChooser(intents, title)?.let { startActivityForResult(it, PICK_IMAGE_CODE) }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

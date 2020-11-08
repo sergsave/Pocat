@@ -5,7 +5,7 @@
     ]>
 
 <resources>
-    <string name="app_name">&appname;</string>
+    <string name="app_name" translatable="false">&appname;</string>
     <string name="sharing_text">Check out my cat in \"&appname;\" App!</string>
     <string name="add_new_cat">Add a new cat</string>
     <string name="name">Name</string>

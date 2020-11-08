@@ -2,12 +2,18 @@ package com.sergsave.purryourcat.helpers
 
 import android.provider.MediaStore
 import android.content.ContentResolver
+import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
+import android.os.Build
+import android.os.Environment
 import android.provider.OpenableColumns
 import android.util.TypedValue
+import androidx.core.content.FileProvider
 import java.io.*
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
@@ -187,4 +193,48 @@ object FileUtils {
             println(e)
         }
     }
+
+    private fun generateImageName(): String {
+        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss_SSS").format(Date())
+        return "IMG_$timestamp.jpg"
+    }
+
+    private fun prepareExternalStorageImageUri(context: Context,
+                                                subPath: String,
+                                                providerAuthority: String): Uri? {
+        // This function is used only for old android versions
+        @Suppress("DEPRECATION")
+        val storageDir = Environment.
+        getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+
+        val targetDir = File(storageDir, subPath)
+        // TODO: To background?
+        targetDir.mkdirs()
+        val file = File(targetDir, generateImageName())
+
+        return FileProvider.getUriForFile(context, providerAuthority, file)
+    }
+
+    private fun prepareMediaStoreImageUri(context: Context, subPath: String): Uri? {
+        val values = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, generateImageName())
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+            put(MediaStore.MediaColumns.RELATIVE_PATH, "${Environment.DIRECTORY_PICTURES}/$subPath")
+        }
+        return context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+    }
+
+    // Prepare collision resistant uri for image in "Pictures" directory in public external storage.
+    // Require WRITE_EXTERNAL_STORAGE permission.
+    // To avoid FileUriExposedException this function use FileProvider.
+    // FileProvider should provide path "Pictures/$subPath" with "external-path" type.
+    fun provideImageUriInPublicStorage(context: Context,
+                                       subPath: String,
+                                       fileProviderAuthority: String): Uri? {
+        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
+            prepareExternalStorageImageUri(context, subPath, fileProviderAuthority)
+        else
+            prepareMediaStoreImageUri(context, subPath)
+    }
+
 }
