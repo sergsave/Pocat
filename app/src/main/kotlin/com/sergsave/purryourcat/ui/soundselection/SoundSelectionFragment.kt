@@ -73,7 +73,8 @@ class SoundSelectionFragment: PreferenceFragmentCompat() {
     }
 
     private fun addAudioFromRecorder() {
-        val permission = Manifest.permission.RECORD_AUDIO
+        // Maybe some kind of recorder return uri with "file" scheme...
+        val permission = Manifest.permission.READ_EXTERNAL_STORAGE
 
         if(PermissionUtils.checkPermission(requireContext(), permission).not())
             PermissionUtils.requestPermissions(this, arrayOf(permission), PERMISSIONS_RECORDER_CODE)
@@ -82,10 +83,10 @@ class SoundSelectionFragment: PreferenceFragmentCompat() {
     }
 
     private fun addAudioFromDevice() {
-        val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
+        val permission = Manifest.permission.READ_EXTERNAL_STORAGE
 
         if(PermissionUtils.checkPermission(requireContext(), permission).not())
-            PermissionUtils.requestPermissions(this, arrayOf(permission), PERMISSIONS_STORAGE_CODE)
+            PermissionUtils.requestPermissions(this, arrayOf(permission), PERMISSIONS_PICK_CODE)
         else
             sendPickAudioIntent()
     }
@@ -102,7 +103,7 @@ class SoundSelectionFragment: PreferenceFragmentCompat() {
 
         when(requestCode) {
             PERMISSIONS_RECORDER_CODE -> sendRecorderIntent()
-            PERMISSIONS_STORAGE_CODE -> sendPickAudioIntent()
+            PERMISSIONS_PICK_CODE -> sendPickAudioIntent()
         }
     }
 
@@ -113,13 +114,20 @@ class SoundSelectionFragment: PreferenceFragmentCompat() {
 
     private fun sendRecorderIntent() {
         val intent = Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION)
-        startActivityForResult(intent, RECORDER_CODE)
+        if (intent.resolveActivity(requireActivity().packageManager) != null)
+            startActivityForResult(intent, RECORDER_CODE)
     }
 
     private fun sendPickAudioIntent() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
             .apply { type = "audio/*" }
-        startActivityForResult(intent, PICK_AUDIO_CODE)
+        if (intent.resolveActivity(requireActivity().packageManager) == null)
+            return
+
+        val title = getString(R.string.add_audio_with)
+        createIntentChooser(listOf(intent), title)?.let {
+            startActivityForResult(it, PICK_AUDIO_CODE)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -135,8 +143,8 @@ class SoundSelectionFragment: PreferenceFragmentCompat() {
     }
 
     companion object {
-        private const val PERMISSIONS_STORAGE_CODE = 1000
-        private const val PERMISSIONS_RECORDER_CODE = 1001
+        private const val PERMISSIONS_RECORDER_CODE = 1000
+        private const val PERMISSIONS_PICK_CODE = 1001
 
         private const val SAMPLES_CODE = 1002
         private const val RECORDER_CODE = 1003
