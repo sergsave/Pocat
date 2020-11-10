@@ -25,8 +25,10 @@ import com.sergsave.purryourcat.BuildConfig
 import com.sergsave.purryourcat.MyApplication
 import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.helpers.*
+import com.sergsave.purryourcat.helpers.PermissionDenyTypeQualifier.Type.DENIED_PERMANENTLY
 import com.sergsave.purryourcat.models.Card
 import com.sergsave.purryourcat.ui.catcard.FormViewModel.SoundButtonType
+import com.sergsave.purryourcat.ui.dialogs.StoragePermissionPermanentlyDeniedDialog
 import com.sergsave.purryourcat.ui.soundselection.SoundSelectionActivity
 import kotlinx.android.synthetic.main.fragment_cat_form.*
 import kotlinx.android.synthetic.main.view_form_fields.view.*
@@ -39,6 +41,7 @@ class FormFragment : Fragment() {
         (requireActivity().application as MyApplication).appContainer
             .provideFormViewModelFactory(arguments?.getParcelable<Card>(ARG_CARD))
     }
+    private lateinit var permissionDenyQualifier: PermissionDenyTypeQualifier
 
     override fun onDestroy() {
         // TODO? Save keyboard visible after orientation change
@@ -49,9 +52,13 @@ class FormFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        permissionDenyQualifier = PermissionDenyTypeQualifier(
+            requireActivity() as AppCompatActivity, "PermissionQualifier")
+
         savedInstanceState?.let {
             cameraImageUri = it.getParcelable(BUNDLE_KEY_CAMERA_IMAGE_URI)
             restoreDialogState()
+            permissionDenyQualifier.onRestoreInstanceState(it)
         }
     }
 
@@ -172,12 +179,15 @@ class FormFragment : Fragment() {
         if(context == null)
             return
 
-        val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
 
-        if(permissions.any { !PermissionUtils.checkPermission(requireContext(), it) })
-            PermissionUtils.requestPermissions(this, permissions, PERMISSIONS_IMAGE_CODE)
-        else
+        if (isPermissionGranted(permission))
             sendPhotoIntent()
+        else {
+            requestPermissions(arrayOf(permission), PERMISSIONS_IMAGE_CODE)
+            permissionDenyQualifier.onRequestPermission(permission)
+        }
+
     }
 
     private fun addAudio() {
@@ -195,11 +205,16 @@ class FormFragment : Fragment() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        if(!PermissionUtils.checkRequestResult(grantResults))
+        if(checkPermissionRequestResult(grantResults)) {
+            when(requestCode) {
+                PERMISSIONS_IMAGE_CODE -> sendPhotoIntent()
+            }
             return
+        }
 
-        if(requestCode == PERMISSIONS_IMAGE_CODE)
-            sendPhotoIntent()
+        val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
+        if (permissionDenyQualifier.handleRequestPermissionResult(permission) == DENIED_PERMANENTLY)
+            StoragePermissionPermanentlyDeniedDialog().show(childFragmentManager, null)
     }
 
     private fun createPickIntent(): Intent? {
@@ -253,6 +268,7 @@ class FormFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelable(BUNDLE_KEY_CAMERA_IMAGE_URI, cameraImageUri)
+        permissionDenyQualifier.onSaveInstanceState(outState)
     }
 
     private fun restoreDialogState() {

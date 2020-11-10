@@ -1,12 +1,14 @@
 package com.sergsave.purryourcat.ui.soundselection
 
 import android.Manifest
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceFragmentCompat
 import androidx.fragment.app.viewModels
 import androidx.preference.Preference
@@ -15,12 +17,15 @@ import com.sergsave.purryourcat.ui.soundselection.SoundSelectionViewModel.Messag
 import com.sergsave.purryourcat.MyApplication
 import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.helpers.*
+import com.sergsave.purryourcat.helpers.PermissionDenyTypeQualifier.Type.DENIED_PERMANENTLY
+import com.sergsave.purryourcat.ui.dialogs.StoragePermissionPermanentlyDeniedDialog
 
 class SoundSelectionFragment: PreferenceFragmentCompat() {
     private val viewModel: SoundSelectionViewModel by viewModels {
         (requireActivity().application as MyApplication).appContainer
             .provideSoundSelectionViewModelFactory()
     }
+    private lateinit var permissionDenyQualifier: PermissionDenyTypeQualifier
 
     // Use preferences for beautiful UI purpose only
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -44,6 +49,15 @@ class SoundSelectionFragment: PreferenceFragmentCompat() {
             { addAudioFromRecorder() })
         registerPreference(R.string.pick_audio_preference_key, viewModel.pickAudioSummary,
             { addAudioFromDevice() })
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        permissionDenyQualifier = PermissionDenyTypeQualifier(
+            requireActivity() as AppCompatActivity, "PermissionQualifier")
+
+        savedInstanceState?.let { permissionDenyQualifier.onRestoreInstanceState(it) }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -72,23 +86,25 @@ class SoundSelectionFragment: PreferenceFragmentCompat() {
         sendSamplesIntent()
     }
 
+    private fun requestReadStoragePermission(requestCode: Int) {
+        val permission = READ_EXTERNAL_STORAGE
+        requestPermissions(arrayOf(permission), requestCode)
+        permissionDenyQualifier.onRequestPermission(permission)
+    }
+
     private fun addAudioFromRecorder() {
         // Maybe some kind of recorder return uri with "file" scheme...
-        val permission = Manifest.permission.READ_EXTERNAL_STORAGE
-
-        if(PermissionUtils.checkPermission(requireContext(), permission).not())
-            PermissionUtils.requestPermissions(this, arrayOf(permission), PERMISSIONS_RECORDER_CODE)
-        else
+        if (isPermissionGranted(READ_EXTERNAL_STORAGE))
             sendRecorderIntent()
+        else
+            requestReadStoragePermission(PERMISSIONS_RECORDER_CODE)
     }
 
     private fun addAudioFromDevice() {
-        val permission = Manifest.permission.READ_EXTERNAL_STORAGE
-
-        if(PermissionUtils.checkPermission(requireContext(), permission).not())
-            PermissionUtils.requestPermissions(this, arrayOf(permission), PERMISSIONS_PICK_CODE)
-        else
+        if (isPermissionGranted(READ_EXTERNAL_STORAGE))
             sendPickAudioIntent()
+        else
+            requestReadStoragePermission(PICK_AUDIO_CODE)
     }
 
     override fun onRequestPermissionsResult(
@@ -98,13 +114,17 @@ class SoundSelectionFragment: PreferenceFragmentCompat() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        if(PermissionUtils.checkRequestResult(grantResults).not())
+        if (checkPermissionRequestResult(grantResults)) {
+            when (requestCode) {
+                PERMISSIONS_RECORDER_CODE -> sendRecorderIntent()
+                PERMISSIONS_PICK_CODE -> sendPickAudioIntent()
+            }
             return
-
-        when(requestCode) {
-            PERMISSIONS_RECORDER_CODE -> sendRecorderIntent()
-            PERMISSIONS_PICK_CODE -> sendPickAudioIntent()
         }
+
+        val permission = READ_EXTERNAL_STORAGE
+        if (permissionDenyQualifier.handleRequestPermissionResult(permission) == DENIED_PERMANENTLY)
+            StoragePermissionPermanentlyDeniedDialog().show(childFragmentManager, null)
     }
 
     private fun sendSamplesIntent() {
@@ -140,6 +160,11 @@ class SoundSelectionFragment: PreferenceFragmentCompat() {
                 viewModel.validateResult(it)
             }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        permissionDenyQualifier.onSaveInstanceState(outState)
     }
 
     companion object {

@@ -1,34 +1,61 @@
 package com.sergsave.purryourcat.helpers
 
-import android.app.Activity
 import androidx.fragment.app.Fragment
-import android.content.Context
-import android.content.pm.PackageManager
-import androidx.core.app.ActivityCompat
+import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.os.Bundle
+import android.os.Parcelable
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import android.os.Build.VERSION
-import android.os.Build.VERSION_CODES
+import kotlinx.android.parcel.Parcelize
 
-class PermissionUtils {
-    companion object {
+fun Fragment.isPermissionGranted(permission: String) =
+    ContextCompat.checkSelfPermission(requireContext(), permission) == PERMISSION_GRANTED
 
-        fun checkPermission(context: Context, name: String) : Boolean
-        {
-            return VERSION.SDK_INT < VERSION_CODES.M ||
-                    ContextCompat.checkSelfPermission(context, name) == PackageManager.PERMISSION_GRANTED
-        }
+fun checkPermissionRequestResult(grantResults: IntArray) =
+    grantResults.isNotEmpty() && grantResults.all { it == PERMISSION_GRANTED }
 
-        fun requestPermissions(activity: Activity, names: Array<String>, code: Int) {
-            ActivityCompat.requestPermissions(activity, names, code)
-        }
+// Based on https://stackoverflow.com/a/41304699
+class PermissionDenyTypeQualifier(private val activity: AppCompatActivity,
+                                  private val bundleTag: String) {
 
-        fun requestPermissions(fragment: Fragment, names: Array<String>, code: Int) {
-            fragment.requestPermissions(names, code)
-        }
+    @Parcelize
+    private data class State(val permission2shouldShow: MutableMap<String, Boolean>): Parcelable
 
-        fun checkRequestResult(grantResults: IntArray) : Boolean
-        {
-            return grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+    private var state = State(mutableMapOf<String, Boolean>())
+
+    enum class Type {
+        DENIED,
+        DENIED_FIRST_TIME,
+        DENIED_PERMANENTLY,
+        DENIED_PERMANENTLY_FIRST_TIME
+    }
+
+    fun onRestoreInstanceState(bundle: Bundle) {
+        bundle.getParcelable<State>(bundleTag)?.let { state = it }
+    }
+
+    fun onSaveInstanceState(bundle: Bundle) {
+        bundle.putParcelable(bundleTag, state)
+    }
+
+    fun onRequestPermission(permission: String) {
+        state.permission2shouldShow[permission] =
+            activity.shouldShowRequestPermissionRationale(permission)
+    }
+
+    // Return null if permission is granted or there was no call onRequestPermission before
+    fun handleRequestPermissionResult(permission: String): Type? {
+        val cached = state.permission2shouldShow[permission]
+        if (cached == null || activity.checkSelfPermission(permission) == PERMISSION_GRANTED)
+            return null
+
+        val current = activity.shouldShowRequestPermissionRationale(permission)
+        return when {
+            cached && current -> Type.DENIED
+            cached.not() && current -> Type.DENIED_FIRST_TIME
+            cached && current.not() -> Type.DENIED_PERMANENTLY_FIRST_TIME
+            cached.not() && current.not() -> Type.DENIED_PERMANENTLY
+            else -> null
         }
     }
 }

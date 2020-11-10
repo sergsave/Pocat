@@ -11,7 +11,7 @@ class UnsavedChangesDialog: DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         super.onCreateDialog(savedInstanceState)
-
+        // TODO: simplify dialogs
         val resources = requireContext().resources
         val positiveText = resources.getString(R.string.discard)
         val negativeText = resources.getString(R.string._continue)
