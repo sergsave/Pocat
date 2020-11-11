@@ -139,13 +139,18 @@ class SoundSelectionFragment: PreferenceFragmentCompat() {
     }
 
     private fun sendPickAudioIntent() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
-            .apply { type = "audio/*" }
-        if (intent.resolveActivity(requireActivity().packageManager) == null)
-            return
+        val type = "audio/*"
+        val intents = listOf(
+            Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI).also {
+                it.type = type
+            },
+            Intent(Intent.ACTION_GET_CONTENT).also {
+                it.type = type
+            }
+        ).filter { it.resolveActivity(requireActivity().packageManager) != null }
 
         val title = getString(R.string.add_audio_with)
-        createIntentChooser(listOf(intent), title)?.let {
+        createIntentChooser(intents, title)?.let {
             startActivityForResult(it, PICK_AUDIO_CODE)
         }
     }

@@ -217,10 +217,16 @@ class FormFragment : Fragment() {
             StoragePermissionPermanentlyDeniedDialog().show(childFragmentManager, null)
     }
 
-    private fun createPickIntent(): Intent? {
-        return Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
-            type = "image/*"
-        }
+    private fun createPickIntents(): List<Intent> {
+        val type = "image/*"
+        return listOf(
+            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).also {
+                it.type = type
+            },
+            Intent(Intent.ACTION_GET_CONTENT).also {
+                it.type = type
+            }
+        )
     }
 
     private fun createCameraIntent(): Intent? {
@@ -235,7 +241,7 @@ class FormFragment : Fragment() {
     }
 
     private fun sendPhotoIntent() {
-        val intents = listOf(createPickIntent(), createCameraIntent()).filterNotNull().filter {
+        val intents = (createPickIntents() + listOf(createCameraIntent())).filterNotNull().filter {
             it.resolveActivity(requireActivity().packageManager) != null
         }
 
