@@ -45,6 +45,7 @@ class PurringFragment : Fragment() {
 
     private var mediaPlayer: MediaPlayer? = null
     private var playerTimeoutHandler: Handler? = null
+    private var fadeOutEffect: FadeOutSoundEffect? = null
     private var vibrator: RythmOfSoundVibrator? = null
     private var transitionListener: TransitionListener? = null
 
@@ -210,6 +211,7 @@ class PurringFragment : Fragment() {
 
         activity?.volumeControlStream = AudioManager.STREAM_MUSIC
         mediaPlayer = MediaPlayer.create(requireContext(), audioUri)?.apply { isLooping = true }
+        fadeOutEffect = mediaPlayer?.let { FadeOutSoundEffect(it, FADE_DURATION) }
 
         if(viewModel.isVibrationEnabled.not())
             return
@@ -219,7 +221,7 @@ class PurringFragment : Fragment() {
 
     private fun deinitAudio() {
         playerTimeoutHandler?.removeCallbacksAndMessages(null)
-        stopAudio()
+        stopAudio(withFade = false)
         vibrator?.release()
         mediaPlayer?.release()
         vibrator = null
@@ -238,6 +240,9 @@ class PurringFragment : Fragment() {
         if(mediaPlayer == null)
             return
 
+        fadeOutEffect?.stop()
+        mediaPlayer?.setVolume(1f, 1f)
+
         if(mediaPlayer?.isPlaying == false)
             mediaPlayer?.start()
 
@@ -245,18 +250,25 @@ class PurringFragment : Fragment() {
 
         playerTimeoutHandler?.removeCallbacksAndMessages(null)
         playerTimeoutHandler = Handler(Looper.getMainLooper()).apply {
-            postDelayed({ stopAudio() }, AUDIO_TIMEOUT)
+            postDelayed({ stopAudio(withFade = true) }, AUDIO_TIMEOUT)
         }
     }
 
-    private fun stopAudio(){
-        if(mediaPlayer?.isPlaying == true)
-            mediaPlayer?.pause()
+    private fun stopAudio(withFade: Boolean){
+        val pausePlayer = { if(mediaPlayer?.isPlaying == true) mediaPlayer?.pause() }
+
+        if (withFade)
+            fadeOutEffect?.start(pausePlayer)
+        else {
+            fadeOutEffect?.stop()
+            pausePlayer()
+        }
         vibrator?.stop()
     }
 
     companion object {
-        private const val AUDIO_TIMEOUT = 2000L
+        private const val AUDIO_TIMEOUT = 1500L
+        private const val FADE_DURATION = 1000L
 
         private const val ARG_TRANSITION_NAME = "TransitionName"
         private const val ARG_CARD = "CatCard"
