@@ -9,4 +9,5 @@ interface CatDataStorage {
     fun add(cat: Pair<String, TimedCatData>): Completable
     fun update(cat: Pair<String, CatData>): Completable
     fun remove(id: String): Completable
+    fun remove(ids: List<String>): Completable
 }

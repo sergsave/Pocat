@@ -25,4 +25,8 @@ class CatDataRepository(private val storage: CatDataStorage)
     fun remove(id: String): Completable {
         return storage.remove(id)
     }
+
+    fun remove(ids: List<String>): Completable {
+        return storage.remove(ids)
+    }
 }

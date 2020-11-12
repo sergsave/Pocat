@@ -36,9 +36,7 @@ class UserCatsViewModel(private val catDataRepository: CatDataRepository): Dispo
 
     private fun remove(catIds: List<String>) {
         addDisposable(
-            Observable.fromIterable(catIds)
-                .concatMapCompletable { catDataRepository.remove(it) }
-                .subscribe({}, { Log.e(TAG, "Remove failed", it) })
+            catDataRepository.remove(catIds).subscribe({}, { Log.e(TAG, "Remove failed", it) })
         )
     }
 

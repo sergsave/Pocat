@@ -1,11 +1,6 @@
 package com.sergsave.purryourcat.persistent.database
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Delete
-import androidx.room.Update
-import androidx.room.OnConflictStrategy
+import androidx.room.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
 
@@ -25,4 +20,9 @@ interface CatDao {
 
     @Query("DELETE FROM cats WHERE id = :catId")
     fun deleteById(catId: String): Completable
+
+    // Warning! Limits for query is 999 items
+    // https://raw.githubusercontent.com/android/platform_external_sqlite/master/dist/sqlite3.c
+    @Query("DELETE FROM cats WHERE id in (:catIds)")
+    fun deleteMultipleById(catIds: List<String>): Completable
 }

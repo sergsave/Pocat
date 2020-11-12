@@ -11,6 +11,7 @@ import com.sergsave.purryourcat.models.CatData
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 
@@ -60,6 +61,14 @@ class RoomCatDataStorage(context: Context): CatDataStorage {
 
     override fun remove(id: String): Completable {
         return database.catDao().deleteById(id)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun remove(ids: List<String>): Completable {
+        val sqliteSizeLimit = 999
+        return Observable.fromIterable(ids.chunked(sqliteSizeLimit))
+            .concatMapCompletable { database.catDao().deleteMultipleById(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
