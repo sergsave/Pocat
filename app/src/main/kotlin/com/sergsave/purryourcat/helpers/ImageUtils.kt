@@ -72,14 +72,15 @@ object ImageUtils {
             .fitCenter()
             .into(object : CustomTarget<Bitmap>(width, height) {
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    val out = FileOutputStream(outputFile)
+                    var out: FileOutputStream? = null
                     val finish = { res: Boolean ->
-                        out.flush()
-                        out.close()
+                        out?.flush()
+                        out?.close()
                         finishCallback?.invoke(res)
                     }
                     try {
-                        val quality = 85
+                        out = FileOutputStream(outputFile)
+                        val quality = 100
                         resource.compress(Bitmap.CompressFormat.JPEG, quality, out)
                         finish(true)
                     }

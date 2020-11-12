@@ -22,7 +22,6 @@ import kotlin.math.abs
 // TODO: Check sdk version of all function
 // TODO: Names of constants (XX_BUNDLE_KEY or BUNDLE_KEY_XX)
 // TODO: Code inspect and warnings
-// TODO: Hangs on Xiaomi Redmi 6
 // TODO: Require context and requireActivity
 
 class MainActivity : AppCompatActivity() {
