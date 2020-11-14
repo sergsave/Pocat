@@ -23,6 +23,7 @@ import kotlin.math.abs
 // TODO: Names of constants (XX_BUNDLE_KEY or BUNDLE_KEY_XX)
 // TODO: Code inspect and warnings
 // TODO: Require context and requireActivity
+// TODO: Check all unhadled exception (in not rxjava code). Specify type of exception. Don't ignore.
 
 class MainActivity : AppCompatActivity() {
 

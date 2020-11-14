@@ -42,7 +42,7 @@ class RingdroidSoundBeatDetector(
             return null
 
         // TODO: To constants
-        val tempDir = File(context.cacheDir, "beat_detector")
+        val tempDir = File(context.cacheDir, "ringdroid_beat_detector")
         tempDir.mkdir()
 
         val suffix = fileName.substringAfterLast('.', "").let {
