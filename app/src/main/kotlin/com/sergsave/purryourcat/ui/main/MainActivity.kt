@@ -44,8 +44,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         setContentView(R.layout.activity_main)
-        // Cleanup not in Application, because Application is created only after device reload
-        viewModel.cleanUnusedFiles()
+        
+        if (savedInstanceState == null) {
+            // Cleanup not in Application, because Application is created only after device reload
+            viewModel.cleanUnusedFiles()
+            checkInputSharingIntent()
+        }
 
         viewModel.requestPageChangeEvent.observe(this, EventObserver {
             pager.setCurrentItem(it, false)
@@ -55,8 +59,6 @@ class MainActivity : AppCompatActivity() {
 
         setToolbarAsActionBar(toolbar, showBackButton = false)
         supportActionBar?.elevation = 0f
-
-        checkInputSharingIntent()
     }
 
     private fun setupPager() {
