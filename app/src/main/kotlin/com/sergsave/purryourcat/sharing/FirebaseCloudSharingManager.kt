@@ -23,15 +23,21 @@ import io.reactivex.schedulers.Schedulers
 import java.io.IOException
 import java.util.*
 import com.sergsave.purryourcat.R
+import io.reactivex.SingleSource
+import io.reactivex.rxkotlin.zipWith
 import io.reactivex.subjects.BehaviorSubject
 
 class FirebaseCloudSharingManager(
     private val context: Context,
-    val packerFactory: DataPackerFactory
+    private val packer: DataPacker
 ): SharingManager {
     private val cacheDir = File(context.cacheDir, "sharing")
-    private val packer = packerFactory.make(cacheDir)
     private val cleanupInProcess = BehaviorSubject.createDefault(false)
+
+    private fun createTempDir(): File {
+        cacheDir.mkdirs()
+        return createTempDir(suffix = null, directory = cacheDir)
+    }
 
     override fun cleanup(): Completable {
         return Completable.fromCallable {
@@ -53,14 +59,16 @@ class FirebaseCloudSharingManager(
 
     override fun makeTakeObservable(pack: Pack): Single<Intent> {
         return waitCleanupFinish()
-            .andThen(packer.pack(pack))
-            .flatMap { checkConnection(context).andThen(uploadDataFile(it)) }
-            .flatMap {
-                createSharingIntent(it, pack.cat.photoUri, pack.cat.name)
+            .andThen(Single.fromCallable { createTempDir() })
+            .flatMap { temp ->
+                packer.pack(pack, File(temp, "pack"))
+                    .flatMap { checkConnection(context).andThen(uploadDataFile(it)) }
+                    .flatMap { createSharingIntent(it, temp, pack.cat.photoUri, pack.cat.name) }
             }
     }
 
-    private fun createSharingIntent(downloadLink: Uri, preview: Uri?, catName: String?): Single<Intent> {
+    private fun createSharingIntent(downloadLink: Uri, tempDir: File,
+                                    preview: Uri?, catName: String?): Single<Intent> {
         val makeIntentSingle = { previewDonwloadLink: Uri? ->
             val header = context.getString(R.string.sharing_text)
             createDynamicLink(downloadLink, header, previewDonwloadLink, catName)
@@ -70,7 +78,7 @@ class FirebaseCloudSharingManager(
         if (preview == null)
             return makeIntentSingle(null)
 
-        return resizePreview(preview, cacheDir, context)
+        return resizePreview(preview, tempDir, context)
             .flatMap { uploadPreview(it) }
             .flatMap { makeIntentSingle(it) }
     }
@@ -78,8 +86,12 @@ class FirebaseCloudSharingManager(
     override fun makeGiveObservable(intent: Intent): Single<Pack> {
         return waitCleanupFinish()
             .andThen(extractDownloadLink(intent))
-            .flatMap { checkConnection(context).andThen(downloadFile(it, cacheDir)) }
-            .flatMap { packer.unpack(it) }
+            .zipWith(Single.fromCallable { createTempDir() })
+            .flatMap { (link, temp) ->
+                checkConnection(context)
+                    .andThen(downloadFile(link, temp))
+                    .flatMap { packer.unpack(it, File(temp, "unpack")) }
+            }
     }
 }
 
@@ -135,7 +147,7 @@ private fun resizePreview(previewUri: Uri, tempDir: File, context: Context): Sin
             if(res)
                 emitter.onSuccess(resizedFile)
             else
-                emitter.onError(IllegalStateException("Image load error"))
+                emitter.onError(IOException("Image load error"))
         }
     }
 }

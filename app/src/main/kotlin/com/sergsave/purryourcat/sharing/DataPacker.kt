@@ -3,11 +3,7 @@ package com.sergsave.purryourcat.sharing
 import java.io.File
 import io.reactivex.Single
 
-abstract class DataPacker(protected val tempDir: File) {
-    abstract fun pack(pack: Pack): Single<File>
-    abstract fun unpack(file: File): Single<Pack>
-}
-
-interface DataPackerFactory {
-    fun make(tempDir: File): DataPacker
+interface DataPacker {
+    fun pack(pack: Pack, buildDir: File): Single<File>
+    fun unpack(file: File, buildDir: File): Single<Pack>
 }

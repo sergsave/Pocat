@@ -13,6 +13,7 @@ import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.json.JsonLiteral
 import kotlinx.serialization.json.JsonObject
 import java.io.File
+import java.io.IOException
 
 private const val BUNDLE_FILE_NAME = "bundle.json"
 private const val BUNDLE_ACTUAL_VERSION = 1
@@ -57,13 +58,12 @@ private fun readPackFromBundleFile(file: File): Pack? {
     }
 }
 
-private class ZipDataPacker(tempDir: File, private val context: Context): DataPacker(tempDir) {
+class ZipDataPacker(private val context: Context): DataPacker {
 
-    private fun packSync(pack: Pack): File? {
-        if(tempDir.exists().not()) tempDir.mkdirs()
+    private fun packSync(pack: Pack, buildDir: File): File? {
+        if(buildDir.exists().not()) buildDir.mkdirs()
 
-        val name = pack.cat.name ?: "Cat"
-        val zipPath = tempDir.path + "/$name.zip"
+        val zipPath = File(buildDir, "cat.zip").path
 
         val contentUris = pack.cat.extractContent().map { it }
         val withFixedUris = pack.cat.withUpdatedContent { uri ->
@@ -71,7 +71,7 @@ private class ZipDataPacker(tempDir: File, private val context: Context): DataPa
             _name?.let { Uri.parse(it) }
         }
 
-        val bundleFile = File(tempDir, BUNDLE_FILE_NAME)
+        val bundleFile = File(buildDir, BUNDLE_FILE_NAME)
         savePackToBundleFile(Pack(withFixedUris), bundleFile)
 
         val zipped = contentUris + Uri.fromFile(bundleFile)
@@ -80,48 +80,42 @@ private class ZipDataPacker(tempDir: File, private val context: Context): DataPa
         return File(zipPath)
     }
 
-    private fun unpackSync(file: File): Pack? {
-        if(tempDir.exists().not()) tempDir.mkdirs()
+    private fun unpackSync(file: File, buildDir: File): Pack? {
+        if(buildDir.exists().not()) buildDir.mkdirs()
 
         if(file.exists().not())
             return null
 
-        FileUtils.unzip(file.path, tempDir.path)
+        FileUtils.unzip(file.path, buildDir.path)
 
-        val bundleFile = File(tempDir, BUNDLE_FILE_NAME)
+        val bundleFile = File(buildDir, BUNDLE_FILE_NAME)
         val pack = readPackFromBundleFile(bundleFile)
         if(pack == null)
             return null
 
         val withFixedUris = pack.cat.withUpdatedContent { uri ->
-            uri?.let { Uri.fromFile(File(tempDir, it.toString())) }
+            uri?.let { Uri.fromFile(File(buildDir, it.toString())) }
         }
         return Pack(withFixedUris)
     }
 
-    private val error = Exception("Packing error")
+    private val error = IOException("Packing error")
 
-    override fun pack(pack: Pack): Single<File> {
+    override fun pack(pack: Pack, buildDir: File): Single<File> {
         return Single.create<File> { emitter ->
-            val file = packSync(pack)
+            val file = packSync(pack, buildDir)
             if(file != null) emitter.onSuccess(file) else emitter.onError(error)
         }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun unpack(file: File): Single<Pack> {
+    override fun unpack(file: File, buildDir: File): Single<Pack> {
         return Single.create<Pack> { emitter ->
-            val pack = unpackSync(file)
+            val pack = unpackSync(file, buildDir)
             if(pack != null) emitter.onSuccess(pack) else emitter.onError(error)
         }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-    }
-}
-
-class ZipDataPackerFactory(private val context: Context): DataPackerFactory {
-    override fun make(tempDir: File): DataPacker {
-        return ZipDataPacker(tempDir, context)
     }
 }

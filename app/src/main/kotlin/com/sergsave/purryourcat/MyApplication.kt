@@ -14,7 +14,7 @@ import com.sergsave.purryourcat.samples.CatSampleProvider
 import com.sergsave.purryourcat.samples.SoundSampleProvider
 import com.sergsave.purryourcat.sharing.FirebaseCloudSharingManager
 import com.sergsave.purryourcat.sharing.SharingManager
-import com.sergsave.purryourcat.sharing.ZipDataPackerFactory
+import com.sergsave.purryourcat.sharing.ZipDataPacker
 import com.sergsave.purryourcat.models.Card
 import com.sergsave.purryourcat.ui.catcard.FormViewModel
 import com.sergsave.purryourcat.ui.catcard.PurringViewModel
@@ -35,7 +35,7 @@ class AppContainer(private val context: Context) {
     private val maxAudioFileSizeMB = 2L
 
     private val sharingManager: SharingManager =
-         FirebaseCloudSharingManager(context, ZipDataPackerFactory(context))
+         FirebaseCloudSharingManager(context, ZipDataPacker(context))
     private val sharingErrorStringId = R.string.connection_error
 
     val soundSampleProvider = SoundSampleProvider(context)
