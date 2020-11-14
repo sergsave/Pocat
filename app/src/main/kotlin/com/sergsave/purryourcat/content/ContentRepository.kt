@@ -5,7 +5,6 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.Completable
 import io.reactivex.rxkotlin.Flowables
-import java.io.IOException
 
 // Save content to file storage available for application
 // Files will added with same names
@@ -20,7 +19,7 @@ class ContentRepository (
 
     private fun add(storage: ContentStorage, sourceContent: Uri?): Single<Uri> {
         if(sourceContent == null)
-            return Single.error(IOException("Null content"))
+            return Single.error(IllegalArgumentException("Null content"))
 
         return storage.add(sourceContent, true)
     }
@@ -35,7 +34,7 @@ class ContentRepository (
 
     fun remove(uri: Uri?): Completable {
         if(uri == null)
-            return Completable.error(IOException("Null uri"))
+            return Completable.error(IllegalArgumentException("Null uri"))
 
         return audioStorage.remove(uri)
             .onErrorResumeNext { imageStorage.remove(uri) }
