@@ -13,7 +13,7 @@ import com.sergsave.purryourcat.preference.PreferenceManager
 import com.sergsave.purryourcat.samples.CatSampleProvider
 import com.sergsave.purryourcat.samples.SoundSampleProvider
 import com.sergsave.purryourcat.sharing.FirebaseCloudSharingManager
-import com.sergsave.purryourcat.sharing.SharingManager
+import com.sergsave.purryourcat.sharing.WebSharingManager
 import com.sergsave.purryourcat.sharing.ZipDataPacker
 import com.sergsave.purryourcat.models.Card
 import com.sergsave.purryourcat.ui.catcard.FormViewModel
@@ -34,9 +34,8 @@ class AppContainer(private val context: Context) {
     private val preferences = PreferenceManager(context)
     private val maxAudioFileSizeMB = 2L
 
-    private val sharingManager: SharingManager =
+    private val sharingManager: WebSharingManager =
          FirebaseCloudSharingManager(context, ZipDataPacker(context))
-    private val sharingErrorStringId = R.string.connection_error
 
     val soundSampleProvider = SoundSampleProvider(context)
 
@@ -62,12 +61,12 @@ class AppContainer(private val context: Context) {
 
     fun providePurringViewModelFactory(card: Card) =
         ViewModelFactory(PurringViewModel::class.java, {
-            PurringViewModel(catDataRepo, sharingManager, preferences, sharingErrorStringId, card)
+            PurringViewModel(catDataRepo, sharingManager, preferences, card)
         })
 
     fun provideSharingDataExtractViewModelFactory() =
         ViewModelFactory(SharingDataExtractViewModel::class.java, {
-            SharingDataExtractViewModel(sharingManager, contentRepo, sharingErrorStringId)
+            SharingDataExtractViewModel(sharingManager, contentRepo)
         })
 
     fun provideSoundSelectionViewModelFactory() =

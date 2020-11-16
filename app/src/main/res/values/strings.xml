@@ -28,7 +28,10 @@
     <string name="close">Close</string>
     <string name="save_snackbar_message_text">Cat successfully added to your collection</string>
     <string name="file_size_exceeded_message_text">The file is too large. Please select a file less than %1$d&nbsp;MB</string>
-    <string name="connection_error">Loading failed. Please check internet connection</string>
+    <string name="connection_error">No internet connection</string>
+    <string name="general_sharing_error">Loading failed. Please check internet connection and free space in the device memory</string>
+    <string name="invalid_link_error">Сat is no longer available at this link. You can ask to send you a cat again.</string>
+    <string name="retry">Retry</string>
     <string name="settings">Settings</string>
     <string name="donate">Donate</string>
     <string name="about">About</string>

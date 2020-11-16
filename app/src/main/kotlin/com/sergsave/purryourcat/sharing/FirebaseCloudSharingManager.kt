@@ -11,6 +11,7 @@ import com.google.firebase.dynamiclinks.ktx.androidParameters
 import com.google.firebase.dynamiclinks.ktx.socialMetaTagParameters
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FileDownloadTask
+import com.google.firebase.storage.StorageException
 import com.google.firebase.storage.UploadTask
 import com.google.firebase.storage.ktx.storage
 import java.io.File
@@ -30,7 +31,7 @@ import io.reactivex.subjects.BehaviorSubject
 class FirebaseCloudSharingManager(
     private val context: Context,
     private val packer: DataPacker
-): SharingManager {
+): WebSharingManager {
     private val cacheDir = File(context.cacheDir, "sharing")
     private val cleanupInProcess = BehaviorSubject.createDefault(false)
 
@@ -57,7 +58,7 @@ class FirebaseCloudSharingManager(
         )
     }
 
-    override fun makeTakeObservable(pack: Pack): Single<Intent> {
+    override fun upload(pack: Pack): Single<Intent> {
         return waitCleanupFinish()
             .andThen(Single.fromCallable { createTempDir() })
             .flatMap { temp ->
@@ -83,7 +84,7 @@ class FirebaseCloudSharingManager(
             .flatMap { makeIntentSingle(it) }
     }
 
-    override fun makeGiveObservable(intent: Intent): Single<Pack> {
+    override fun download(intent: Intent): Single<Pack> {
         return waitCleanupFinish()
             .andThen(extractDownloadLink(intent))
             .zipWith(Single.fromCallable { createTempDir() })
@@ -100,7 +101,7 @@ private fun checkConnection(context: Context): Completable {
         if(NetworkUtils.isNetworkAvailable(context))
             emitter.onComplete()
         else
-            emitter.onError(IOException("No connection"))
+            emitter.onError(WebSharingManager.NoConnectionException("Network not available"))
     }
 }
 
@@ -120,7 +121,11 @@ private fun uploadFile(file: File, folderName: String): Single<Uri> {
                     emitter.onSuccess(it)
                 }
             }.addOnFailureListener {
-                emitter.onError(IOException("Uploading error"))
+                val errorCode = (it as? StorageException)?.errorCode
+                if (errorCode == StorageException.ERROR_RETRY_LIMIT_EXCEEDED)
+                    emitter.onError(WebSharingManager.NoConnectionException("Retry limit"))
+                else
+                    emitter.onError(IOException("Uploading error"))
             }
         }
     }.doOnDispose {
@@ -184,17 +189,24 @@ private fun makeIntent(link: Uri): Intent {
         val text = link.toString()
         putExtra(Intent.EXTRA_TEXT, text)
         type = "text/plain"
-        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
 }
 
 private fun extractDownloadLink(intent: Intent): Single<Uri> {
-    val error = IOException("Extract link error")
+    val error = WebSharingManager.InvalidLinkException("Extract link error")
     return Single.create<Uri> { emitter ->
         Firebase.dynamicLinks
             .getDynamicLink(intent)
             .addOnSuccessListener { pendingLinkData ->
-                pendingLinkData?.link?.let { emitter.onSuccess(it) }?: emitter.onError(error)
+                // Hack. Firebase allow exract uri with "getDynamicLink" only once.
+                // Follow-up call of "getDynamicLink" return null.
+                // In this case extract uri form intent directly
+                val link = if (pendingLinkData == null)
+                    intent.data
+                else
+                    pendingLinkData.link
+
+                link?.let { emitter.onSuccess(it) } ?: emitter.onError(error)
             }
             .addOnFailureListener { emitter.onError(error) }
     }
@@ -215,7 +227,15 @@ private fun downloadFile(uri: Uri, dir: File): Single<File> {
             addOnSuccessListener {
                 emitter.onSuccess(file)
             }.addOnFailureListener {
-                emitter.onError(IOException("Downloading error"))
+                val error = when ((it as? StorageException)?.errorCode) {
+                    StorageException.ERROR_RETRY_LIMIT_EXCEEDED ->
+                        WebSharingManager.NoConnectionException("Retry limit")
+                    StorageException.ERROR_OBJECT_NOT_FOUND,
+                    StorageException.ERROR_BUCKET_NOT_FOUND ->
+                        WebSharingManager.InvalidLinkException("Object not found")
+                    else -> IOException("Downloading error")
+                }
+                emitter.onError(error)
             }
         }
     }.doOnDispose {

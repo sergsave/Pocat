@@ -11,14 +11,13 @@ import com.sergsave.purryourcat.models.Card
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.preference.PreferenceManager
 import com.sergsave.purryourcat.sharing.Pack
-import com.sergsave.purryourcat.sharing.SharingManager
+import com.sergsave.purryourcat.sharing.WebSharingManager
 import com.sergsave.purryourcat.R
 
 class PurringViewModel(
     private val catDataRepository: CatDataRepository,
-    private val sharingManager: SharingManager,
+    private val sharingManager: WebSharingManager,
     private val preferences: PreferenceManager,
-    private val sharingErrorStringId: Int,
     private var card: Card
 ) : DisposableViewModel() {
 
@@ -84,17 +83,25 @@ class PurringViewModel(
 
     private fun onSharePressed() {
         val pack = _catData.value?.let { Pack(it) }
-        val single = pack?.let { sharingManager.makeTakeObservable(it) }
+        val single = pack?.let { sharingManager.upload(it) }
         if(single == null)
             return
 
         _sharingLoaderIsVisible.value = true
 
+        val handleError = { throwable: Throwable ->
+            val stringId = when (throwable) {
+                is WebSharingManager.NoConnectionException -> R.string.connection_error
+                else -> R.string.general_sharing_error
+            }
+            _sharingFailedStringIdEvent.value = Event(stringId)
+        }
+
         val disposable = single
             .doOnEvent{ _,_ -> _sharingLoaderIsVisible.value = false }
             .subscribe(
                 { data -> _sharingSuccessEvent.value = Event(data) },
-                { _sharingFailedStringIdEvent.value = Event(sharingErrorStringId) }
+                { handleError(it) }
             )
 
         addDisposable(disposable)

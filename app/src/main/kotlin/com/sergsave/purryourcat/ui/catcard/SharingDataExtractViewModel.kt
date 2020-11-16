@@ -9,37 +9,73 @@ import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.models.Card
 import com.sergsave.purryourcat.helpers.Event
 import com.sergsave.purryourcat.helpers.DisposableViewModel
-import com.sergsave.purryourcat.sharing.SharingManager
+import com.sergsave.purryourcat.sharing.WebSharingManager
 import com.sergsave.purryourcat.R
+import com.sergsave.purryourcat.sharing.Pack
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.zipWith
+import java.util.concurrent.TimeUnit
 
 class SharingDataExtractViewModel(
-    private val sharingManager: SharingManager,
-    private val contentRepo: ContentRepository,
-    private val errorStringId: Int
+    private val sharingManager: WebSharingManager,
+    private val contentRepo: ContentRepository
 ) : DisposableViewModel() {
 
-    private val _sharingState = MutableLiveData<Boolean>()
-    val sharingState: LiveData<Boolean>
-        get() = _sharingState
+    enum class SharingState {
+        INITIAL,
+        LOADING,
+        NO_CONNECTION_ERROR,
+        INVALID_LINK_ERROR,
+        UNKNOWN_ERROR
+    }
 
-    private val _extractFailedStringIdEvent = MutableLiveData<Event<Int>>()
-    val extractFailedStringIdEvent: LiveData<Event<Int>>
-        get() = _extractFailedStringIdEvent
+    private val _sharingState = MutableLiveData<SharingState>(SharingState.INITIAL)
+    val sharingState: LiveData<SharingState>
+        get() = _sharingState
 
     private val _extractSuccessEvent = MutableLiveData<Event<Card>>()
     val extractSuccessEvent: LiveData<Event<Card>>
         get() = _extractSuccessEvent
 
-    // Use intent is safe here because we don't save reference to any context.
-    fun startExtract(intent: Intent) {
-        _sharingState.value = true
+    private sealed class Result {
+        class Success(val pack: Pack): Result()
+        class Error(val throwable: Throwable): Result()
+    }
 
-        val disposable = sharingManager.makeGiveObservable(intent)
-            .doOnEvent { _, _ -> _sharingState.value = false }
-            .subscribe(
-                { data -> updateContent(data.cat) },
-                { _extractFailedStringIdEvent.value = Event(errorStringId) }
+    // Use intent is safe here because we don't save reference to any context.
+    fun startExtract(intent: Intent?) {
+        if (intent == null) {
+            assert(false) { "Need intent!" }
+            return
+        }
+
+        val handleError = { throwable: Throwable ->
+            val state = when(throwable) {
+                is WebSharingManager.NoConnectionException -> SharingState.NO_CONNECTION_ERROR
+                is WebSharingManager.InvalidLinkException -> SharingState.INVALID_LINK_ERROR
+                else -> SharingState.UNKNOWN_ERROR
+            }
+            _sharingState.value = state
+        }
+
+        _sharingState.value = SharingState.LOADING
+
+        // Allow to avoid progress bar blinking
+        val minimumLoadingDurationMillis = 1000L
+        val disposable = Single.timer(minimumLoadingDurationMillis, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .zipWith(
+                sharingManager.download(intent)
+                    .map<Result> { Result.Success(it) }
+                    .onErrorReturn { Result.Error(it) }
             )
+            .subscribe { (_, res) ->
+                when (res) {
+                    is Result.Success -> updateContent(res.pack.cat)
+                    is Result.Error -> handleError(res.throwable)
+                }
+            }
 
         addDisposable(disposable)
     }
@@ -55,7 +91,7 @@ class SharingDataExtractViewModel(
                         val updated = data.copy(photoUri = photo, purrAudioUri = audio)
                         _extractSuccessEvent.value = Event(Card(null, updated, true, true))
                     },
-                    { _extractFailedStringIdEvent.value = Event(R.string.not_valid_data) }
+                    { _sharingState.value = SharingState.INVALID_LINK_ERROR }
                 )
         )
     }

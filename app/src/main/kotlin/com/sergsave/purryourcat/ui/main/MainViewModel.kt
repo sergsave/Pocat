@@ -9,7 +9,7 @@ import com.sergsave.purryourcat.helpers.DisposableViewModel
 import com.sergsave.purryourcat.helpers.Event
 import com.sergsave.purryourcat.models.extractContent
 import com.sergsave.purryourcat.preference.PreferenceManager
-import com.sergsave.purryourcat.sharing.SharingManager
+import com.sergsave.purryourcat.sharing.WebSharingManager
 import com.sergsave.purryourcat.R
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.Flowables
@@ -17,7 +17,7 @@ import io.reactivex.rxkotlin.Flowables
 class MainViewModel(
     private val catDataRepository: CatDataRepository,
     private val contentRepository: ContentRepository,
-    private val sharingManager: SharingManager,
+    private val sharingManager: WebSharingManager,
     private val preferences: PreferenceManager
 ): DisposableViewModel() {
 
