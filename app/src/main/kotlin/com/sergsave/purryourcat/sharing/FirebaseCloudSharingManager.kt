@@ -59,29 +59,29 @@ class FirebaseCloudSharingManager(
     }
 
     override fun upload(pack: Pack): Single<Intent> {
+        val uploadData = { _pack: Pack, tempDir: File ->
+            packer.pack(_pack, File(tempDir, "pack")).flatMap { uploadFile(it, "data") }
+        }
+
+        val uploadPreview = { photo: Uri, tempDir: File ->
+            resizePreview(photo, tempDir, context).flatMap { uploadFile(it, "preview") }
+        }
+
         return waitCleanupFinish()
             .andThen(Single.fromCallable { createTempDir() })
             .flatMap { temp ->
-                packer.pack(pack, File(temp, "pack"))
-                    .flatMap { checkConnection(context).andThen(uploadDataFile(it)) }
-                    .flatMap { createSharingIntent(it, temp, pack.cat.photoUri, pack.cat.name) }
+                val photo = pack.cat.photoUri
+                checkConnection(context)
+                    .andThen(uploadData(pack, temp))
+                    .zipWith(photo?.let { uploadPreview(it, temp) } ?: Single.just(Uri.EMPTY))
             }
-    }
-
-    private fun createSharingIntent(downloadLink: Uri, tempDir: File,
-                                    preview: Uri?, catName: String?): Single<Intent> {
-        val makeIntentSingle = { previewDonwloadLink: Uri? ->
-            val header = context.getString(R.string.sharing_text)
-            createDynamicLink(downloadLink, header, previewDonwloadLink, catName)
-                .map { makeIntent(it) }
-        }
-
-        if (preview == null)
-            return makeIntentSingle(null)
-
-        return resizePreview(preview, tempDir, context)
-            .flatMap { uploadPreview(it) }
-            .flatMap { makeIntentSingle(it) }
+            .flatMap {
+                val dataLink = it.first
+                val previewLink = if (it.second == Uri.EMPTY) null else it.second
+                val header = context.getString(R.string.sharing_text)
+                createDynamicLink(dataLink, header, previewLink, pack.cat.name)
+            }
+            .map { makeIntent(it) }
     }
 
     override fun download(intent: Intent): Single<Pack> {
@@ -135,10 +135,6 @@ private fun uploadFile(file: File, folderName: String): Single<Uri> {
     return authorize().andThen(uploadSingle)
 }
 
-private fun uploadDataFile(file: File): Single<Uri> {
-    return uploadFile(file, "data")
-}
-
 private fun resizePreview(previewUri: Uri, tempDir: File, context: Context): Single<File> {
     val resizedFile = File(tempDir, "preview.jpg")
     // Size for firebase deeplink preview should be greater than 300 x 200
@@ -155,10 +151,6 @@ private fun resizePreview(previewUri: Uri, tempDir: File, context: Context): Sin
                 emitter.onError(IOException("Image load error"))
         }
     }
-}
-
-private fun uploadPreview(file: File): Single<Uri> {
-    return uploadFile(file, "preview")
 }
 
 private fun createDynamicLink(downloadLink: Uri,
