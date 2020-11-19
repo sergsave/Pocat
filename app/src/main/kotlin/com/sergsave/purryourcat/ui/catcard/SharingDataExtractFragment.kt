@@ -43,7 +43,7 @@ class SharingDataExtractFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         (activity as? AppCompatActivity)?.supportActionBar?.title =
-            resources.getString(R.string.wait)
+            resources.getString(R.string.loading)
 
         val sharingIntent = arguments?.getParcelable<Intent>(ARG_INTENT)
 

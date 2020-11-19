@@ -191,8 +191,10 @@ class PurringFragment : Fragment() {
         viewModel.menuState.value?.visibleActionIds?.forEach { menu.findItem(it)?.isVisible = true  }
 
         menu.findItem(viewModel.shareActionId)?.let {
-            if(viewModel.sharingLoaderIsVisible.value == true)
+            if(viewModel.sharingLoaderIsVisible.value == true) {
                 it.setActionView(R.layout.view_loader)
+                it.actionView?.setOnClickListener { viewModel.onSharingLoaderClicked() }
+            }
             else
                 it.setActionView(null)
         }

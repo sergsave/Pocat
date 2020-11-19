@@ -13,6 +13,7 @@ import com.sergsave.purryourcat.preference.PreferenceManager
 import com.sergsave.purryourcat.sharing.Pack
 import com.sergsave.purryourcat.sharing.WebSharingManager
 import com.sergsave.purryourcat.R
+import io.reactivex.disposables.Disposable
 
 class PurringViewModel(
     private val catDataRepository: CatDataRepository,
@@ -24,8 +25,9 @@ class PurringViewModel(
     val menuId = R.menu.menu_purring
     val shareActionId = R.id.action_share
 
-    data class MenuState(val visibleActionIds: List<Int>,
-                         val hidedActionIds: List<Int>)
+    data class MenuState(val visibleActionIds: List<Int>, val hidedActionIds: List<Int>)
+
+    private var sharingDisposable: Disposable? = null
 
     private val _catData = MutableLiveData<CatData>()
     val catData: LiveData<CatData>
@@ -98,13 +100,15 @@ class PurringViewModel(
         }
 
         val disposable = single
-            .doOnEvent{ _,_ -> _sharingLoaderIsVisible.value = false }
+            .doOnDispose { _sharingLoaderIsVisible.value = false }
+            .doOnEvent { _, _ -> _sharingLoaderIsVisible.value = false }
             .subscribe(
                 { data -> _sharingSuccessEvent.value = Event(data) },
                 { handleError(it) }
             )
 
         addDisposable(disposable)
+        sharingDisposable = disposable
     }
 
     private fun onSavePressed() {
@@ -132,6 +136,10 @@ class PurringViewModel(
             else -> return false
         }
         return true
+    }
+
+    fun onSharingLoaderClicked() {
+        sharingDisposable?.dispose()
     }
 
     val isVibrationEnabled: Boolean

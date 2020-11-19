@@ -24,6 +24,7 @@ import io.reactivex.schedulers.Schedulers
 import java.io.IOException
 import java.util.*
 import com.sergsave.purryourcat.R
+import com.sergsave.purryourcat.helpers.createIntentChooser
 import io.reactivex.SingleSource
 import io.reactivex.rxkotlin.zipWith
 import io.reactivex.subjects.BehaviorSubject
@@ -81,7 +82,7 @@ class FirebaseCloudSharingManager(
                 val header = context.getString(R.string.sharing_text)
                 createDynamicLink(dataLink, header, previewLink, pack.cat.name)
             }
-            .map { makeIntent(it) }
+            .map { makeIntent(context, it) }
     }
 
     override fun download(intent: Intent): Single<Pack> {
@@ -176,12 +177,13 @@ private fun createDynamicLink(downloadLink: Uri,
     }
 }
 
-private fun makeIntent(link: Uri): Intent {
-    return Intent(Intent.ACTION_SEND).apply {
+private fun makeIntent(context: Context, link: Uri): Intent {
+    val intent = Intent(Intent.ACTION_SEND).apply {
         val text = link.toString()
         putExtra(Intent.EXTRA_TEXT, text)
         type = "text/plain"
     }
+    return createIntentChooser(listOf(intent), context.getString(R.string.send_data)) ?: intent
 }
 
 private fun extractDownloadLink(intent: Intent): Single<Uri> {
