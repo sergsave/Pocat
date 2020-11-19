@@ -132,7 +132,7 @@ private fun uploadFile(file: File, folderName: String): Single<Uri> {
         uploadTask?.cancel()
     }
 
-    return authorize().andThen(uploadSingle)
+    return auth().andThen(uploadSingle)
 }
 
 private fun resizePreview(previewUri: Uri, tempDir: File, context: Context): Single<File> {
@@ -234,17 +234,17 @@ private fun downloadFile(uri: Uri, dir: File): Single<File> {
         downloadTask?.cancel()
     }
 
-    return authorize().andThen(downloadSingle)
+    return auth().andThen(downloadSingle)
 }
 
-private fun authorize(): Completable {
+private fun auth(): Completable {
     return Completable.create { emitter ->
         Firebase.auth.signInAnonymously()
             .addOnCompleteListener{ task ->
                 if (task.isSuccessful) {
                     emitter.onComplete()
                 } else {
-                    emitter.onError(IOException("Authorize error"))
+                    emitter.onError(IOException("Auth error"))
                 }
             }
     }
