@@ -1,5 +1,6 @@
 package com.sergsave.purryourcat.ui.testing
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -10,6 +11,7 @@ import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.R
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
+import java.lang.IllegalStateException
 
 class TestingViewModel(
     private val catDataRepository: CatDataRepository,
@@ -24,10 +26,15 @@ class TestingViewModel(
 
         val createCatCopyObservable = { cat: CatData ->
             Singles.zip(
-                contentRepository.addImage(cat.photoUri),
-                contentRepository.addAudio(cat.purrAudioUri)
+                contentRepository.addImage(cat.photoUri).onErrorReturnItem(Uri.EMPTY),
+                contentRepository.addAudio(cat.purrAudioUri).onErrorReturnItem(Uri.EMPTY)
             )
-                .map { cat.copy(photoUri = it.first, purrAudioUri = it.second) }
+                .map { (photo, audio) ->
+                    if (photo == Uri.EMPTY || audio == Uri.EMPTY)
+                        throw IllegalStateException("Bad cat!")
+                    else
+                        cat.copy(photoUri = photo, purrAudioUri = audio)
+                }
         }
 
         val disposable = catDataRepository.read()

@@ -1,6 +1,7 @@
 package com.sergsave.purryourcat.ui.catcard
 
 import android.content.Intent
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.rxkotlin.Singles
@@ -81,18 +82,19 @@ class SharingDataExtractViewModel(
     }
 
     private fun updateContent(data: CatData) {
-        addDisposable(
-            Singles.zip(
-                contentRepo.addImage(data.photoUri),
-                contentRepo.addAudio(data.purrAudioUri)
+        val disposable = Singles.zip(
+                contentRepo.addImage(data.photoUri).onErrorReturnItem(Uri.EMPTY),
+                contentRepo.addAudio(data.purrAudioUri).onErrorReturnItem(Uri.EMPTY)
             )
-                .subscribe(
-                    { (photo, audio) ->
+            .subscribe({ (photo, audio) ->
+                    if (photo == Uri.EMPTY || audio == Uri.EMPTY)
+                        _sharingState.value = SharingState.INVALID_LINK_ERROR
+                    else {
                         val updated = data.copy(photoUri = photo, purrAudioUri = audio)
                         _extractSuccessEvent.value = Event(Card(null, updated, true, true))
-                    },
-                    { _sharingState.value = SharingState.INVALID_LINK_ERROR }
-                )
-        )
+                    }
+                }
+            )
+        addDisposable(disposable)
     }
 }

@@ -64,17 +64,19 @@ class FirebaseCloudSharingManager(
             packer.pack(_pack, File(tempDir, "pack")).flatMap { uploadFile(it, "data") }
         }
 
-        val uploadPreview = { photo: Uri, tempDir: File ->
-            resizePreview(photo, tempDir, context).flatMap { uploadFile(it, "preview") }
+        val uploadPreview = { photo: Uri?, tempDir: File ->
+            if (photo == null)
+                Single.error(IllegalArgumentException("Null photo uri"))
+            else
+                resizePreview(photo, tempDir, context).flatMap { uploadFile(it, "preview") }
         }
 
         return waitCleanupFinish()
             .andThen(Single.fromCallable { createTempDir() })
             .flatMap { temp ->
-                val photo = pack.cat.photoUri
                 checkConnection(context)
                     .andThen(uploadData(pack, temp))
-                    .zipWith(photo?.let { uploadPreview(it, temp) } ?: Single.just(Uri.EMPTY))
+                    .zipWith(uploadPreview(pack.cat.photoUri, temp).onErrorReturn { Uri.EMPTY })
             }
             .flatMap {
                 val dataLink = it.first
@@ -88,8 +90,8 @@ class FirebaseCloudSharingManager(
     override fun download(intent: Intent): Single<Pack> {
         return waitCleanupFinish()
             .andThen(extractDownloadLink(intent))
-            .zipWith(Single.fromCallable { createTempDir() })
-            .flatMap { (link, temp) ->
+            .flatMap { link ->
+                val temp = createTempDir()
                 checkConnection(context)
                     .andThen(downloadFile(link, temp))
                     .flatMap { packer.unpack(it, File(temp, "unpack")) }
