@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<notices>
+    <notice>
+        <name>CircleImageView</name>
+        <url>https://github.com/hdodenhof/CircleImageView</url>
+        <copyright>Copyright 2014 - 2020 Henning Dodenhof</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>Material Components for Android</name>
+        <url>https://github.com/material-components/material-components-android</url>
+        <copyright></copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>Glide</name>
+        <url>bumptech.github.io/glide/</url>
+        <copyright>Copyright 2014 Google, Inc. All rights reserved.</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>RxJava</name>
+        <url>https://github.com/ReactiveX/RxJava</url>
+        <copyright>Copyright (c) 2016-present, RxJava Contributors.</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>RxKotlin</name>
+        <url>https://github.com/ReactiveX/RxKotlin</url>
+        <copyright></copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>RxAndroid</name>
+        <url>https://github.com/ReactiveX/RxAndroid</url>
+        <copyright>Copyright 2015 The RxAndroid authors</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>LicensesDialog</name>
+        <url>http://psdev.de/LicensesDialog</url>
+        <copyright>Copyright 2013 Philip Schiffer - Apache Software License 2.0</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>LeakCanary</name>
+        <url>square.github.io/leakcanary</url>
+        <copyright>Copyright 2015 Square, Inc.</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>Ringdroid</name>
+        <url>https://github.com/google/ringdroid</url>
+        <copyright>Copyright (C) 2015 Google Inc.</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>Material design icons</name>
+        <url>https://material.io/resources/icons</url>
+        <copyright></copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>Kotlin Programming Language</name>
+        <url>https://kotlinlang.org</url>
+        <copyright>Copyright 2000-2018 JetBrains s.r.o. and Kotlin Programming Language contributors.</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>Android Jetpack</name>
+        <url>https://github.com/androidx/androidx</url>
+        <copyright></copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+</notices>

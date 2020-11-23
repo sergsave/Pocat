@@ -57,12 +57,14 @@
     <style name="MyThemeOverlay.MaterialComponents.MaterialAlertDialog" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
         <item name="buttonBarPositiveButtonStyle">@style/AlertDialogButtonStyle</item>
         <item name="buttonBarNegativeButtonStyle">@style/AlertDialogButtonStyle</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/TextAppearance.MaterialComponents.Body1</item>
     </style>
 
     <style name="AlertDialogButtonStyle" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
         <item name="android:textColor">?attr/colorOnBackground</item>
     </style>
 
+    <!-- Outlined Button -->
     <style name="OutlinedEditTextLikeButtonStyle" parent="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon">
         <item name="android:paddingTop">16dp</item>
         <item name="android:paddingBottom">12dp</item>

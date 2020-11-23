@@ -7,15 +7,15 @@
         app:showAsAction="never"
         android:title="@string/settings"/>
     <item
-        android:id="@+id/action_about"
-        android:icon="@drawable/ic_info_outline_black_24dp"
-        app:showAsAction="never"
-        android:title="@string/about"/>
-    <item
         android:id="@+id/action_donate"
         android:icon="@drawable/ic_favorite_border_black_24dp"
         app:showAsAction="never"
         android:title="@string/donate"/>
+    <item
+        android:id="@+id/action_about"
+        android:icon="@drawable/ic_info_outline_black_24dp"
+        app:showAsAction="never"
+        android:title="@string/about"/>
     <item
         android:id="@+id/action_testing"
         android:icon="@drawable/ic_bug_report_black_24dp"

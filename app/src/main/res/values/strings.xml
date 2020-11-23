@@ -7,6 +7,8 @@
 
 <resources>
     <string name="app_name" translatable="false">&appname;</string>
+<!--TODO: create dev email -->
+    <string name="dev_email" translatable="false">sa.savenko2@gmail.com</string>
     <string name="sharing_text">Check out my cat in \"&appname;\" App!</string>
     <string name="add_new_cat">Add a new cat</string>
     <string name="name">Name</string>
@@ -23,7 +25,7 @@
     <string name="ok">OK</string>
     <string name="_continue">Continue editing</string>
     <string name="discard">Discard</string>
-    <string name="changes_not_saved">Changes not saved.\nDiscard them?</string>
+    <string name="changes_not_saved">Changes not saved. Discard them?</string>
     <string name="fill_the_form">Please choose a photo, name and sound</string>
     <string name="close">Close</string>
     <string name="save_snackbar_message_text">Cat successfully added to your collection</string>
@@ -71,4 +73,10 @@
     <string name="need_storage_permission">For full-fledged work, you should give the storage access permission for &nbAppName;</string>
     <string name="show_settings">Show settings</string>
     <string name="send_data">Send data</string>
+    <string name="version">Version</string>
+    <string name="rate_on_play_market">Rate app on Google Play</string>
+    <string name="contact_us">Send feedback</string>
+    <string name="licenses">Licenses</string>
+    <string name="how_to_use">How to use</string>
+    <string name="how_to_use_text">Pet the cat and enjoy the purring sounds.\n\nAdd your cats and share them with your friends.</string>
 </resources>
