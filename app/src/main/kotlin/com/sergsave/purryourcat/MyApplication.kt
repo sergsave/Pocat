@@ -2,6 +2,7 @@ package com.sergsave.purryourcat
 
 import android.app.Application
 import android.content.Context
+import com.sergsave.purryourcat.analytics.FirebaseAnalyticsTracker
 import com.sergsave.purryourcat.content.ContentRepository
 import com.sergsave.purryourcat.content.CopySavingStrategy
 import com.sergsave.purryourcat.content.ImageResizeSavingStrategy
@@ -16,14 +17,16 @@ import com.sergsave.purryourcat.sharing.FirebaseCloudSharingManager
 import com.sergsave.purryourcat.sharing.WebSharingManager
 import com.sergsave.purryourcat.sharing.ZipDataPacker
 import com.sergsave.purryourcat.models.Card
-import com.sergsave.purryourcat.ui.catcard.FormViewModel
-import com.sergsave.purryourcat.ui.catcard.PurringViewModel
-import com.sergsave.purryourcat.ui.catcard.SharingDataExtractViewModel
-import com.sergsave.purryourcat.ui.main.MainViewModel
-import com.sergsave.purryourcat.ui.main.UserCatsViewModel
-import com.sergsave.purryourcat.ui.main.SamplesViewModel
-import com.sergsave.purryourcat.ui.testing.TestingViewModel
-import com.sergsave.purryourcat.ui.soundselection.SoundSelectionViewModel
+import com.sergsave.purryourcat.screens.catcard.FormViewModel
+import com.sergsave.purryourcat.screens.catcard.PurringViewModel
+import com.sergsave.purryourcat.screens.catcard.SharingDataExtractViewModel
+import com.sergsave.purryourcat.screens.main.MainViewModel
+import com.sergsave.purryourcat.screens.main.UserCatsViewModel
+import com.sergsave.purryourcat.screens.main.SamplesViewModel
+import com.sergsave.purryourcat.screens.main.analytics.MainAnalyticsHelper
+import com.sergsave.purryourcat.screens.soundselection.SamplesListViewModel
+import com.sergsave.purryourcat.screens.testing.TestingViewModel
+import com.sergsave.purryourcat.screens.soundselection.SoundSelectionViewModel
 
 // Manual dependency injection
 class AppContainer(private val context: Context) {
@@ -32,21 +35,22 @@ class AppContainer(private val context: Context) {
     private val audioStorage = LocalFilesContentStorage(context, CopySavingStrategy(context))
     private val contentRepo = ContentRepository(imageStorage, audioStorage)
     private val preferences = PreferenceManager(context)
+    private val sharingManager = FirebaseCloudSharingManager(context, ZipDataPacker(context))
+    private val analyticsTracker = FirebaseAnalyticsTracker()
+    private val soundSampleProvider = SoundSampleProvider(context)
+    private val catSampleProvider = CatSampleProvider(context)
+
     private val maxAudioFileSizeMB = 2L
-
-    private val sharingManager: WebSharingManager =
-         FirebaseCloudSharingManager(context, ZipDataPacker(context))
-
-    val soundSampleProvider = SoundSampleProvider(context)
 
     fun provideMainViewModelFactory() =
         ViewModelFactory(MainViewModel::class.java, {
-            MainViewModel(catDataRepo, contentRepo, sharingManager, preferences)
+            val analytics = MainAnalyticsHelper(analyticsTracker)
+            MainViewModel(catDataRepo, contentRepo, sharingManager, preferences, analytics)
         })
 
     fun provideSamplesViewModelFactory() =
         ViewModelFactory(SamplesViewModel::class.java, {
-            SamplesViewModel(CatSampleProvider(context))
+            SamplesViewModel(catSampleProvider)
         })
 
     fun provideUserCatsViewModelFactory() =
@@ -72,6 +76,11 @@ class AppContainer(private val context: Context) {
     fun provideSoundSelectionViewModelFactory() =
         ViewModelFactory(SoundSelectionViewModel::class.java, {
             SoundSelectionViewModel(context, maxAudioFileSizeMB)
+        })
+
+    fun provideSamplesListViewModelFactory() =
+        ViewModelFactory(SamplesListViewModel::class.java, {
+            SamplesListViewModel(soundSampleProvider)
         })
 
     fun provideTestingViewModelFactory() =
