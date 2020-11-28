@@ -62,6 +62,7 @@ class UserCatsFragment : Fragment() {
                 sharedElement: View,
                 sharedElementTransitionName: String
             ) {
+                viewModel.onCardClicked()
                 val card = viewModel.makeCard(id, data)
                 activity?.launchCatCard(card, sharedElement, sharedElementTransitionName)
             }
@@ -73,6 +74,7 @@ class UserCatsFragment : Fragment() {
         }
 
         fab.setOnClickListener {
+            viewModel.onAddClicked()
             fragment.clearSelection()
             activity?.launchCatCard()
         }

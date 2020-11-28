@@ -13,7 +13,7 @@ import androidx.lifecycle.Observer
 import com.sergsave.purryourcat.MyApplication
 import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.helpers.EventObserver
-import com.sergsave.purryourcat.screens.catcard.SharingDataExtractViewModel.SharingState
+import com.sergsave.purryourcat.screens.catcard.SharingDataExtractViewModel.ExtractState
 import kotlinx.android.synthetic.main.fragment_sharing_data_extract.*
 
 class SharingDataExtractFragment: Fragment() {
@@ -57,16 +57,16 @@ class SharingDataExtractFragment: Fragment() {
         })
 
         viewModel.apply {
-            sharingState.observe(viewLifecycleOwner, Observer {
+            extractState.observe(viewLifecycleOwner, Observer {
                 listOf(progress_bar, no_connection_layout, invalid_link_text, unknown_error_text)
                     .forEach { it.visibility = View.INVISIBLE }
 
                 when (it) {
-                    SharingState.INITIAL -> null
-                    SharingState.LOADING -> progress_bar
-                    SharingState.NO_CONNECTION_ERROR -> no_connection_layout
-                    SharingState.INVALID_LINK_ERROR -> invalid_link_text
-                    SharingState.UNKNOWN_ERROR -> unknown_error_text
+                    ExtractState.INITIAL -> null
+                    ExtractState.LOADING -> progress_bar
+                    ExtractState.NO_CONNECTION_ERROR -> no_connection_layout
+                    ExtractState.INVALID_LINK_ERROR -> invalid_link_text
+                    ExtractState.UNKNOWN_ERROR -> unknown_error_text
                     else -> null
                 }
                     ?.visibility = View.VISIBLE

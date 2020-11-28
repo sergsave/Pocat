@@ -9,10 +9,12 @@ import androidx.lifecycle.ViewModel
 import com.sergsave.purryourcat.helpers.Event
 import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.helpers.FileUtils
+import com.sergsave.purryourcat.screens.soundselection.analytics.SoundSelectionAnalyticsHelper
 import kotlin.math.roundToLong
 
 class SoundSelectionViewModel(private val applicationContext: Context,
-                              private val maxFileSizeMB: Long)
+                              private val maxFileSizeMB: Long,
+                              private val analytics: SoundSelectionAnalyticsHelper)
     : ViewModel() {
     data class Message (val stringId: Int, val stringArgs: Array<Any>)
 
@@ -47,9 +49,19 @@ class SoundSelectionViewModel(private val applicationContext: Context,
         val error = Message(R.string.file_size_exceeded_message_text, arrayOf(maxFileSizeMB))
         val size = FileUtils.getContentFileSize(applicationContext, uri)
 
-        if(size < maxFileSizeMB * 1000000)
+        val result = size < maxFileSizeMB * 1000000
+
+        if(result)
             _validationSuccessEvent.value = Event(uri)
         else
             _validationFailedEvent.value = Event(error)
+
+        analytics.onValidateResult(result)
     }
+
+    fun onAddFromSamplesRequested() = analytics.onAddFromSamplesRequested()
+    fun onAddFromRecorderRequested() = analytics.onAddFromRecorderRequested()
+    fun onAddFromDeviceRequested() = analytics.onAddFromDeviceRequested()
+
+    fun onRecorderNotFound() = analytics.onRecorderNotFound()
 }

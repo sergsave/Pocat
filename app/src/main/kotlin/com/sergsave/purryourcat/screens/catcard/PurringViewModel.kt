@@ -13,13 +13,15 @@ import com.sergsave.purryourcat.preference.PreferenceManager
 import com.sergsave.purryourcat.sharing.Pack
 import com.sergsave.purryourcat.sharing.WebSharingManager
 import com.sergsave.purryourcat.R
+import com.sergsave.purryourcat.screens.catcard.analytics.CatCardAnalyticsHelper
 import io.reactivex.disposables.Disposable
 
 class PurringViewModel(
     private val catDataRepository: CatDataRepository,
     private val sharingManager: WebSharingManager,
     private val preferences: PreferenceManager,
-    private var card: Card
+    private var card: Card,
+    private val analytics: CatCardAnalyticsHelper
 ) : DisposableViewModel() {
 
     val menuId = R.menu.menu_purring
@@ -84,10 +86,17 @@ class PurringViewModel(
     }
 
     private fun onSharePressed() {
+        analytics.onShareClicked()
+
         val pack = _catData.value?.let { Pack(it) }
-        val single = pack?.let { sharingManager.upload(it) }
-        if(single == null)
+        if (pack == null)
             return
+
+        val single = sharingManager.upload(pack)
+            .doOnSubscribe { analytics.onUploadStarted() }
+            .doOnSuccess { analytics.onUploadFinished(it) }
+            .doOnError { analytics.onUploadFailed(it) }
+            .flatMap { sharingManager.createIntent(it) }
 
         _sharingLoaderIsVisible.value = true
 
@@ -112,6 +121,8 @@ class PurringViewModel(
     }
 
     private fun onSavePressed() {
+        analytics.onSaveClicked()
+
         val disposable = catDataRepository.add(card.data).subscribe(
             { id ->
                 card = card.copy(persistentId = id)
@@ -124,6 +135,8 @@ class PurringViewModel(
     }
 
     private fun onEditPressed() {
+        analytics.onEditClicked()
+
         if(card.persistentId != null)
             _editCatEvent.value = Event(card)
     }
@@ -137,6 +150,9 @@ class PurringViewModel(
         }
         return true
     }
+
+    fun onTouchStarted() = analytics.onTouchStarted()
+    fun onTouchFinished() = analytics.onTouchFinished()
 
     fun onSharingLoaderClicked() {
         sharingDisposable?.dispose()

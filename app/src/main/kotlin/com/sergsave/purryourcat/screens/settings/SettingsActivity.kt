@@ -23,7 +23,7 @@ class SettingsActivity : AppCompatActivity() {
 
         supportFragmentManager
             .beginTransaction()
-            .add(R.id.container, PreferenceFragment())
+            .add(R.id.container, SettingsFragment())
             .commit()
     }
 }

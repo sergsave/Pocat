@@ -66,6 +66,8 @@ class MainViewModel(
         tabInfo?.let { analytics.onTabSwitched(it) }
     }
 
+    fun onOptionsItemSelected(menuId: Int) = analytics.onOptionsItemSelected(menuId)
+
     fun onForwardIntent() {
         _requestPageChangeEvent.value = Event(TabInfo.USER_CATS.pageNumber)
     }

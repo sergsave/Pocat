@@ -46,6 +46,7 @@ class SamplesFragment : Fragment() {
                 sharedElement: View,
                 sharedElementTransitionName: String
             ) {
+                viewModel.onCardClicked(id)
                 val card = viewModel.makeCard(data)
                 activity?.launchCatCard(card, sharedElement, sharedElementTransitionName)
             }

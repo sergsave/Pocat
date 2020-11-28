@@ -8,9 +8,11 @@ import com.sergsave.purryourcat.helpers.DisposableViewModel
 import com.sergsave.purryourcat.helpers.Event
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.models.Card
+import com.sergsave.purryourcat.screens.main.analytics.MainAnalyticsHelper
 import io.reactivex.Observable
 
-class UserCatsViewModel(private val catDataRepository: CatDataRepository): DisposableViewModel() {
+class UserCatsViewModel(private val catDataRepository: CatDataRepository,
+                        private val analytics: MainAnalyticsHelper): DisposableViewModel() {
 
     private val _cats = MutableLiveData<List<Pair<String, CatData>>>()
     val cats: LiveData<List<Pair<String, CatData>>>
@@ -39,6 +41,10 @@ class UserCatsViewModel(private val catDataRepository: CatDataRepository): Dispo
             catDataRepository.remove(catIds).subscribe({}, { Log.e(TAG, "Remove failed", it) })
         )
     }
+
+    fun onCardClicked() = analytics.onUserCardClicked()
+
+    fun onAddClicked() = analytics.onAddClicked()
 
     companion object {
         private const val TAG = "UserCatsViewModel"

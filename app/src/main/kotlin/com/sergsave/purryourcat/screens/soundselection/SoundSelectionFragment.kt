@@ -83,6 +83,7 @@ class SoundSelectionFragment: PreferenceFragmentCompat() {
     }
 
     private fun addAudioFromSamples() {
+        viewModel.onAddFromSamplesRequested()
         sendSamplesIntent()
     }
 
@@ -93,6 +94,8 @@ class SoundSelectionFragment: PreferenceFragmentCompat() {
     }
 
     private fun addAudioFromRecorder() {
+        viewModel.onAddFromRecorderRequested()
+
         // Maybe some kind of recorder return uri with "file" scheme...
         if (isPermissionGranted(READ_EXTERNAL_STORAGE))
             sendRecorderIntent()
@@ -101,6 +104,8 @@ class SoundSelectionFragment: PreferenceFragmentCompat() {
     }
 
     private fun addAudioFromDevice() {
+        viewModel.onAddFromDeviceRequested()
+
         if (isPermissionGranted(READ_EXTERNAL_STORAGE))
             sendPickAudioIntent()
         else
@@ -136,6 +141,8 @@ class SoundSelectionFragment: PreferenceFragmentCompat() {
         val intent = Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION)
         if (intent.resolveActivity(requireActivity().packageManager) != null)
             startActivityForResult(intent, RECORDER_CODE)
+        else
+            viewModel.onRecorderNotFound()
     }
 
     private fun sendPickAudioIntent() {

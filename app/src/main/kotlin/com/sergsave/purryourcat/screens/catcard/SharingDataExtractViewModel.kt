@@ -12,6 +12,7 @@ import com.sergsave.purryourcat.helpers.Event
 import com.sergsave.purryourcat.helpers.DisposableViewModel
 import com.sergsave.purryourcat.sharing.WebSharingManager
 import com.sergsave.purryourcat.R
+import com.sergsave.purryourcat.screens.catcard.analytics.CatCardAnalyticsHelper
 import com.sergsave.purryourcat.sharing.Pack
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -20,10 +21,11 @@ import java.util.concurrent.TimeUnit
 
 class SharingDataExtractViewModel(
     private val sharingManager: WebSharingManager,
-    private val contentRepo: ContentRepository
+    private val contentRepo: ContentRepository,
+    private val analytics: CatCardAnalyticsHelper
 ) : DisposableViewModel() {
 
-    enum class SharingState {
+    enum class ExtractState {
         INITIAL,
         LOADING,
         NO_CONNECTION_ERROR,
@@ -31,9 +33,9 @@ class SharingDataExtractViewModel(
         UNKNOWN_ERROR
     }
 
-    private val _sharingState = MutableLiveData<SharingState>(SharingState.INITIAL)
-    val sharingState: LiveData<SharingState>
-        get() = _sharingState
+    private val _extractState = MutableLiveData<ExtractState>(ExtractState.INITIAL)
+    val extractState: LiveData<ExtractState>
+        get() = _extractState
 
     private val _extractSuccessEvent = MutableLiveData<Event<Card>>()
     val extractSuccessEvent: LiveData<Event<Card>>
@@ -53,21 +55,27 @@ class SharingDataExtractViewModel(
 
         val handleError = { throwable: Throwable ->
             val state = when(throwable) {
-                is WebSharingManager.NoConnectionException -> SharingState.NO_CONNECTION_ERROR
-                is WebSharingManager.InvalidLinkException -> SharingState.INVALID_LINK_ERROR
-                else -> SharingState.UNKNOWN_ERROR
+                is WebSharingManager.NoConnectionException -> ExtractState.NO_CONNECTION_ERROR
+                is WebSharingManager.InvalidLinkException -> ExtractState.INVALID_LINK_ERROR
+                else -> ExtractState.UNKNOWN_ERROR
             }
-            _sharingState.value = state
+            _extractState.value = state
         }
 
-        _sharingState.value = SharingState.LOADING
+        _extractState.value = ExtractState.LOADING
 
         // Allow to avoid progress bar blinking
         val minimumLoadingDurationMillis = 1000L
         val disposable = Single.timer(minimumLoadingDurationMillis, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
             .zipWith(
-                sharingManager.download(intent)
+                sharingManager.extractLink(intent)
+                    .flatMap { uri ->
+                        sharingManager.download(uri)
+                            .doOnSubscribe { analytics.onDownloadStarted(uri) }
+                            .doOnSuccess { analytics.onDownloadFinished() }
+                            .doOnError { analytics.onDownloadFailed(it) }
+                    }
                     .map<Result> { Result.Success(it) }
                     .onErrorReturn { Result.Error(it) }
             )
@@ -88,7 +96,7 @@ class SharingDataExtractViewModel(
             )
             .subscribe({ (photo, audio) ->
                     if (photo == Uri.EMPTY || audio == Uri.EMPTY)
-                        _sharingState.value = SharingState.INVALID_LINK_ERROR
+                        _extractState.value = ExtractState.INVALID_LINK_ERROR
                     else {
                         val updated = data.copy(photoUri = photo, purrAudioUri = audio)
                         _extractSuccessEvent.value = Event(Card(null, updated, true, true))

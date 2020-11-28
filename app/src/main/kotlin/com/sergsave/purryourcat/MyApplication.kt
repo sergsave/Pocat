@@ -20,13 +20,17 @@ import com.sergsave.purryourcat.models.Card
 import com.sergsave.purryourcat.screens.catcard.FormViewModel
 import com.sergsave.purryourcat.screens.catcard.PurringViewModel
 import com.sergsave.purryourcat.screens.catcard.SharingDataExtractViewModel
+import com.sergsave.purryourcat.screens.catcard.analytics.CatCardAnalyticsHelper
 import com.sergsave.purryourcat.screens.main.MainViewModel
 import com.sergsave.purryourcat.screens.main.UserCatsViewModel
 import com.sergsave.purryourcat.screens.main.SamplesViewModel
 import com.sergsave.purryourcat.screens.main.analytics.MainAnalyticsHelper
+import com.sergsave.purryourcat.screens.settings.SettingsViewModel
+import com.sergsave.purryourcat.screens.settings.analytics.SettingsAnalyticsHelper
 import com.sergsave.purryourcat.screens.soundselection.SamplesListViewModel
 import com.sergsave.purryourcat.screens.testing.TestingViewModel
 import com.sergsave.purryourcat.screens.soundselection.SoundSelectionViewModel
+import com.sergsave.purryourcat.screens.soundselection.analytics.SoundSelectionAnalyticsHelper
 
 // Manual dependency injection
 class AppContainer(private val context: Context) {
@@ -40,47 +44,55 @@ class AppContainer(private val context: Context) {
     private val soundSampleProvider = SoundSampleProvider(context)
     private val catSampleProvider = CatSampleProvider(context)
 
+    private val mainAnalytics = MainAnalyticsHelper(analyticsTracker)
+    private val soundSelectionAnalytics = SoundSelectionAnalyticsHelper(analyticsTracker)
+    private val settingsAnalytics = SettingsAnalyticsHelper(analyticsTracker)
+    private val catCardAnalytics = CatCardAnalyticsHelper(analyticsTracker)
     private val maxAudioFileSizeMB = 2L
 
     fun provideMainViewModelFactory() =
         ViewModelFactory(MainViewModel::class.java, {
-            val analytics = MainAnalyticsHelper(analyticsTracker)
-            MainViewModel(catDataRepo, contentRepo, sharingManager, preferences, analytics)
+            MainViewModel(catDataRepo, contentRepo, sharingManager, preferences, mainAnalytics)
         })
 
     fun provideSamplesViewModelFactory() =
         ViewModelFactory(SamplesViewModel::class.java, {
-            SamplesViewModel(catSampleProvider)
+            SamplesViewModel(catSampleProvider, mainAnalytics)
         })
 
     fun provideUserCatsViewModelFactory() =
         ViewModelFactory(UserCatsViewModel::class.java, {
-            UserCatsViewModel(catDataRepo)
+            UserCatsViewModel(catDataRepo, mainAnalytics)
         })
 
     fun provideFormViewModelFactory(card: Card?) =
         ViewModelFactory(FormViewModel::class.java, {
-            FormViewModel(catDataRepo, contentRepo, card)
+            FormViewModel(catDataRepo, contentRepo, card, catCardAnalytics)
         })
 
     fun providePurringViewModelFactory(card: Card) =
         ViewModelFactory(PurringViewModel::class.java, {
-            PurringViewModel(catDataRepo, sharingManager, preferences, card)
+            PurringViewModel(catDataRepo, sharingManager, preferences, card, catCardAnalytics)
         })
 
     fun provideSharingDataExtractViewModelFactory() =
         ViewModelFactory(SharingDataExtractViewModel::class.java, {
-            SharingDataExtractViewModel(sharingManager, contentRepo)
+            SharingDataExtractViewModel(sharingManager, contentRepo, catCardAnalytics)
         })
 
     fun provideSoundSelectionViewModelFactory() =
         ViewModelFactory(SoundSelectionViewModel::class.java, {
-            SoundSelectionViewModel(context, maxAudioFileSizeMB)
+            SoundSelectionViewModel(context, maxAudioFileSizeMB, soundSelectionAnalytics)
         })
 
     fun provideSamplesListViewModelFactory() =
         ViewModelFactory(SamplesListViewModel::class.java, {
             SamplesListViewModel(soundSampleProvider)
+        })
+
+    fun provideSettingsViewModelFactory() =
+        ViewModelFactory(SettingsViewModel::class.java, {
+            SettingsViewModel(settingsAnalytics)
         })
 
     fun provideTestingViewModelFactory() =

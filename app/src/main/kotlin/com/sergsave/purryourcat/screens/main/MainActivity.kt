@@ -99,6 +99,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        viewModel.onOptionsItemSelected(item.itemId)
+
         when (item.itemId) {
             R.id.action_settings -> launchSettings()
             R.id.action_about -> launchAbout()

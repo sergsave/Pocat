@@ -11,8 +11,7 @@ import android.os.Looper
 import android.transition.Transition.TransitionListener
 import android.transition.Transition
 import android.view.*
-import android.view.MotionEvent.ACTION_DOWN
-import android.view.MotionEvent.ACTION_MOVE
+import android.view.MotionEvent.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
@@ -165,6 +164,12 @@ class PurringFragment : Fragment() {
     }
 
     private fun onTouchEvent(event: MotionEvent): Boolean {
+        if(event.action == ACTION_DOWN)
+            viewModel.onTouchStarted()
+
+        if(event.action == ACTION_UP)
+            viewModel.onTouchFinished()
+
         if(event.action != ACTION_DOWN && event.action != ACTION_MOVE)
             return false
 

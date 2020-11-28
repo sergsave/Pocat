@@ -13,11 +13,13 @@ import com.sergsave.purryourcat.helpers.Event
 import com.sergsave.purryourcat.helpers.DisposableViewModel
 import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.models.Card
+import com.sergsave.purryourcat.screens.catcard.analytics.CatCardAnalyticsHelper
 
 class FormViewModel(
     private val catDataRepository: CatDataRepository,
     private val contentRepository: ContentRepository,
-    private val card: Card? = null
+    private val card: Card? = null,
+    private val analytics: CatCardAnalyticsHelper
 ) : DisposableViewModel() {
 
     private var backup: CatData? = null
@@ -75,11 +77,14 @@ class FormViewModel(
         }
 
     fun changeName(name: String) {
+        analytics.onChangeName()
         // Empty text is null for correct comparing data with backup
         _name.value = if(name.isNotEmpty()) name else null
     }
 
     fun changePhoto(uri: Uri) {
+        analytics.onChangePhoto()
+
         if(uri != _photoUri.value) {
             addDisposable(contentRepository.addImage(uri).subscribe(
                 { newUri -> _photoUri.value = newUri },
@@ -89,6 +94,8 @@ class FormViewModel(
     }
 
     fun changeAudio(uri: Uri) {
+        analytics.onChangeAudio()
+
         if(_audioUri.value != null)
             _audioChangedMessageEvent.value = Event(Unit)
 
@@ -101,6 +108,8 @@ class FormViewModel(
     }
 
     fun onApplyPressed() {
+        analytics.onTryApplyChanges(isCurrentDataValid())
+
         if (isCurrentDataValid().not()) {
             _notValidDataMessageEvent.value = Event(Unit)
             return

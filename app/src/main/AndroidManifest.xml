@@ -15,13 +15,13 @@
         android:supportsRtl="true"
         android:debuggable="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.settings.SettingsActivity" />
-        <activity android:name=".ui.about.AboutActivity" />
-        <activity android:name=".ui.donate.DonateActivity" />
-        <activity android:name=".ui.catcard.CatCardActivity" />
-        <activity android:name=".ui.soundselection.SoundSelectionActivity" />
-        <activity android:name=".ui.soundselection.SamplesListActivity" />
-        <activity android:name=".IntentForwardingActivity"
+        <activity android:name=".screens.settings.SettingsActivity" />
+        <activity android:name=".screens.about.AboutActivity" />
+        <activity android:name=".screens.donate.DonateActivity" />
+        <activity android:name=".screens.catcard.CatCardActivity" />
+        <activity android:name=".screens.soundselection.SoundSelectionActivity" />
+        <activity android:name=".screens.soundselection.SamplesListActivity" />
+        <activity android:name=".screens.starting.IntentForwardingActivity"
             android:launchMode="singleTop"
             android:theme="@android:style/Theme.Translucent.NoTitleBar">
 
@@ -35,14 +35,14 @@
                 <data android:pathPrefix="/v0/b/purr-your-cat.appspot.com" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.main.MainActivity">
+        <activity android:name=".screens.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.testing.TestingActivity" />
+        <activity android:name=".screens.testing.TestingActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
