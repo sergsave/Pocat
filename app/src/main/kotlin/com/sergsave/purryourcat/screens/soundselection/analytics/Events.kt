@@ -6,9 +6,9 @@ import com.sergsave.purryourcat.AnalyticsConstants.Events.AddAudioRequested
 import com.sergsave.purryourcat.AnalyticsConstants.Events.RecorderNotFound
 
 class AudioValidated(result: Boolean):
-    AnalyticsEvent(AudioValidated.NAME,
-        mapOf(AudioValidated.Params.RESULT to result)
-    )
+    AnalyticsEvent(AudioValidated.NAME, mapOf(
+        AudioValidated.Params.RESULT to result
+    ))
 
 class AddAudioRequested(source: Source):
     AnalyticsEvent(AddAudioRequested.NAME, mapOf(

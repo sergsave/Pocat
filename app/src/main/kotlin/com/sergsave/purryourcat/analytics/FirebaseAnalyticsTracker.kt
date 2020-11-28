@@ -8,12 +8,12 @@ import com.google.firebase.ktx.Firebase
 class FirebaseAnalyticsTracker: AnalyticsTracker {
     override fun sendEvent(event: AnalyticsEvent) {
         val bundle = Bundle().apply {
-            event.params.forEach { (key, value) -> putString(key, value?.toString()) }
+            event.params.forEach { (key, value) -> value?.let { putString(key, it.toString()) } }
         }
         Firebase.analytics.logEvent(event.name, bundle)
     }
 
     override fun setProperty(property: AnalyticsProperty) {
-        Firebase.analytics.setUserProperty(property.name, property.param)
+        Firebase.analytics.setUserProperty(property.name, property.param.toString())
     }
 }

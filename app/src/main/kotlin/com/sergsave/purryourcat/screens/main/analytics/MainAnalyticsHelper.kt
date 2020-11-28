@@ -1,7 +1,6 @@
 package com.sergsave.purryourcat.screens.main.analytics
 
 import com.sergsave.purryourcat.analytics.AnalyticsTracker
-import com.sergsave.purryourcat.models.CatData
 import com.sergsave.purryourcat.screens.main.TabInfo
 import com.sergsave.purryourcat.R
 

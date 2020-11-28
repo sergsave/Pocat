@@ -4,8 +4,6 @@ import android.os.Bundle
 import androidx.fragment.app.viewModels
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.SwitchPreference
-import androidx.preference.SwitchPreferenceCompat
 import com.sergsave.purryourcat.R
 import com.sergsave.purryourcat.MyApplication
 

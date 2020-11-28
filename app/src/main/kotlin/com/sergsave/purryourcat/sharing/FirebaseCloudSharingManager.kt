@@ -96,25 +96,7 @@ class FirebaseCloudSharingManager(
             }
     }
 
-    override fun extractLink(intent: Intent): Single<Uri> {
-        val error = WebSharingManager.InvalidLinkException("Extract link error")
-        return Single.create<Uri> { emitter ->
-            Firebase.dynamicLinks
-                .getDynamicLink(intent)
-                .addOnSuccessListener { pendingLinkData ->
-                    // Hack. Firebase allow exract uri with "getDynamicLink" only once.
-                    // Follow-up call of "getDynamicLink" return null.
-                    // In this case extract uri form intent directly
-                    val link = if (pendingLinkData == null)
-                        intent.data
-                    else
-                        pendingLinkData.link
-
-                    link?.let { emitter.onSuccess(it) } ?: emitter.onError(error)
-                }
-                .addOnFailureListener { emitter.onError(error) }
-        }
-    }
+    override fun extractLink(intent: Intent): Single<Uri> = extractDynamicLink(intent)
 
     override fun createIntent(link: Uri): Single<Intent> {
         return Single.fromCallable {
@@ -206,6 +188,26 @@ private fun createDynamicLink(downloadLink: Uri,
         }.addOnFailureListener {
             emitter.onError(error)
         }
+    }
+}
+
+private fun extractDynamicLink(intent: Intent): Single<Uri> {
+    val error = WebSharingManager.InvalidLinkException("Extract link error")
+    return Single.create<Uri> { emitter ->
+        Firebase.dynamicLinks
+            .getDynamicLink(intent)
+            .addOnSuccessListener { pendingLinkData ->
+                // Hack. Firebase allow exract uri with "getDynamicLink" only once.
+                // Follow-up call of "getDynamicLink" return null.
+                // In this case extract uri form intent directly
+                val link = if (pendingLinkData == null)
+                    intent.data
+                else
+                    pendingLinkData.link
+
+                link?.let { emitter.onSuccess(it) } ?: emitter.onError(error)
+            }
+            .addOnFailureListener { emitter.onError(error) }
     }
 }
 
