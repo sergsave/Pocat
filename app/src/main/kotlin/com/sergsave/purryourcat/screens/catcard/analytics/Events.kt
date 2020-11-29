@@ -2,35 +2,35 @@ package com.sergsave.purryourcat.screens.catcard.analytics
 
 import android.net.Uri
 import com.sergsave.purryourcat.AnalyticsConstants.Events
-import com.sergsave.purryourcat.AnalyticsConstants.Events.CatTouched
-import com.sergsave.purryourcat.AnalyticsConstants.Events.EditActionClicked
-import com.sergsave.purryourcat.AnalyticsConstants.Events.SaveActionClicked
-import com.sergsave.purryourcat.AnalyticsConstants.Events.ShareActionClicked
-import com.sergsave.purryourcat.AnalyticsConstants.Events.AudioChanged
-import com.sergsave.purryourcat.AnalyticsConstants.Events.PhotoChanged
-import com.sergsave.purryourcat.AnalyticsConstants.Events.CatAdded
+import com.sergsave.purryourcat.AnalyticsConstants.Events.CatTouch
+import com.sergsave.purryourcat.AnalyticsConstants.Events.EditActionClick
+import com.sergsave.purryourcat.AnalyticsConstants.Events.SaveActionClick
+import com.sergsave.purryourcat.AnalyticsConstants.Events.ShareActionClick
+import com.sergsave.purryourcat.AnalyticsConstants.Events.AudioChange
+import com.sergsave.purryourcat.AnalyticsConstants.Events.PhotoChange
+import com.sergsave.purryourcat.AnalyticsConstants.Events.CatAdd
 import com.sergsave.purryourcat.AnalyticsConstants.Events.TryApplyFormChanges
 import com.sergsave.purryourcat.AnalyticsConstants.Events.SharingTransferParams
-import com.sergsave.purryourcat.AnalyticsConstants.Events.SharingDataUploaded
-import com.sergsave.purryourcat.AnalyticsConstants.Events.SharingDataUploadFailed
-import com.sergsave.purryourcat.AnalyticsConstants.Events.SharingDataDownloaded
-import com.sergsave.purryourcat.AnalyticsConstants.Events.SharingDataDownloadFailed
+import com.sergsave.purryourcat.AnalyticsConstants.Events.SharingDataUpload
+import com.sergsave.purryourcat.AnalyticsConstants.Events.SharingDataUploadError
+import com.sergsave.purryourcat.AnalyticsConstants.Events.SharingDataDownload
+import com.sergsave.purryourcat.AnalyticsConstants.Events.SharingDataDownloadError
 import com.sergsave.purryourcat.analytics.AnalyticsEvent
 
-class CatTouched(val durationSec: Long):
-    AnalyticsEvent(CatTouched.NAME, mapOf(CatTouched.Params.DURATION to durationSec))
+class CatTouch(val durationSec: Long):
+    AnalyticsEvent(CatTouch.NAME, mapOf(CatTouch.Params.DURATION to durationSec))
 
-class ShareActionClicked: AnalyticsEvent(ShareActionClicked.NAME)
-class EditActionClicked: AnalyticsEvent(EditActionClicked.NAME)
-class SaveActionClicked: AnalyticsEvent(SaveActionClicked.NAME)
+class ShareActionClick: AnalyticsEvent(ShareActionClick.NAME)
+class EditActionClick: AnalyticsEvent(EditActionClick.NAME)
+class SaveActionClick: AnalyticsEvent(SaveActionClick.NAME)
 
 class TryApplyFormChanges(result: Boolean):
     AnalyticsEvent(TryApplyFormChanges.NAME, mapOf(TryApplyFormChanges.Params.RESULT to result))
 
-class AudioChanged: AnalyticsEvent(AudioChanged.NAME)
-class PhotoChanged: AnalyticsEvent(PhotoChanged.NAME)
+class AudioChange: AnalyticsEvent(AudioChange.NAME)
+class PhotoChange: AnalyticsEvent(PhotoChange.NAME)
 
-class CatAdded: AnalyticsEvent(CatAdded.NAME)
+class CatAdd: AnalyticsEvent(CatAdd.NAME)
 
 data class SharingTransferInfo(val durationSec: Long, val photoSize: Long, val audioSize: Long)
 
@@ -41,11 +41,11 @@ private fun makeSharingParams(transferInfo: SharingTransferInfo) = mapOf(
     SharingTransferParams.TOTAL_SIZE to (transferInfo.photoSize + transferInfo.audioSize)
 )
 
-class SharingDataUploaded(transferInfo: SharingTransferInfo):
-    AnalyticsEvent(SharingDataUploaded.NAME, makeSharingParams(transferInfo))
+class SharingDataUpload(transferInfo: SharingTransferInfo):
+    AnalyticsEvent(SharingDataUpload.NAME, makeSharingParams(transferInfo))
 
-class SharingDataDownloaded(transferInfo: SharingTransferInfo):
-    AnalyticsEvent(SharingDataDownloaded.NAME, makeSharingParams(transferInfo))
+class SharingDataDownload(transferInfo: SharingTransferInfo):
+    AnalyticsEvent(SharingDataDownload.NAME, makeSharingParams(transferInfo))
 
 enum class SharingError {
     NO_CONNECTION, INVALID_LINK, UNKNOWN;
@@ -57,12 +57,12 @@ enum class SharingError {
     }
 }
 
-class SharingDataUploadFailed(cause: SharingError):
-    AnalyticsEvent(SharingDataUploadFailed.NAME, mapOf(
-        SharingDataUploadFailed.Params.CAUSE to cause.toString()
+class SharingDataUploadError(cause: SharingError):
+    AnalyticsEvent(SharingDataUploadError.NAME, mapOf(
+        SharingDataUploadError.Params.CAUSE to cause.toString()
     ))
 
-class SharingDataDownloadFailed(cause: SharingError):
-    AnalyticsEvent(SharingDataDownloadFailed.NAME, mapOf(
-        SharingDataDownloadFailed.Params.CAUSE to cause.toString()
+class SharingDataDownloadError(cause: SharingError):
+    AnalyticsEvent(SharingDataDownloadError.NAME, mapOf(
+        SharingDataDownloadError.Params.CAUSE to cause.toString()
     ))

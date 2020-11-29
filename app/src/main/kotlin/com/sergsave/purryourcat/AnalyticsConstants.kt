@@ -2,12 +2,12 @@ package com.sergsave.purryourcat
 
 object AnalyticsConstants {
     object Events {
-        object AppStarted {
-            const val NAME = "app_started"
+        object AppStart {
+            const val NAME = "app_start"
         }
 
-        object TabOpened {
-            const val NAME = "tab_opened"
+        object TabOpen {
+            const val NAME = "tab_open"
 
             object TabType {
                 const val SAMPLES = "samples"
@@ -19,44 +19,44 @@ object AnalyticsConstants {
             }
         }
 
-        object UserCardClicked {
-            const val NAME = "user_card_clicked"
+        object UserCardClick {
+            const val NAME = "user_card_click"
         }
 
-        object SampleCardClicked {
-            const val NAME = "sample_card_clicked"
+        object SampleCardClick {
+            const val NAME = "sample_card_click"
 
             object Params {
                 const val ID = "id"
             }
         }
 
-        object CatsRemoved {
-            const val NAME = "cats_removed"
+        object CatsRemove {
+            const val NAME = "cats_remove"
 
             object Params {
                 const val COUNT = "count"
             }
         }
 
-        object AddButtonClicked {
-            const val NAME = "add_button_clicked"
+        object AddButtonClick {
+            const val NAME = "add_button_click"
         }
 
-        object SettingsActionClicked {
-            const val NAME = "settings_action_clicked"
+        object SettingsActionClick {
+            const val NAME = "settings_action_click"
         }
 
-        object DonateActionClicked {
-            const val NAME = "donate_action_clicked"
+        object DonateActionClick {
+            const val NAME = "donate_action_click"
         }
 
-        object AboutActionClicked {
-            const val NAME = "about_action_clicked"
+        object AboutActionClick {
+            const val NAME = "about_action_click"
         }
 
-        object VibrationSwitched {
-            const val NAME = "vibration_switched"
+        object VibrationSwitch {
+            const val NAME = "vibration_switch"
 
             object Params {
                 const val STATE = "state"
@@ -71,8 +71,8 @@ object AnalyticsConstants {
             }
         }
 
-        object AddAudioRequested {
-            const val NAME = "add_audio_requested"
+        object AudioSelectionStart {
+            const val NAME = "audio_selection_start"
 
             object Params {
                 const val SOURCE = "source"
@@ -89,32 +89,32 @@ object AnalyticsConstants {
             const val NAME = "recorder_not_found"
         }
 
-        object CatTouched {
-            const val NAME = "cat_touched"
+        object CatTouch {
+            const val NAME = "cat_touch"
 
             object Params {
                 const val DURATION = "duration"
             }
         }
 
-        object ShareActionClicked {
-            const val NAME = "share_action_clicked"
+        object ShareActionClick {
+            const val NAME = "share_action_click"
         }
 
-        object SaveActionClicked {
-            const val NAME = "save_action_clicked"
+        object SaveActionClick {
+            const val NAME = "save_action_click"
         }
 
-        object EditActionClicked {
-            const val NAME = "edit_action_clicked"
+        object EditActionClick {
+            const val NAME = "edit_action_click"
         }
 
-        object AudioChanged {
-            const val NAME = "audio_changed"
+        object AudioChange {
+            const val NAME = "audio_change"
         }
 
-        object PhotoChanged {
-            const val NAME = "photo_changed"
+        object PhotoChange {
+            const val NAME = "photo_change"
         }
 
         object TryApplyFormChanges {
@@ -125,8 +125,8 @@ object AnalyticsConstants {
             }
         }
 
-        object CatAdded {
-            const val NAME = "cat_added"
+        object CatAdd {
+            const val NAME = "cat_add"
         }
 
         object SharingTransferParams {
@@ -136,12 +136,12 @@ object AnalyticsConstants {
             const val TOTAL_SIZE = "total_size"
         }
 
-        object SharingDataUploaded {
-            const val NAME = "sharing_data_uploaded"
+        object SharingDataUpload {
+            const val NAME = "sharing_data_upload"
         }
 
-        object SharingDataDownloaded {
-            const val NAME = "sharing_data_downloaded"
+        object SharingDataDownload {
+            const val NAME = "sharing_data_download"
         }
 
         object SharingError {
@@ -150,16 +150,16 @@ object AnalyticsConstants {
             const val UNKNOWN = "unknown"
         }
 
-        object SharingDataUploadFailed {
-            const val NAME = "sharing_data_upload_failed"
+        object SharingDataUploadError {
+            const val NAME = "sharing_data_upload_error"
 
             object Params {
                 const val CAUSE = "cause"
             }
         }
 
-        object SharingDataDownloadFailed {
-            const val NAME = "sharing_data_download_failed"
+        object SharingDataDownloadError {
+            const val NAME = "sharing_data_download_error"
 
             object Params {
                 const val CAUSE = "cause"

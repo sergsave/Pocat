@@ -23,18 +23,18 @@ class CatCardAnalyticsHelper(
     }
 
     fun onTouchFinished() {
-        touchTime?.let { tracker.sendEvent(CatTouched(diffTimeInSec(it))) }
+        touchTime?.let { tracker.sendEvent(CatTouch(diffTimeInSec(it))) }
         touchTime = null
     }
 
-    fun onShareClicked() = tracker.sendEvent(ShareActionClicked())
-    fun onEditClicked() = tracker.sendEvent(EditActionClicked())
-    fun onSaveClicked() = tracker.sendEvent(SaveActionClicked())
+    fun onShareClicked() = tracker.sendEvent(ShareActionClick())
+    fun onEditClicked() = tracker.sendEvent(EditActionClick())
+    fun onSaveClicked() = tracker.sendEvent(SaveActionClick())
 
-    fun onChangePhoto() = tracker.sendEvent(PhotoChanged())
-    fun onChangeAudio() = tracker.sendEvent(AudioChanged())
+    fun onChangePhoto() = tracker.sendEvent(PhotoChange())
+    fun onChangeAudio() = tracker.sendEvent(AudioChange())
 
-    fun onCatAdded() = tracker.sendEvent(CatAdded())
+    fun onCatAdded() = tracker.sendEvent(CatAdd())
 
     fun onTryApplyChanges(result: Boolean) = tracker.sendEvent(TryApplyFormChanges(result))
 
@@ -51,7 +51,7 @@ class CatCardAnalyticsHelper(
 
     fun onUploadFinished() {
         val event = uploadTime?.let { time ->
-            uploadingPack?.let { SharingDataUploaded(makeTransferInfo(it, time)) }
+            uploadingPack?.let { SharingDataUpload(makeTransferInfo(it, time)) }
         }
 
         event?.let { tracker.sendEvent(it) }
@@ -67,7 +67,7 @@ class CatCardAnalyticsHelper(
             is NoConnectionException -> SharingError.NO_CONNECTION
             else -> SharingError.UNKNOWN
         }
-        tracker.sendEvent(SharingDataUploadFailed(cause))
+        tracker.sendEvent(SharingDataUploadError(cause))
     }
 
     fun onDownloadStarted() {
@@ -80,7 +80,7 @@ class CatCardAnalyticsHelper(
 
     fun onDownloadFinished(pack: Pack) {
         downloadTime?.let {
-            tracker.sendEvent(SharingDataDownloaded(makeTransferInfo(pack, it)))
+            tracker.sendEvent(SharingDataDownload(makeTransferInfo(pack, it)))
         }
         downloadTime = null
     }
@@ -91,6 +91,6 @@ class CatCardAnalyticsHelper(
             is InvalidLinkException -> SharingError.INVALID_LINK
             else -> SharingError.UNKNOWN
         }
-        tracker.sendEvent(SharingDataDownloadFailed(cause))
+        tracker.sendEvent(SharingDataDownloadError(cause))
     }
 }
