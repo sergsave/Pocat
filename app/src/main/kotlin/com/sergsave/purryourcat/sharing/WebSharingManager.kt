@@ -1,7 +1,6 @@
 package com.sergsave.purryourcat.sharing
 
 import android.content.Intent
-import android.net.Uri
 import io.reactivex.Single
 import io.reactivex.Completable
 
@@ -10,15 +9,10 @@ interface WebSharingManager{
     class NoConnectionException(message: String, cause: Throwable? = null): Exception(message, cause)
 
     // Expected errors: NoConnectionException, IOException
-    fun upload(pack: Pack): Single<Uri>
+    fun upload(pack: Pack): Single<Intent>
 
     // Expected errors: InvalidLinkException, NoConnectionException, IOException
-    fun download(link: Uri): Single<Pack>
-
-    // Expected errors: InvalidLinkException
-    fun extractLink(intent: Intent): Single<Uri>
-
-    fun createIntent(link: Uri): Single<Intent>
+    fun download(intent: Intent): Single<Pack>
 
     // Release any resources, call only if sharing is not in progress
     // Expected errors: IOException

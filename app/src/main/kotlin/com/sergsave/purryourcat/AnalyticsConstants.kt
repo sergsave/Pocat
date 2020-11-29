@@ -2,8 +2,12 @@ package com.sergsave.purryourcat
 
 object AnalyticsConstants {
     object Events {
-        object TabSwitched {
-            const val NAME = "tab_switched"
+        object AppStarted {
+            const val NAME = "app_started"
+        }
+
+        object TabOpened {
+            const val NAME = "tab_opened"
 
             object TabType {
                 const val SAMPLES = "samples"
@@ -24,6 +28,14 @@ object AnalyticsConstants {
 
             object Params {
                 const val ID = "id"
+            }
+        }
+
+        object CatsRemoved {
+            const val NAME = "cats_removed"
+
+            object Params {
+                const val COUNT = "count"
             }
         }
 
@@ -51,11 +63,11 @@ object AnalyticsConstants {
             }
         }
 
-        object AudioValidated {
-            const val NAME = "audio_validated"
+        object AudioSelected {
+            const val NAME = "audio_selected"
 
             object Params {
-                const val RESULT = "result"
+                const val VALIDATION_RESULT = "validation_result"
             }
         }
 
@@ -81,7 +93,7 @@ object AnalyticsConstants {
             const val NAME = "cat_touched"
 
             object Params {
-                const val DURATION = Common.DURATION
+                const val DURATION = "duration"
             }
         }
 
@@ -95,10 +107,6 @@ object AnalyticsConstants {
 
         object EditActionClicked {
             const val NAME = "edit_action_clicked"
-        }
-
-        object NameChanged {
-            const val NAME = "name_changed"
         }
 
         object AudioChanged {
@@ -117,22 +125,23 @@ object AnalyticsConstants {
             }
         }
 
+        object CatAdded {
+            const val NAME = "cat_added"
+        }
+
+        object SharingTransferParams {
+            const val DURATION = "duration"
+            const val PHOTO_SIZE = "photo_size"
+            const val AUDIO_SIZE = "audio_size"
+            const val TOTAL_SIZE = "total_size"
+        }
+
         object SharingDataUploaded {
             const val NAME = "sharing_data_uploaded"
-
-            object Params {
-                const val DURATION = Common.DURATION
-                const val URL = "url"
-            }
         }
 
         object SharingDataDownloaded {
             const val NAME = "sharing_data_downloaded"
-
-            object Params {
-                const val DURATION = Common.DURATION
-                const val URL = "url"
-            }
         }
 
         object SharingError {
@@ -155,10 +164,6 @@ object AnalyticsConstants {
             object Params {
                 const val CAUSE = "cause"
             }
-        }
-
-        private object Common {
-            const val DURATION = "duration"
         }
     }
 }

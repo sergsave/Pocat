@@ -43,6 +43,8 @@ class MainViewModel(
     init {
         val tabInfo = preferences.lastTabTag?.let { tag2tabInfo.get(it) }
         tabInfo?.let { _requestPageChangeEvent.value = Event(it.pageNumber) }
+
+        analytics.onAppStarted()
     }
 
     fun tabInfoForPosition(position: Int): TabInfo? {
@@ -63,7 +65,7 @@ class MainViewModel(
         val tag = tabInfo?.let { tabInfo2tag.get(it) }
         tag?.let { preferences.lastTabTag = it }
 
-        tabInfo?.let { analytics.onTabSwitched(it) }
+        tabInfo?.let { analytics.onTabOpened(it) }
     }
 
     fun onOptionsItemSelected(menuId: Int) = analytics.onOptionsItemSelected(menuId)

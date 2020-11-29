@@ -92,11 +92,11 @@ class PurringViewModel(
         if (pack == null)
             return
 
-        val single = sharingManager.upload(pack)
-            .doOnSubscribe { analytics.onUploadStarted() }
-            .doOnSuccess { analytics.onUploadFinished(it) }
+        val upload = sharingManager.upload(pack)
+            .doOnSubscribe { analytics.onUploadStarted(pack) }
+            .doOnSuccess { analytics.onUploadFinished() }
+            .doOnDispose { analytics.onUploadCanceled() }
             .doOnError { analytics.onUploadFailed(it) }
-            .flatMap { sharingManager.createIntent(it) }
 
         _sharingLoaderIsVisible.value = true
 
@@ -108,7 +108,7 @@ class PurringViewModel(
             _sharingFailedStringIdEvent.value = Event(stringId)
         }
 
-        val disposable = single
+        val disposable = upload
             .doOnDispose { _sharingLoaderIsVisible.value = false }
             .doOnEvent { _, _ -> _sharingLoaderIsVisible.value = false }
             .subscribe(

@@ -1,13 +1,13 @@
 package com.sergsave.purryourcat.screens.soundselection.analytics
 
 import com.sergsave.purryourcat.analytics.AnalyticsEvent
-import com.sergsave.purryourcat.AnalyticsConstants.Events.AudioValidated
+import com.sergsave.purryourcat.AnalyticsConstants.Events.AudioSelected
 import com.sergsave.purryourcat.AnalyticsConstants.Events.AddAudioRequested
 import com.sergsave.purryourcat.AnalyticsConstants.Events.RecorderNotFound
 
-class AudioValidated(result: Boolean):
-    AnalyticsEvent(AudioValidated.NAME, mapOf(
-        AudioValidated.Params.RESULT to result
+class AudioValidated(validationResult: Boolean):
+    AnalyticsEvent(AudioSelected.NAME, mapOf(
+        AudioSelected.Params.VALIDATION_RESULT to validationResult
     ))
 
 class AddAudioRequested(source: Source):

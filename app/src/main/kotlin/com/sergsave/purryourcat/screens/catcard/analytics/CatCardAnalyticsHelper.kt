@@ -2,17 +2,21 @@ package com.sergsave.purryourcat.screens.catcard.analytics
 
 import android.net.Uri
 import com.sergsave.purryourcat.analytics.AnalyticsTracker
+import com.sergsave.purryourcat.sharing.Pack
 import com.sergsave.purryourcat.sharing.WebSharingManager.*
 import java.util.concurrent.TimeUnit
 
 private fun diffTimeInSec(startTime: Long) =
     TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - startTime)
 
-class CatCardAnalyticsHelper(private val tracker: AnalyticsTracker) {
+class CatCardAnalyticsHelper(
+    private val tracker: AnalyticsTracker,
+    private val fileSizeByteCalculator: (Uri) -> Long) {
     private var touchTime: Long? = null
     private var uploadTime: Long? = null
     private var downloadTime: Long? = null
-    private var downloadLink: Uri? = null
+
+    private var uploadingPack: Pack? = null
 
     fun onTouchStarted() {
         touchTime = System.currentTimeMillis()
@@ -27,18 +31,34 @@ class CatCardAnalyticsHelper(private val tracker: AnalyticsTracker) {
     fun onEditClicked() = tracker.sendEvent(EditActionClicked())
     fun onSaveClicked() = tracker.sendEvent(SaveActionClicked())
 
-    fun onChangeName() = tracker.sendEvent(NameChanged())
     fun onChangePhoto() = tracker.sendEvent(PhotoChanged())
     fun onChangeAudio() = tracker.sendEvent(AudioChanged())
 
+    fun onCatAdded() = tracker.sendEvent(CatAdded())
+
     fun onTryApplyChanges(result: Boolean) = tracker.sendEvent(TryApplyFormChanges(result))
 
-    fun onUploadStarted() {
+    private fun makeTransferInfo(pack: Pack, transferStartTime: Long) = SharingTransferInfo(
+        diffTimeInSec(transferStartTime),
+        pack.cat.photoUri?.let { fileSizeByteCalculator(it) } ?: 0,
+        pack.cat.purrAudioUri?.let { fileSizeByteCalculator(it) } ?: 0
+    )
+
+    fun onUploadStarted(pack: Pack) {
         uploadTime = System.currentTimeMillis()
+        uploadingPack = pack
     }
 
-    fun onUploadFinished(uri: Uri) {
-        uploadTime?.let { tracker.sendEvent(SharingDataUploaded(diffTimeInSec(it), uri)) }
+    fun onUploadFinished() {
+        val event = uploadTime?.let { time ->
+            uploadingPack?.let { SharingDataUploaded(makeTransferInfo(it, time)) }
+        }
+
+        event?.let { tracker.sendEvent(it) }
+        uploadTime = null
+    }
+
+    fun onUploadCanceled() {
         uploadTime = null
     }
 
@@ -50,19 +70,19 @@ class CatCardAnalyticsHelper(private val tracker: AnalyticsTracker) {
         tracker.sendEvent(SharingDataUploadFailed(cause))
     }
 
-    fun onDownloadStarted(uri: Uri) {
+    fun onDownloadStarted() {
         downloadTime = System.currentTimeMillis()
-        downloadLink = uri
     }
 
-    fun onDownloadFinished() {
-        val uri = downloadLink
-        if (uri == null)
-            return
-
-        downloadTime?.let { tracker.sendEvent(SharingDataDownloaded(diffTimeInSec(it), uri)) }
+    fun onDownloadCanceled() {
         downloadTime = null
-        downloadLink = null
+    }
+
+    fun onDownloadFinished(pack: Pack) {
+        downloadTime?.let {
+            tracker.sendEvent(SharingDataDownloaded(makeTransferInfo(pack, it)))
+        }
+        downloadTime = null
     }
 
     fun onDownloadFailed(throwable: Throwable) {

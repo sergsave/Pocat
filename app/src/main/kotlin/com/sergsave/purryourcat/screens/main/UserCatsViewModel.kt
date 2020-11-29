@@ -38,7 +38,9 @@ class UserCatsViewModel(private val catDataRepository: CatDataRepository,
 
     private fun remove(catIds: List<String>) {
         addDisposable(
-            catDataRepository.remove(catIds).subscribe({}, { Log.e(TAG, "Remove failed", it) })
+            catDataRepository.remove(catIds)
+                .doOnComplete { analytics.onCatsRemoved(catIds.size) }
+                .subscribe({}, { Log.e(TAG, "Remove failed", it) })
         )
     }
 

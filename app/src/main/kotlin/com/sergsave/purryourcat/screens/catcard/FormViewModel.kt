@@ -77,7 +77,6 @@ class FormViewModel(
         }
 
     fun changeName(name: String) {
-        analytics.onChangeName()
         // Empty text is null for correct comparing data with backup
         _name.value = if(name.isNotEmpty()) name else null
     }
@@ -145,7 +144,9 @@ class FormViewModel(
             return
         }
 
-        addDisposable(catDataRepository.add(data).subscribe(
+        addDisposable(catDataRepository.add(data)
+            .doOnSuccess { analytics.onCatAdded() }
+            .subscribe(
             { newId -> _openCardEvent.value = Event(Card(newId, data, true, true)) },
             { Log.e(TAG, message, it) }
         ))

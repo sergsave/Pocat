@@ -59,7 +59,7 @@ class FirebaseCloudSharingManager(
         )
     }
 
-    override fun upload(pack: Pack): Single<Uri> {
+    override fun upload(pack: Pack): Single<Intent> {
         val uploadData = { _pack: Pack, tempDir: File ->
             packer.pack(_pack, File(tempDir, "pack")).flatMap { uploadFile(it, "data") }
         }
@@ -84,30 +84,18 @@ class FirebaseCloudSharingManager(
                 val header = context.getString(R.string.sharing_text)
                 createDynamicLink(dataLink, header, previewLink, pack.cat.name)
             }
+            .map { makeIntent(context, it) }
     }
 
-    override fun download(link: Uri): Single<Pack> {
+    override fun download(intent: Intent): Single<Pack> {
         return waitCleanupFinish()
-            .andThen(Single.fromCallable { createTempDir() })
-            .flatMap { temp ->
+            .andThen(extractDownloadLink(intent))
+            .flatMap { link ->
+                val temp = createTempDir()
                 checkConnection(context)
                     .andThen(downloadFile(link, temp))
                     .flatMap { packer.unpack(it, File(temp, "unpack")) }
             }
-    }
-
-    override fun extractLink(intent: Intent): Single<Uri> = extractDynamicLink(intent)
-
-    override fun createIntent(link: Uri): Single<Intent> {
-        return Single.fromCallable {
-            val intent = Intent(Intent.ACTION_SEND).apply {
-                val text = link.toString()
-                putExtra(Intent.EXTRA_TEXT, text)
-                type = "text/plain"
-            }
-
-            createIntentChooser(listOf(intent), context.getString(R.string.send_data)) ?: intent
-        }
     }
 }
 
@@ -191,7 +179,16 @@ private fun createDynamicLink(downloadLink: Uri,
     }
 }
 
-private fun extractDynamicLink(intent: Intent): Single<Uri> {
+private fun makeIntent(context: Context, link: Uri): Intent {
+    val intent = Intent(Intent.ACTION_SEND).apply {
+        val text = link.toString()
+        putExtra(Intent.EXTRA_TEXT, text)
+        type = "text/plain"
+    }
+    return createIntentChooser(listOf(intent), context.getString(R.string.send_data)) ?: intent
+}
+
+private fun extractDownloadLink(intent: Intent): Single<Uri> {
     val error = WebSharingManager.InvalidLinkException("Extract link error")
     return Single.create<Uri> { emitter ->
         Firebase.dynamicLinks

@@ -2,11 +2,13 @@ package com.sergsave.purryourcat
 
 import android.app.Application
 import android.content.Context
+import android.net.Uri
 import com.sergsave.purryourcat.analytics.FirebaseAnalyticsTracker
 import com.sergsave.purryourcat.content.ContentRepository
 import com.sergsave.purryourcat.content.CopySavingStrategy
 import com.sergsave.purryourcat.content.ImageResizeSavingStrategy
 import com.sergsave.purryourcat.content.LocalFilesContentStorage
+import com.sergsave.purryourcat.helpers.FileUtils
 import com.sergsave.purryourcat.persistent.CatDataRepository
 import com.sergsave.purryourcat.persistent.RoomCatDataStorage
 import com.sergsave.purryourcat.helpers.ViewModelFactory
@@ -33,7 +35,7 @@ import com.sergsave.purryourcat.screens.soundselection.SoundSelectionViewModel
 import com.sergsave.purryourcat.screens.soundselection.analytics.SoundSelectionAnalyticsHelper
 
 // Manual dependency injection
-class AppContainer(private val context: Context) {
+class AppContainer(context: Context) {
     private val catDataRepo = CatDataRepository(RoomCatDataStorage(context))
     private val imageStorage = LocalFilesContentStorage(context, ImageResizeSavingStrategy(context))
     private val audioStorage = LocalFilesContentStorage(context, CopySavingStrategy(context))
@@ -44,10 +46,12 @@ class AppContainer(private val context: Context) {
     private val soundSampleProvider = SoundSampleProvider(context)
     private val catSampleProvider = CatSampleProvider(context)
 
+    private val fileSizeCalculator = { uri: Uri -> FileUtils.getContentFileSize(context, uri) }
+
     private val mainAnalytics = MainAnalyticsHelper(analyticsTracker)
     private val soundSelectionAnalytics = SoundSelectionAnalyticsHelper(analyticsTracker)
     private val settingsAnalytics = SettingsAnalyticsHelper(analyticsTracker)
-    private val catCardAnalytics = CatCardAnalyticsHelper(analyticsTracker)
+    private val catCardAnalytics = CatCardAnalyticsHelper(analyticsTracker, fileSizeCalculator)
     private val maxAudioFileSizeMB = 2L
 
     fun provideMainViewModelFactory() =
@@ -82,7 +86,7 @@ class AppContainer(private val context: Context) {
 
     fun provideSoundSelectionViewModelFactory() =
         ViewModelFactory(SoundSelectionViewModel::class.java, {
-            SoundSelectionViewModel(context, maxAudioFileSizeMB, soundSelectionAnalytics)
+            SoundSelectionViewModel(fileSizeCalculator, maxAudioFileSizeMB, soundSelectionAnalytics)
         })
 
     fun provideSamplesListViewModelFactory() =

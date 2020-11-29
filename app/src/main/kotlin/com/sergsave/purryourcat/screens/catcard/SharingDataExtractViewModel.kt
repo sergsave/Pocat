@@ -53,6 +53,12 @@ class SharingDataExtractViewModel(
             return
         }
 
+        val download = sharingManager.download(intent)
+            .doOnSuccess { analytics.onDownloadFinished(it) }
+            .doOnSubscribe { analytics.onDownloadStarted() }
+            .doOnDispose { analytics.onDownloadCanceled() }
+            .doOnError { analytics.onDownloadFailed(it) }
+
         val handleError = { throwable: Throwable ->
             val state = when(throwable) {
                 is WebSharingManager.NoConnectionException -> ExtractState.NO_CONNECTION_ERROR
@@ -69,13 +75,7 @@ class SharingDataExtractViewModel(
         val disposable = Single.timer(minimumLoadingDurationMillis, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
             .zipWith(
-                sharingManager.extractLink(intent)
-                    .flatMap { uri ->
-                        sharingManager.download(uri)
-                            .doOnSubscribe { analytics.onDownloadStarted(uri) }
-                            .doOnSuccess { analytics.onDownloadFinished() }
-                            .doOnError { analytics.onDownloadFailed(it) }
-                    }
+                download
                     .map<Result> { Result.Success(it) }
                     .onErrorReturn { Result.Error(it) }
             )

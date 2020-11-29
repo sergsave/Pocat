@@ -12,7 +12,7 @@ import com.sergsave.purryourcat.helpers.FileUtils
 import com.sergsave.purryourcat.screens.soundselection.analytics.SoundSelectionAnalyticsHelper
 import kotlin.math.roundToLong
 
-class SoundSelectionViewModel(private val applicationContext: Context,
+class SoundSelectionViewModel(private val fileSizeByteCalculator: (Uri) -> Long,
                               private val maxFileSizeMB: Long,
                               private val analytics: SoundSelectionAnalyticsHelper)
     : ViewModel() {
@@ -47,7 +47,7 @@ class SoundSelectionViewModel(private val applicationContext: Context,
 
     fun validateResult(uri: Uri) {
         val error = Message(R.string.file_size_exceeded_message_text, arrayOf(maxFileSizeMB))
-        val size = FileUtils.getContentFileSize(applicationContext, uri)
+        val size = fileSizeByteCalculator(uri)
 
         val result = size < maxFileSizeMB * 1000000
 
