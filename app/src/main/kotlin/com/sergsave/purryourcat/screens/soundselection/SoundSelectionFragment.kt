@@ -109,7 +109,7 @@ class SoundSelectionFragment: PreferenceFragmentCompat() {
         if (isPermissionGranted(READ_EXTERNAL_STORAGE))
             sendPickAudioIntent()
         else
-            requestReadStoragePermission(PICK_AUDIO_CODE)
+            requestReadStoragePermission(PERMISSIONS_PICK_CODE)
     }
 
     override fun onRequestPermissionsResult(
