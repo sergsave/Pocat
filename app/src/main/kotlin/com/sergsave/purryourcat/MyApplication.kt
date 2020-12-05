@@ -46,7 +46,7 @@ class AppContainer(context: Context) {
     private val soundSampleProvider = SoundSampleProvider(context)
     private val catSampleProvider = CatSampleProvider(context)
 
-    private val fileSizeCalculator = { uri: Uri -> FileUtils.getContentFileSize(context, uri) }
+    private val fileSizeCalculator = { uri: Uri -> FileUtils.resolveContentFileSize(context, uri) }
 
     private val mainAnalytics = MainAnalyticsHelper(analyticsTracker)
     private val soundSelectionAnalytics = SoundSelectionAnalyticsHelper(analyticsTracker)

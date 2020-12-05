@@ -35,7 +35,7 @@ class CatSampleProvider(private val context: Context) {
 
     private fun dataFrom(sample: SampleData) = CatData(
         context.getString(sample.nameStringId),
-        FileUtils.uriOfResource(sample.photoResId, context),
-        FileUtils.uriOfResource(sample.audioResId, context)
+        FileUtils.uriOfResource(context, sample.photoResId),
+        FileUtils.uriOfResource(context, sample.audioResId)
     )
 }

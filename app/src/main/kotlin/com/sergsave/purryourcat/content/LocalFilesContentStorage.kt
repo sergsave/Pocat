@@ -36,7 +36,7 @@ class LocalFilesContentStorage(private val context: Context,
 
     override fun add(sourceContent: Uri, keepFileName: Boolean): Single<Uri> {
         // This implementation always keep file name
-        val name = FileUtils.getContentFileName(context, sourceContent)
+        val name = FileUtils.resolveContentFileName(context, sourceContent)
 
         if(name == null)
             return Single.error(IOException("Invalid file name"))

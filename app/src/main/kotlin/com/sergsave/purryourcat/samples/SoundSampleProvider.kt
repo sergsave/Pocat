@@ -16,6 +16,6 @@ class SoundSampleProvider(private val context: Context) {
             Pair(R.string.sample_audio_6_name, R.raw.sample_audio_6)
         )
         return ids.map { Pair(context.getString(it.first),
-            FileUtils.uriOfResource(it.second,context)) }
+            FileUtils.uriOfResource(context, it.second)) }
     }
 }

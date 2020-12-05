@@ -35,19 +35,28 @@ object FileUtils {
         }
     }
 
-    fun uriOfResource(resId: Int, context: Context): Uri {
+    fun uriOfResource(context: Context, resId: Int): Uri {
         return Uri.Builder()
             .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
             .authority(context.resources.getResourcePackageName(resId))
-            .appendPath(resId.toString())
+            .appendPath(context.resources.getResourceTypeName(resId))
+            .appendPath(context.resources.getResourceEntryName(resId))
             .build()
     }
 
-    fun resourceIdFromUri(uri: Uri): Int? {
-        return if (uri.scheme.equals(ContentResolver.SCHEME_ANDROID_RESOURCE))
-            uri.lastPathSegment?.toIntOrNull()
-        else
-            null
+    private fun resourceIdFromUri(context: Context, uri: Uri): Int? {
+        if (uri.scheme.equals(ContentResolver.SCHEME_ANDROID_RESOURCE).not())
+            return null
+
+        // Call of "getgetIdentifier" can be long.
+        // But when using the id of the resource when composing the uri,
+        // there may be problems with caching images.
+        val type = uri.pathSegments[0]
+        val name = uri.pathSegments[1]
+        val packageName = uri.authority
+        return context.resources.getIdentifier(name, type, packageName).let {
+            if (it == 0) null else it
+        }
     }
 
     private fun getContentResolverQuery(context: Context, contentUri: Uri): Cursor? {
@@ -57,7 +66,7 @@ object FileUtils {
             null
     }
 
-    private fun getResourceName(resId: Int, context: Context): String? {
+    private fun getResourceFileNameWithExtension(context: Context, resId: Int): String? {
         val typedValue = TypedValue()
 
         try {
@@ -69,7 +78,7 @@ object FileUtils {
         return cutLastSegment(typedValue.string.toString())
     }
 
-    private fun getResourceSize(resId: Int, context: Context): Long {
+    private fun getResourceSize(context: Context, resId: Int): Long {
         val size = try {
             context.resources.openRawResource(resId).use { it.available().toLong() }
         } catch(e: Exception) {
@@ -86,7 +95,7 @@ object FileUtils {
     }
 
     // Support schemes: content, file and android.resource (should be obtained from "uriOfResource")
-    fun getContentFileName(context: Context, contentUri: Uri): String? {
+    fun resolveContentFileName(context: Context, contentUri: Uri): String? {
         val cursor = getContentResolverQuery(context, contentUri)
         cursor?.use {
             if (it.moveToFirst()) {
@@ -100,25 +109,25 @@ object FileUtils {
             }
         }
 
-        val resourceId = resourceIdFromUri(contentUri)
+        val resourceId = resourceIdFromUri(context, contentUri)
         resourceId?.let { id ->
-            getResourceName(id, context)?.let { return it }
+            getResourceFileNameWithExtension(context, id)?.let { return it }
         }
 
         return contentUri.lastPathSegment
     }
 
     // Support schemes: content, file and android.resource (should be obtained from "uriOfResource")
-    fun getContentFileSize(context: Context, contentUri: Uri): Long {
+    fun resolveContentFileSize(context: Context, contentUri: Uri): Long {
         val cursor = getContentResolverQuery(context, contentUri)
         cursor?.use {
             if (it.moveToFirst())
                 return it.getLong(it.getColumnIndex(OpenableColumns.SIZE))
         }
 
-        val resourceId = resourceIdFromUri(contentUri)
+        val resourceId = resourceIdFromUri(context, contentUri)
         resourceId?.let { id ->
-            getResourceSize(id, context).let { if (it != 0L) return it }
+            getResourceSize(context, id).let { if (it != 0L) return it }
         }
 
         return contentUri.path?.let { File(it).length() } ?: 0
@@ -139,7 +148,7 @@ object FileUtils {
             content.forEach { uri ->
                 val input = context.contentResolver.openInputStream(uri)
                 origin = BufferedInputStream(input, bufferSize)
-                val entry = ZipEntry(getContentFileName(context, uri))
+                val entry = ZipEntry(resolveContentFileName(context, uri))
                 out.putNextEntry(entry)
                 var count = 0
                 while (origin?.read(data, 0, bufferSize)?.also({ count = it }) != -1) {

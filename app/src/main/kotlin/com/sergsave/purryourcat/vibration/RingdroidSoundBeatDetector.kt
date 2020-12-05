@@ -33,7 +33,7 @@ class RingdroidSoundBeatDetector(
     private lateinit var fileData: FileData
 
     private fun prepareTempFile(uri: Uri): File? {
-        val fileName = FileUtils.getContentFileName(context, uri)
+        val fileName = FileUtils.resolveContentFileName(context, uri)
         if (fileName == null)
             return null
 

@@ -67,7 +67,7 @@ class ZipDataPacker(private val context: Context): DataPacker {
 
         val contentUris = pack.cat.extractContent().map { it }
         val withFixedUris = pack.cat.withUpdatedContent { uri ->
-            val _name = uri?.let { FileUtils.getContentFileName(context, it) }
+            val _name = uri?.let { FileUtils.resolveContentFileName(context, it) }
             _name?.let { Uri.parse(it) }
         }
 
