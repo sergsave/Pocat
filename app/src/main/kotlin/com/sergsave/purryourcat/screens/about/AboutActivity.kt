@@ -36,8 +36,11 @@ class AboutActivity : AppCompatActivity() {
         contact_item.text.text = getString(R.string.contact_us)
         contact_item.setOnClickListener { sendEmail(getString(R.string.dev_email)) }
 
-        license_item.text.text = getString(R.string.licenses)
-        license_item.setOnClickListener { openLicensesDialog() }
+        licenses_item.text.text = getString(R.string.licenses)
+        licenses_item.setOnClickListener { openLicensesDialog() }
+
+        credits_item.text.text = getString(R.string.credits)
+        credits_item.setOnClickListener { openCreditsActivity() }
     }
 
     private fun sendEmail(address: String) {
@@ -56,5 +59,9 @@ class AboutActivity : AppCompatActivity() {
 
     private fun openHowToUseDialog() {
         HowToUseDialog().show(supportFragmentManager, null)
+    }
+
+    private fun openCreditsActivity() {
+        startActivity(Intent(this, CreditsActivity::class.java))
     }
 }

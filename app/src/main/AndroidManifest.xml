@@ -17,6 +17,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".screens.settings.SettingsActivity" />
         <activity android:name=".screens.about.AboutActivity" />
+        <activity android:name=".screens.about.CreditsActivity" />
         <activity android:name=".screens.donate.DonateActivity" />
         <activity android:name=".screens.catcard.CatCardActivity" />
         <activity android:name=".screens.soundselection.SoundSelectionActivity" />
