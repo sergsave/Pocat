@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.helpers
+package com.sergsave.pocat.helpers
 
 import androidx.fragment.app.Fragment
 import android.content.pm.PackageManager.PERMISSION_GRANTED

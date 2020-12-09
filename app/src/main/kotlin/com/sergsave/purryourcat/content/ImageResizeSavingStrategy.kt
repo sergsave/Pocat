@@ -1,8 +1,8 @@
-package com.sergsave.purryourcat.content
+package com.sergsave.pocat.content
 
 import android.content.Context
 import android.net.Uri
-import com.sergsave.purryourcat.helpers.ImageUtils
+import com.sergsave.pocat.helpers.ImageUtils
 import io.reactivex.Completable
 import java.io.File
 import java.io.IOException

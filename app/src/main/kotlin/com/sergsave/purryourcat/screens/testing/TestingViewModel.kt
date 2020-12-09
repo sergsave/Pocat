@@ -1,14 +1,14 @@
-package com.sergsave.purryourcat.screens.testing
+package com.sergsave.pocat.screens.testing
 
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
-import com.sergsave.purryourcat.content.ContentRepository
-import com.sergsave.purryourcat.persistent.CatDataRepository
-import com.sergsave.purryourcat.helpers.DisposableViewModel
-import com.sergsave.purryourcat.models.CatData
-import com.sergsave.purryourcat.R
+import com.sergsave.pocat.content.ContentRepository
+import com.sergsave.pocat.persistent.CatDataRepository
+import com.sergsave.pocat.helpers.DisposableViewModel
+import com.sergsave.pocat.models.CatData
+import com.sergsave.pocat.R
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import java.lang.IllegalStateException

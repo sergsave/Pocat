@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.content
+package com.sergsave.pocat.content
 
 import android.net.Uri
 import io.reactivex.Flowable

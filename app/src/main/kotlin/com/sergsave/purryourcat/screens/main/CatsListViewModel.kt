@@ -1,13 +1,13 @@
-package com.sergsave.purryourcat.screens.main
+package com.sergsave.pocat.screens.main
 
 import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.sergsave.purryourcat.helpers.Event
-import com.sergsave.purryourcat.helpers.Long2StringIdMapper
-import com.sergsave.purryourcat.models.CatData
+import com.sergsave.pocat.helpers.Event
+import com.sergsave.pocat.helpers.Long2StringIdMapper
+import com.sergsave.pocat.models.CatData
 
 class CatsListViewModel: ViewModel() {
     private var selection = listOf<Long>()

@@ -1,13 +1,13 @@
-package com.sergsave.purryourcat.screens.about
+package com.sergsave.pocat.screens.about
 
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.sergsave.purryourcat.BuildConfig
-import com.sergsave.purryourcat.helpers.setToolbarAsActionBar
-import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.helpers.openRateAppLink
+import com.sergsave.pocat.BuildConfig
+import com.sergsave.pocat.helpers.setToolbarAsActionBar
+import com.sergsave.pocat.R
+import com.sergsave.pocat.helpers.openRateAppLink
 import de.psdev.licensesdialog.LicensesDialog
 import kotlinx.android.synthetic.main.activity_about.*
 import kotlinx.android.synthetic.main.view_about_list_item.*

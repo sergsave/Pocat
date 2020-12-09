@@ -1,8 +1,8 @@
-package com.sergsave.purryourcat.preference
+package com.sergsave.pocat.preference
 
 import android.content.Context
 import androidx.preference.PreferenceManager
-import com.sergsave.purryourcat.R
+import com.sergsave.pocat.R
 
 class PreferenceManager(context: Context) {
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)

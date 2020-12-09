@@ -1,10 +1,10 @@
-package com.sergsave.purryourcat.vibration
+package com.sergsave.pocat.vibration
 
 import android.content.Context
 import android.net.Uri
 import androidx.core.net.toFile
 import com.ringdroid.soundfile.SoundFile
-import com.sergsave.purryourcat.helpers.FileUtils
+import com.sergsave.pocat.helpers.FileUtils
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers

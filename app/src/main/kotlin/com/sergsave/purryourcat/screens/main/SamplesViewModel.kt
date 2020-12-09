@@ -1,12 +1,12 @@
-package com.sergsave.purryourcat.screens.main
+package com.sergsave.pocat.screens.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.sergsave.purryourcat.models.CatData
-import com.sergsave.purryourcat.models.Card
-import com.sergsave.purryourcat.samples.CatSampleProvider
-import com.sergsave.purryourcat.screens.main.analytics.MainAnalyticsHelper
+import com.sergsave.pocat.models.CatData
+import com.sergsave.pocat.models.Card
+import com.sergsave.pocat.samples.CatSampleProvider
+import com.sergsave.pocat.screens.main.analytics.MainAnalyticsHelper
 import java.util.*
 
 class SamplesViewModel(provider: CatSampleProvider,

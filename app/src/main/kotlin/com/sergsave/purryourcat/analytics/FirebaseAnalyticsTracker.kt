@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.analytics
+package com.sergsave.pocat.analytics
 
 import android.os.Bundle
 import com.google.firebase.analytics.ktx.analytics

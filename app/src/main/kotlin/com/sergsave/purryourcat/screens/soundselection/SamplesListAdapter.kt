@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.screens.soundselection
+package com.sergsave.pocat.screens.soundselection
 
 import android.net.Uri
 import android.view.LayoutInflater
@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.extensions.LayoutContainer
-import com.sergsave.purryourcat.R
+import com.sergsave.pocat.R
 import kotlinx.android.synthetic.main.view_sound_item.*
 
 class SamplesListAdapter : RecyclerView.Adapter<SamplesListAdapter.ViewHolder>() {

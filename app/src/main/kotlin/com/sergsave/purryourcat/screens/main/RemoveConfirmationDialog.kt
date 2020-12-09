@@ -1,10 +1,10 @@
-package com.sergsave.purryourcat.screens.catcard
+package com.sergsave.pocat.screens.catcard
 
 import android.app.Dialog
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.sergsave.purryourcat.R
+import com.sergsave.pocat.R
 
 class RemoveConfirmationDialog: DialogFragment() {
     var onRemoveConfirmListener: (() -> Unit)? = null

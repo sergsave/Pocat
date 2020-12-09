@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.screens.soundselection
+package com.sergsave.pocat.screens.soundselection
 
 import android.content.Context
 import android.content.Intent
@@ -6,10 +6,10 @@ import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import com.sergsave.purryourcat.helpers.Event
-import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.helpers.FileUtils
-import com.sergsave.purryourcat.screens.soundselection.analytics.SoundSelectionAnalyticsHelper
+import com.sergsave.pocat.helpers.Event
+import com.sergsave.pocat.R
+import com.sergsave.pocat.helpers.FileUtils
+import com.sergsave.pocat.screens.soundselection.analytics.SoundSelectionAnalyticsHelper
 import kotlin.math.roundToLong
 
 class SoundSelectionViewModel(private val fileSizeByteCalculator: (Uri) -> Long,

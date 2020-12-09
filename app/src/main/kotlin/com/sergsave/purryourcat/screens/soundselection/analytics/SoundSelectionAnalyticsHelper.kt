@@ -1,7 +1,7 @@
-package com.sergsave.purryourcat.screens.soundselection.analytics
+package com.sergsave.pocat.screens.soundselection.analytics
 
-import com.sergsave.purryourcat.analytics.AnalyticsTracker
-import com.sergsave.purryourcat.screens.soundselection.analytics.AudioSelectionStart.Source
+import com.sergsave.pocat.analytics.AnalyticsTracker
+import com.sergsave.pocat.screens.soundselection.analytics.AudioSelectionStart.Source
 
 class SoundSelectionAnalyticsHelper(private val tracker: AnalyticsTracker) {
     fun onValidateResult(result: Boolean) = tracker.sendEvent(AudioSelected(result))

@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.screens.catcard
+package com.sergsave.pocat.screens.catcard
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,12 +6,12 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialFadeThrough
-import com.sergsave.purryourcat.Constants
-import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.models.Card
-import com.sergsave.purryourcat.helpers.EventObserver
-import com.sergsave.purryourcat.helpers.ViewModelFactory
-import com.sergsave.purryourcat.helpers.setToolbarAsActionBar
+import com.sergsave.pocat.Constants
+import com.sergsave.pocat.R
+import com.sergsave.pocat.models.Card
+import com.sergsave.pocat.helpers.EventObserver
+import com.sergsave.pocat.helpers.ViewModelFactory
+import com.sergsave.pocat.helpers.setToolbarAsActionBar
 import kotlinx.android.synthetic.main.activity_cat_card.*
 
 class CatCardActivity : AppCompatActivity() {

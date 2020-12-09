@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.helpers
+package com.sergsave.pocat.helpers
 
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.ItemKeyProvider

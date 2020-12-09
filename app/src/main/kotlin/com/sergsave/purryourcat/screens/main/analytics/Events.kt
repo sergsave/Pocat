@@ -1,16 +1,16 @@
-package com.sergsave.purryourcat.screens.main.analytics
+package com.sergsave.pocat.screens.main.analytics
 
-import com.sergsave.purryourcat.AnalyticsConstants.Events.AppStart
-import com.sergsave.purryourcat.AnalyticsConstants.Events.TabOpen
-import com.sergsave.purryourcat.AnalyticsConstants.Events.UserCardClick
-import com.sergsave.purryourcat.AnalyticsConstants.Events.SampleCardClick
-import com.sergsave.purryourcat.AnalyticsConstants.Events.AddButtonClick
-import com.sergsave.purryourcat.AnalyticsConstants.Events.SettingsActionClick
-import com.sergsave.purryourcat.AnalyticsConstants.Events.DonateActionClick
-import com.sergsave.purryourcat.AnalyticsConstants.Events.AboutActionClick
-import com.sergsave.purryourcat.AnalyticsConstants.Events.CatsRemove
-import com.sergsave.purryourcat.analytics.AnalyticsEvent
-import com.sergsave.purryourcat.screens.main.TabInfo
+import com.sergsave.pocat.AnalyticsConstants.Events.AppStart
+import com.sergsave.pocat.AnalyticsConstants.Events.TabOpen
+import com.sergsave.pocat.AnalyticsConstants.Events.UserCardClick
+import com.sergsave.pocat.AnalyticsConstants.Events.SampleCardClick
+import com.sergsave.pocat.AnalyticsConstants.Events.AddButtonClick
+import com.sergsave.pocat.AnalyticsConstants.Events.SettingsActionClick
+import com.sergsave.pocat.AnalyticsConstants.Events.DonateActionClick
+import com.sergsave.pocat.AnalyticsConstants.Events.AboutActionClick
+import com.sergsave.pocat.AnalyticsConstants.Events.CatsRemove
+import com.sergsave.pocat.analytics.AnalyticsEvent
+import com.sergsave.pocat.screens.main.TabInfo
 
 class AppStarted(): AnalyticsEvent(AppStart.NAME)
 

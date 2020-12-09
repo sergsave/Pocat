@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.screens.catcard
+package com.sergsave.pocat.screens.catcard
 
 import android.Manifest
 import android.app.Activity
@@ -21,15 +21,15 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
-import com.sergsave.purryourcat.BuildConfig
-import com.sergsave.purryourcat.MyApplication
-import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.helpers.*
-import com.sergsave.purryourcat.helpers.PermissionDenyTypeQualifier.Type.DENIED_PERMANENTLY
-import com.sergsave.purryourcat.models.Card
-import com.sergsave.purryourcat.dialogs.StoragePermissionPermanentlyDeniedDialog
-import com.sergsave.purryourcat.screens.catcard.FormViewModel.SoundButtonType
-import com.sergsave.purryourcat.screens.soundselection.SoundSelectionActivity
+import com.sergsave.pocat.BuildConfig
+import com.sergsave.pocat.MyApplication
+import com.sergsave.pocat.R
+import com.sergsave.pocat.helpers.*
+import com.sergsave.pocat.helpers.PermissionDenyTypeQualifier.Type.DENIED_PERMANENTLY
+import com.sergsave.pocat.models.Card
+import com.sergsave.pocat.dialogs.StoragePermissionPermanentlyDeniedDialog
+import com.sergsave.pocat.screens.catcard.FormViewModel.SoundButtonType
+import com.sergsave.pocat.screens.soundselection.SoundSelectionActivity
 import kotlinx.android.synthetic.main.fragment_cat_form.*
 import kotlinx.android.synthetic.main.view_form_fields.view.*
 

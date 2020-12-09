@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.sharing
+package com.sergsave.pocat.sharing
 
 import java.io.File
 import io.reactivex.Single

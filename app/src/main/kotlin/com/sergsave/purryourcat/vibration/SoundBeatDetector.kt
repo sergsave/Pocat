@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.vibration
+package com.sergsave.pocat.vibration
 
 import io.reactivex.Completable
 import io.reactivex.Observable

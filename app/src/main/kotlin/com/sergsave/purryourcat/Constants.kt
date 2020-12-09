@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat
+package com.sergsave.pocat
 
 object Constants {
     // TODO: Launch methods for activity?

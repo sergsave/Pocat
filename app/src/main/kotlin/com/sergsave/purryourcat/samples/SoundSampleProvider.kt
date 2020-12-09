@@ -1,9 +1,9 @@
-package com.sergsave.purryourcat.samples
+package com.sergsave.pocat.samples
 
 import android.content.Context
 import android.net.Uri
-import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.helpers.FileUtils
+import com.sergsave.pocat.R
+import com.sergsave.pocat.helpers.FileUtils
 
 class SoundSampleProvider(private val context: Context) {
     fun provide(): List<Pair<String, Uri>> {

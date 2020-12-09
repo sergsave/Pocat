@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.screens.catcard
+package com.sergsave.pocat.screens.catcard
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,8 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.helpers.EventObserver
+import com.sergsave.pocat.R
+import com.sergsave.pocat.helpers.EventObserver
 import kotlinx.android.synthetic.main.fragment_purring_tutorial.*
 
 class PurringTutorialFragment: Fragment() {

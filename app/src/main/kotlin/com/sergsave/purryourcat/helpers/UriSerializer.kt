@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.helpers
+package com.sergsave.pocat.helpers
 
 import kotlinx.serialization.*
 import android.net.Uri

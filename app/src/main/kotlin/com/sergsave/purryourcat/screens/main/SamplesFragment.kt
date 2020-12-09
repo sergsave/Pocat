@@ -1,13 +1,13 @@
-package com.sergsave.purryourcat.screens.main
+package com.sergsave.pocat.screens.main
 
 import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.models.CatData
-import com.sergsave.purryourcat.MyApplication
+import com.sergsave.pocat.R
+import com.sergsave.pocat.models.CatData
+import com.sergsave.pocat.MyApplication
 import kotlinx.android.synthetic.main.fragment_samples.*
 
 class SamplesFragment : Fragment() {

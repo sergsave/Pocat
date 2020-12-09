@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.screens.soundselection
+package com.sergsave.pocat.screens.soundselection
 
 import android.Manifest
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
@@ -13,12 +13,12 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.fragment.app.viewModels
 import androidx.preference.Preference
 import com.google.android.material.snackbar.Snackbar
-import com.sergsave.purryourcat.screens.soundselection.SoundSelectionViewModel.Message
-import com.sergsave.purryourcat.MyApplication
-import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.helpers.*
-import com.sergsave.purryourcat.helpers.PermissionDenyTypeQualifier.Type.DENIED_PERMANENTLY
-import com.sergsave.purryourcat.dialogs.StoragePermissionPermanentlyDeniedDialog
+import com.sergsave.pocat.screens.soundselection.SoundSelectionViewModel.Message
+import com.sergsave.pocat.MyApplication
+import com.sergsave.pocat.R
+import com.sergsave.pocat.helpers.*
+import com.sergsave.pocat.helpers.PermissionDenyTypeQualifier.Type.DENIED_PERMANENTLY
+import com.sergsave.pocat.dialogs.StoragePermissionPermanentlyDeniedDialog
 
 class SoundSelectionFragment: PreferenceFragmentCompat() {
     private val viewModel: SoundSelectionViewModel by viewModels {

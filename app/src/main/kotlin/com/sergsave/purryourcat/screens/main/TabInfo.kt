@@ -1,6 +1,6 @@
-package com.sergsave.purryourcat.screens.main
+package com.sergsave.pocat.screens.main
 
-import com.sergsave.purryourcat.R
+import com.sergsave.pocat.R
 
 enum class TabInfo(val pageNumber: Int, val titleStringId: Int) {
     SAMPLES(0, R.string.samples_tab),

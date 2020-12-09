@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.vibration
+package com.sergsave.pocat.vibration
 
 import android.content.Context
 import android.os.Build

@@ -1,8 +1,8 @@
-package com.sergsave.purryourcat.content
+package com.sergsave.pocat.content
 
 import android.content.Context
 import android.net.Uri
-import com.sergsave.purryourcat.helpers.FileUtils
+import com.sergsave.pocat.helpers.FileUtils
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Single

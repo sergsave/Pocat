@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.screens.main
+package com.sergsave.pocat.screens.main
 
 import android.os.Bundle
 import android.view.*
@@ -10,10 +10,10 @@ import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.RecyclerView
-import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.helpers.*
-import com.sergsave.purryourcat.models.CatData
-import com.sergsave.purryourcat.screens.catcard.RemoveConfirmationDialog
+import com.sergsave.pocat.R
+import com.sergsave.pocat.helpers.*
+import com.sergsave.pocat.models.CatData
+import com.sergsave.pocat.screens.catcard.RemoveConfirmationDialog
 import kotlinx.android.synthetic.main.fragment_cats_list.*
 
 class CatsListFragment : Fragment() {

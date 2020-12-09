@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.screens.main
+package com.sergsave.pocat.screens.main
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,9 +7,9 @@ import androidx.core.view.ViewCompat
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
-import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.helpers.ImageUtils
-import com.sergsave.purryourcat.models.CatData
+import com.sergsave.pocat.R
+import com.sergsave.pocat.helpers.ImageUtils
+import com.sergsave.pocat.models.CatData
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.view_cat_item.*
 

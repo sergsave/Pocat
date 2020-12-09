@@ -1,6 +1,6 @@
-package com.sergsave.purryourcat.persistent
+package com.sergsave.pocat.persistent
 
-import com.sergsave.purryourcat.models.CatData
+import com.sergsave.pocat.models.CatData
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single

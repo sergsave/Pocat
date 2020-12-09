@@ -1,17 +1,17 @@
-package com.sergsave.purryourcat.screens.main
+package com.sergsave.pocat.screens.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import android.util.Log
-import com.sergsave.purryourcat.content.ContentRepository
-import com.sergsave.purryourcat.persistent.CatDataRepository
-import com.sergsave.purryourcat.helpers.DisposableViewModel
-import com.sergsave.purryourcat.helpers.Event
-import com.sergsave.purryourcat.models.extractContent
-import com.sergsave.purryourcat.preference.PreferenceManager
-import com.sergsave.purryourcat.sharing.WebSharingManager
-import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.screens.main.analytics.MainAnalyticsHelper
+import com.sergsave.pocat.content.ContentRepository
+import com.sergsave.pocat.persistent.CatDataRepository
+import com.sergsave.pocat.helpers.DisposableViewModel
+import com.sergsave.pocat.helpers.Event
+import com.sergsave.pocat.models.extractContent
+import com.sergsave.pocat.preference.PreferenceManager
+import com.sergsave.pocat.sharing.WebSharingManager
+import com.sergsave.pocat.R
+import com.sergsave.pocat.screens.main.analytics.MainAnalyticsHelper
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.Flowables
 

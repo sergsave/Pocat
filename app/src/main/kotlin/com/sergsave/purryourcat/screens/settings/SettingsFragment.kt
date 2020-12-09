@@ -1,11 +1,11 @@
-package com.sergsave.purryourcat.screens.settings
+package com.sergsave.pocat.screens.settings
 
 import android.os.Bundle
 import androidx.fragment.app.viewModels
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.MyApplication
+import com.sergsave.pocat.R
+import com.sergsave.pocat.MyApplication
 
 class SettingsFragment: PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

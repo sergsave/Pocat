@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.screens.soundselection
+package com.sergsave.pocat.screens.soundselection
 
 import android.app.Activity
 import android.content.Intent
@@ -11,9 +11,9 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.sergsave.purryourcat.MyApplication
-import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.helpers.setToolbarAsActionBar
+import com.sergsave.pocat.MyApplication
+import com.sergsave.pocat.R
+import com.sergsave.pocat.helpers.setToolbarAsActionBar
 import kotlinx.android.synthetic.main.activity_samples_list.*
 
 class SamplesListActivity : AppCompatActivity() {

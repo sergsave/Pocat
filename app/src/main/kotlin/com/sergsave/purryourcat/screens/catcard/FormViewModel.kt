@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.screens.catcard
+package com.sergsave.pocat.screens.catcard
 
 import android.content.Context
 import android.net.Uri
@@ -6,14 +6,14 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
-import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.persistent.CatDataRepository
-import com.sergsave.purryourcat.content.ContentRepository
-import com.sergsave.purryourcat.helpers.Event
-import com.sergsave.purryourcat.helpers.DisposableViewModel
-import com.sergsave.purryourcat.models.CatData
-import com.sergsave.purryourcat.models.Card
-import com.sergsave.purryourcat.screens.catcard.analytics.CatCardAnalyticsHelper
+import com.sergsave.pocat.R
+import com.sergsave.pocat.persistent.CatDataRepository
+import com.sergsave.pocat.content.ContentRepository
+import com.sergsave.pocat.helpers.Event
+import com.sergsave.pocat.helpers.DisposableViewModel
+import com.sergsave.pocat.models.CatData
+import com.sergsave.pocat.models.Card
+import com.sergsave.pocat.screens.catcard.analytics.CatCardAnalyticsHelper
 
 class FormViewModel(
     private val catDataRepository: CatDataRepository,

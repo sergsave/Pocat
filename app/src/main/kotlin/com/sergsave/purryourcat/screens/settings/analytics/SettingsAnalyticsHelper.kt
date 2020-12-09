@@ -1,6 +1,6 @@
-package com.sergsave.purryourcat.screens.settings.analytics
+package com.sergsave.pocat.screens.settings.analytics
 
-import com.sergsave.purryourcat.analytics.AnalyticsTracker
+import com.sergsave.pocat.analytics.AnalyticsTracker
 
 class SettingsAnalyticsHelper(private val tracker: AnalyticsTracker) {
     fun onVibrationSwitched(state: Boolean) = tracker.sendEvent(VibrationSwitched(state))

@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.dialogs
+package com.sergsave.pocat.dialogs
 
 import android.app.Dialog
 import android.content.Intent
@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.provider.Settings
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.sergsave.purryourcat.R
+import com.sergsave.pocat.R
 
 class StoragePermissionPermanentlyDeniedDialog: DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

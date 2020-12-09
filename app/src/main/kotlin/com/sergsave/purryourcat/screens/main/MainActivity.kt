@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.screens.main
+package com.sergsave.pocat.screens.main
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -9,13 +9,13 @@ import androidx.appcompat.view.menu.MenuBuilder
 import androidx.activity.viewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
-import com.sergsave.purryourcat.BuildConfig
-import com.sergsave.purryourcat.Constants
-import com.sergsave.purryourcat.MyApplication
-import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.helpers.EventObserver
-import com.sergsave.purryourcat.helpers.FirstTimeLaunchBugWorkaround
-import com.sergsave.purryourcat.helpers.setToolbarAsActionBar
+import com.sergsave.pocat.BuildConfig
+import com.sergsave.pocat.Constants
+import com.sergsave.pocat.MyApplication
+import com.sergsave.pocat.R
+import com.sergsave.pocat.helpers.EventObserver
+import com.sergsave.pocat.helpers.FirstTimeLaunchBugWorkaround
+import com.sergsave.pocat.helpers.setToolbarAsActionBar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlin.math.abs
 

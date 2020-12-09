@@ -1,13 +1,13 @@
-package com.sergsave.purryourcat.persistent
+package com.sergsave.pocat.persistent
 
 import android.content.Context
 import android.net.Uri
 import androidx.room.Room
-import com.sergsave.purryourcat.persistent.database.BaseCatEntity
-import com.sergsave.purryourcat.persistent.database.Cat
-import com.sergsave.purryourcat.persistent.database.CatDatabase
-import com.sergsave.purryourcat.persistent.database.CatWithoutTime
-import com.sergsave.purryourcat.models.CatData
+import com.sergsave.pocat.persistent.database.BaseCatEntity
+import com.sergsave.pocat.persistent.database.Cat
+import com.sergsave.pocat.persistent.database.CatDatabase
+import com.sergsave.pocat.persistent.database.CatWithoutTime
+import com.sergsave.pocat.models.CatData
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.Completable
 import io.reactivex.Flowable

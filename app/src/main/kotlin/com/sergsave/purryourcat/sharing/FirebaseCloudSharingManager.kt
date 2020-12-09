@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.sharing
+package com.sergsave.pocat.sharing
 
 import android.content.Context
 import android.content.Intent
@@ -17,14 +17,14 @@ import com.google.firebase.storage.ktx.storage
 import java.io.File
 import io.reactivex.Single
 import io.reactivex.Completable
-import com.sergsave.purryourcat.helpers.ImageUtils
-import com.sergsave.purryourcat.helpers.NetworkUtils
+import com.sergsave.pocat.helpers.ImageUtils
+import com.sergsave.pocat.helpers.NetworkUtils
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import java.io.IOException
 import java.util.*
-import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.helpers.createIntentChooser
+import com.sergsave.pocat.R
+import com.sergsave.pocat.helpers.createIntentChooser
 import io.reactivex.SingleSource
 import io.reactivex.rxkotlin.zipWith
 import io.reactivex.subjects.BehaviorSubject
@@ -164,7 +164,7 @@ private fun createDynamicLink(downloadLink: Uri,
     return Single.create<Uri> { emitter ->
         Firebase.dynamicLinks.shortLinkAsync(ShortDynamicLink.Suffix.SHORT) {
             link = downloadLink
-            domainUriPrefix = "https://purryourcat.page.link"
+            domainUriPrefix = "https://pocat.page.link"
             androidParameters {  }
             socialMetaTagParameters {
                 header?.let { title = it }

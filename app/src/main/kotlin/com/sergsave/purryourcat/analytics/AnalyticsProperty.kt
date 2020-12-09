@@ -1,3 +1,3 @@
-package com.sergsave.purryourcat.analytics
+package com.sergsave.pocat.analytics
 
 abstract class AnalyticsProperty(val name: String, val param: Any)

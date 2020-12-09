@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE resources [
-    <!ENTITY appname "Purr My Cat">
-    <!ENTITY nbAppName "Purr&#160;My&#160;Cat">
+    <!ENTITY appname "Pocat">
+    <!ENTITY nbAppName "Pocat">
     <!ENTITY nbsp "&#160;"><!-- non-breaking space, U+00A0 -->
     ]>
 

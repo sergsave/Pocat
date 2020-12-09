@@ -1,9 +1,9 @@
-package com.sergsave.purryourcat.screens.soundselection.analytics
+package com.sergsave.pocat.screens.soundselection.analytics
 
-import com.sergsave.purryourcat.analytics.AnalyticsEvent
-import com.sergsave.purryourcat.AnalyticsConstants.Events.AudioSelected
-import com.sergsave.purryourcat.AnalyticsConstants.Events.AudioSelectionStart
-import com.sergsave.purryourcat.AnalyticsConstants.Events.RecorderNotFound
+import com.sergsave.pocat.analytics.AnalyticsEvent
+import com.sergsave.pocat.AnalyticsConstants.Events.AudioSelected
+import com.sergsave.pocat.AnalyticsConstants.Events.AudioSelectionStart
+import com.sergsave.pocat.AnalyticsConstants.Events.RecorderNotFound
 
 class AudioSelected(validationResult: Boolean):
     AnalyticsEvent(AudioSelected.NAME, mapOf(

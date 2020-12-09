@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.models
+package com.sergsave.pocat.models
 
 import android.net.Uri
 

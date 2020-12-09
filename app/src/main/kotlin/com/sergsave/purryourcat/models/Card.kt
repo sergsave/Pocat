@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.models
+package com.sergsave.pocat.models
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize

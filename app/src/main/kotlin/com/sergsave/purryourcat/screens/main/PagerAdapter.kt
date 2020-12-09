@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.screens.main
+package com.sergsave.pocat.screens.main
 
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.Fragment

@@ -1,16 +1,16 @@
-package com.sergsave.purryourcat.screens.main
+package com.sergsave.pocat.screens.main
 
 import android.app.Activity
 import android.content.Intent
 import android.view.View
 import androidx.core.app.ActivityOptionsCompat
-import com.sergsave.purryourcat.Constants
-import com.sergsave.purryourcat.models.Card
-import com.sergsave.purryourcat.screens.about.AboutActivity
-import com.sergsave.purryourcat.screens.catcard.CatCardActivity
-import com.sergsave.purryourcat.screens.donate.DonateActivity
-import com.sergsave.purryourcat.screens.settings.SettingsActivity
-import com.sergsave.purryourcat.screens.testing.TestingActivity
+import com.sergsave.pocat.Constants
+import com.sergsave.pocat.models.Card
+import com.sergsave.pocat.screens.about.AboutActivity
+import com.sergsave.pocat.screens.catcard.CatCardActivity
+import com.sergsave.pocat.screens.donate.DonateActivity
+import com.sergsave.pocat.screens.settings.SettingsActivity
+import com.sergsave.pocat.screens.testing.TestingActivity
 
 fun Activity.launchCatCard() {
     startActivity(Intent(this, CatCardActivity::class.java))

@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.sharing
+package com.sergsave.pocat.sharing
 
 import android.content.Intent
 import io.reactivex.Single

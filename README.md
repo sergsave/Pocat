@@ -1,1 +1,1 @@
-# PurrYourCat
+# Pocat Android Application

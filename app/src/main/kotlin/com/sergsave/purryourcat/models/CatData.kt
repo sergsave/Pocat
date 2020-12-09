@@ -1,5 +1,5 @@
-@file:UseSerializers(com.sergsave.purryourcat.helpers.UriSerializer::class)
-package com.sergsave.purryourcat.models
+@file:UseSerializers(com.sergsave.pocat.helpers.UriSerializer::class)
+package com.sergsave.pocat.models
 
 import android.net.Uri
 import android.os.Parcelable

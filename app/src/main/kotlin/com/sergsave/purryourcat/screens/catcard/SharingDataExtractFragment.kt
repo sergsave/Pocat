@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.screens.catcard
+package com.sergsave.pocat.screens.catcard
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,10 +10,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import com.sergsave.purryourcat.MyApplication
-import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.helpers.EventObserver
-import com.sergsave.purryourcat.screens.catcard.SharingDataExtractViewModel.ExtractState
+import com.sergsave.pocat.MyApplication
+import com.sergsave.pocat.R
+import com.sergsave.pocat.helpers.EventObserver
+import com.sergsave.pocat.screens.catcard.SharingDataExtractViewModel.ExtractState
 import kotlinx.android.synthetic.main.fragment_sharing_data_extract.*
 
 class SharingDataExtractFragment: Fragment() {

@@ -1,10 +1,10 @@
-package com.sergsave.purryourcat.sharing
+package com.sergsave.pocat.sharing
 
 import android.content.Context
 import android.net.Uri
-import com.sergsave.purryourcat.helpers.FileUtils
-import com.sergsave.purryourcat.models.extractContent
-import com.sergsave.purryourcat.models.withUpdatedContent
+import com.sergsave.pocat.helpers.FileUtils
+import com.sergsave.pocat.models.extractContent
+import com.sergsave.pocat.models.withUpdatedContent
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers

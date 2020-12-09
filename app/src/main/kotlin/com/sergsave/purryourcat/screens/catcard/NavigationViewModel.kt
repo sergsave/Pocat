@@ -1,10 +1,10 @@
-package com.sergsave.purryourcat.screens.catcard
+package com.sergsave.pocat.screens.catcard
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.sergsave.purryourcat.helpers.Event
-import com.sergsave.purryourcat.models.Card
+import com.sergsave.pocat.helpers.Event
+import com.sergsave.pocat.models.Card
 
 class NavigationViewModel(card: Card?, isThereSharingInputData: Boolean)
     : ViewModel() {

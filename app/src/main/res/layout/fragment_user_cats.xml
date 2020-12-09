@@ -41,7 +41,7 @@
             app:layout_constraintVertical_bias="0.0" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.sergsave.purryourcat.helpers.IgnoreVerticalSwipeLayout
+    <com.sergsave.pocat.helpers.IgnoreVerticalSwipeLayout
         android:id="@+id/list_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

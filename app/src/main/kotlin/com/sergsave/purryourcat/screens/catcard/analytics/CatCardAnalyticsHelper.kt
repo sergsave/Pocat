@@ -1,9 +1,9 @@
-package com.sergsave.purryourcat.screens.catcard.analytics
+package com.sergsave.pocat.screens.catcard.analytics
 
 import android.net.Uri
-import com.sergsave.purryourcat.analytics.AnalyticsTracker
-import com.sergsave.purryourcat.sharing.Pack
-import com.sergsave.purryourcat.sharing.WebSharingManager.*
+import com.sergsave.pocat.analytics.AnalyticsTracker
+import com.sergsave.pocat.sharing.Pack
+import com.sergsave.pocat.sharing.WebSharingManager.*
 import java.util.concurrent.TimeUnit
 
 private fun diffTimeInSec(startTime: Long) =

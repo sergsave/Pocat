@@ -1,4 +1,4 @@
-package com.sergsave.purryourcat.screens.catcard
+package com.sergsave.pocat.screens.catcard
 
 import android.Manifest
 import android.content.Context
@@ -19,16 +19,16 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
-import com.sergsave.purryourcat.MyApplication
-import com.sergsave.purryourcat.R
-import com.sergsave.purryourcat.helpers.*
-import com.sergsave.purryourcat.models.Card
-import com.sergsave.purryourcat.models.CatData
-import com.sergsave.purryourcat.screens.catcard.PurringViewModel.MenuState
-import com.sergsave.purryourcat.vibration.RingdroidSoundBeatDetector
-import com.sergsave.purryourcat.vibration.RythmOfSoundVibrator
-import com.sergsave.purryourcat.vibration.RythmOfSoundVibrator.OnPrepareFinishedListener
-import com.sergsave.purryourcat.vibration.SoundBeatDetector
+import com.sergsave.pocat.MyApplication
+import com.sergsave.pocat.R
+import com.sergsave.pocat.helpers.*
+import com.sergsave.pocat.models.Card
+import com.sergsave.pocat.models.CatData
+import com.sergsave.pocat.screens.catcard.PurringViewModel.MenuState
+import com.sergsave.pocat.vibration.RingdroidSoundBeatDetector
+import com.sergsave.pocat.vibration.RythmOfSoundVibrator
+import com.sergsave.pocat.vibration.RythmOfSoundVibrator.OnPrepareFinishedListener
+import com.sergsave.pocat.vibration.SoundBeatDetector
 import kotlinx.android.synthetic.main.fragment_purring.*
 
 class PurringFragment : Fragment() {

@@ -1,6 +1,6 @@
-package com.sergsave.purryourcat.sharing
+package com.sergsave.pocat.sharing
 
-import com.sergsave.purryourcat.models.*
+import com.sergsave.pocat.models.*
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 import kotlinx.serialization.*

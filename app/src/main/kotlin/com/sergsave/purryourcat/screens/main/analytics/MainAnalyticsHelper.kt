@@ -1,8 +1,8 @@
-package com.sergsave.purryourcat.screens.main.analytics
+package com.sergsave.pocat.screens.main.analytics
 
-import com.sergsave.purryourcat.analytics.AnalyticsTracker
-import com.sergsave.purryourcat.screens.main.TabInfo
-import com.sergsave.purryourcat.R
+import com.sergsave.pocat.analytics.AnalyticsTracker
+import com.sergsave.pocat.screens.main.TabInfo
+import com.sergsave.pocat.R
 
 class MainAnalyticsHelper(private val tracker: AnalyticsTracker) {
     fun onAppStarted() = tracker.sendEvent(AppStarted())

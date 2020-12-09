@@ -1,10 +1,10 @@
-package com.sergsave.purryourcat.screens.starting
+package com.sergsave.pocat.screens.starting
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.sergsave.purryourcat.Constants
-import com.sergsave.purryourcat.screens.main.MainActivity
+import com.sergsave.pocat.Constants
+import com.sergsave.pocat.screens.main.MainActivity
 
 // Telegram doesn't want open app in new window when MainActivity has "singleTask" launch mode.
 // Therefore use additional activity.
