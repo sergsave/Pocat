@@ -49,10 +49,12 @@ android {
         development {
             dimension "version"
             versionNameSuffix ".dev"
+            manifestPlaceholders = [firebaseProjectId:"pocat-app-dev"]
         }
         production {
             dimension "version"
             versionNameSuffix ".prod"
+            manifestPlaceholders = [firebaseProjectId:"pocat-app"]
         }
     }
 

@@ -33,7 +33,7 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <data android:scheme="https"/>
                 <data android:host="firebasestorage.googleapis.com" />
-                <data android:pathPrefix="/v0/b/pocat-app.appspot.com" />
+                <data android:pathPrefix="/v0/b/${firebaseProjectId}.appspot.com" />
             </intent-filter>
         </activity>
         <activity android:name=".screens.main.MainActivity">
