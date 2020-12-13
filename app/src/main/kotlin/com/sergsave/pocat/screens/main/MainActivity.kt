@@ -23,7 +23,7 @@ import kotlin.math.abs
 // TODO: Names of constants (XX_BUNDLE_KEY or BUNDLE_KEY_XX)
 // TODO: Code inspect and warnings
 // TODO: Require context and requireActivity
-// TODO: Check all unhadled exception (in not rxjava code). Specify type of exception. Don't ignore.
+// TODO: Check all unhadled exception (in not rxjava code). Specify type of exception. Don't ignore. Use cause for custom exceptions.
 
 class MainActivity : AppCompatActivity() {
 
@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("RestrictedApi")
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
-        menu?.findItem(R.id.action_testing)?.isVisible = BuildConfig.DEBUG
+        menu?.findItem(R.id.action_testing)?.isVisible = BuildConfig.HIDE_TEST_ACTION.not()
 
         if (menu is MenuBuilder)
             menu.setOptionalIconsVisible(true)
@@ -100,7 +100,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         viewModel.onOptionsItemSelected(item.itemId)
-
         when (item.itemId) {
             R.id.action_settings -> launchSettings()
             R.id.action_about -> launchAbout()

@@ -13,9 +13,10 @@ class StoragePermissionPermanentlyDeniedDialog: DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         super.onCreateDialog(savedInstanceState)
 
+        val appName = getString(R.string.app_name)
         return MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.need_permission)
-            .setMessage(R.string.need_storage_permission)
+            .setMessage(getString(R.string.need_storage_permission, appName))
             .setPositiveButton(R.string.show_settings, { _, _ -> goToSettings() })
             .create()
     }

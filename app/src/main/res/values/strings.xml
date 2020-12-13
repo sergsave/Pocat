@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE resources [
-    <!ENTITY appname "Pocat">
-    <!ENTITY nbAppName "Pocat">
     <!ENTITY nbsp "&#160;"><!-- non-breaking space, U+00A0 -->
     ]>
 
 <resources>
-    <string name="app_name" translatable="false">&appname;</string>
-<!--TODO: create dev email -->
-    <string name="dev_email" translatable="false">sa.savenko2@gmail.com</string>
-    <string name="sharing_text">Check out my cat in \"&appname;\" App!</string>
+    <string name="dev_email" translatable="false">sergsave.dev@gmail.com</string>
+    <string name="sharing_text">Check out my cat in %1$s App!</string>
     <string name="add_new_cat">Add a new cat</string>
     <string name="name">Name</string>
     <string name="go_to_purr">Apply</string>
@@ -72,7 +68,7 @@
     <string name="copy_cats">Clone all cats</string>
     <string name="copy_in_progress">Сloning in progress…</string>
     <string name="need_permission">Permission required</string>
-    <string name="need_storage_permission">For full-fledged work, you should give the storage access permission for &nbAppName;</string>
+    <string name="need_storage_permission">For full-fledged work, you should give the storage access permission for %1$s</string>
     <string name="show_settings">Show settings</string>
     <string name="send_data">Send data</string>
     <string name="version">Version</string>

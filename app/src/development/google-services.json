@@ -33,6 +33,35 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:588432149637:android:60d1a67c06c788cf696dec",
+        "android_client_info": {
+          "package_name": "com.sergsave.pocat.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "588432149637-78ig5mo9ddvnqq4v8rpf2uotcitmufu4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4TGq9yCtJeHHwsvXrl9DD0kgyHjS7OiE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "588432149637-78ig5mo9ddvnqq4v8rpf2uotcitmufu4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

@@ -14,6 +14,7 @@ import com.google.firebase.storage.FileDownloadTask
 import com.google.firebase.storage.StorageException
 import com.google.firebase.storage.UploadTask
 import com.google.firebase.storage.ktx.storage
+import com.sergsave.pocat.BuildConfig
 import java.io.File
 import io.reactivex.Single
 import io.reactivex.Completable
@@ -81,7 +82,8 @@ class FirebaseCloudSharingManager(
             .flatMap {
                 val dataLink = it.first
                 val previewLink = if (it.second == Uri.EMPTY) null else it.second
-                val header = context.getString(R.string.sharing_text)
+                val appName = context.getString(R.string.app_name)
+                val header = context.getString(R.string.sharing_text, appName)
                 createDynamicLink(dataLink, header, previewLink, pack.cat.name)
             }
             .map { makeIntent(context, it) }
@@ -164,7 +166,7 @@ private fun createDynamicLink(downloadLink: Uri,
     return Single.create<Uri> { emitter ->
         Firebase.dynamicLinks.shortLinkAsync(ShortDynamicLink.Suffix.SHORT) {
             link = downloadLink
-            domainUriPrefix = "https://pocat.page.link"
+            domainUriPrefix = BuildConfig.DYNAMIC_LINK_DOMAIN
             androidParameters {  }
             socialMetaTagParameters {
                 header?.let { title = it }

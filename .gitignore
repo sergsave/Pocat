@@ -13,3 +13,5 @@
 .externalNativeBuild
 .cxx
 Thumbs.db
+/app/development
+/app/production

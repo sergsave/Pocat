@@ -46,14 +46,24 @@ android {
 
     flavorDimensions "version"
     productFlavors {
+        def appName = "Pocat"
+
         development {
             dimension "version"
-            versionNameSuffix ".dev"
+            applicationIdSuffix ".dev"
+            versionNameSuffix "_dev"
+            resValue "string", "app_name", "$appName"
+            resValue "string", "app_label", "$appName Dev"
+            buildConfigField("String", "DYNAMIC_LINK_DOMAIN", "\"https://pocatappdev.page.link\"")
+            buildConfigField("Boolean", "HIDE_TEST_ACTION", "false")
             manifestPlaceholders = [firebaseProjectId:"pocat-app-dev"]
         }
         production {
             dimension "version"
-            versionNameSuffix ".prod"
+            resValue "string", "app_name", "$appName"
+            resValue "string", "app_label", "$appName"
+            buildConfigField("String", "DYNAMIC_LINK_DOMAIN", "\"https://pocatapp.page.link\"")
+            buildConfigField("Boolean", "HIDE_TEST_ACTION", "true")
             manifestPlaceholders = [firebaseProjectId:"pocat-app"]
         }
     }
