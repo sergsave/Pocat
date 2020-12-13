@@ -8,7 +8,7 @@ import com.sergsave.pocat.BuildConfig
 import com.sergsave.pocat.helpers.setToolbarAsActionBar
 import com.sergsave.pocat.R
 import com.sergsave.pocat.helpers.openRateAppLink
-import de.psdev.licensesdialog.LicensesDialog
+import de.psdev.licensesdialog.LicensesDialogFragment
 import kotlinx.android.synthetic.main.activity_about.*
 import kotlinx.android.synthetic.main.view_about_list_item.*
 import kotlinx.android.synthetic.main.view_about_list_item.view.*
@@ -34,7 +34,7 @@ class AboutActivity : AppCompatActivity() {
         how_to_use_item.setOnClickListener { openHowToUseDialog() }
 
         contact_item.text.text = getString(R.string.contact_us)
-        contact_item.setOnClickListener { sendEmail(getString(R.string.dev_email)) }
+        contact_item.setOnClickListener { sendEmail() }
 
         licenses_item.text.text = getString(R.string.licenses)
         licenses_item.setOnClickListener { openLicensesDialog() }
@@ -43,18 +43,23 @@ class AboutActivity : AppCompatActivity() {
         credits_item.setOnClickListener { openCreditsActivity() }
     }
 
-    private fun sendEmail(address: String) {
-        Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", address, null)).also {
-            startActivity(it)
+    private fun sendEmail() {
+        val address = getString(R.string.dev_email)
+        val subject = getString(R.string.feedback_email_subject, getString(R.string.app_name))
+        Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:")).also {
+            it.putExtra(Intent.EXTRA_EMAIL, arrayOf(address))
+            it.putExtra(Intent.EXTRA_SUBJECT, subject)
+            if (it.resolveActivity(packageManager) != null)
+                startActivity(it)
         }
     }
 
     private fun openLicensesDialog() {
-        LicensesDialog.Builder(this)
+        LicensesDialogFragment.Builder(this)
             .setNotices(R.raw.notices)
             .setThemeResourceId(R.style.MyThemeOverlay_MaterialComponents_MaterialAlertDialog)
             .build()
-            .show()
+            .show(supportFragmentManager, null)
     }
 
     private fun openHowToUseDialog() {
