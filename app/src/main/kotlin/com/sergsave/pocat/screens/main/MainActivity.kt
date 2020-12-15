@@ -92,6 +92,9 @@ class MainActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu_main, menu)
         menu?.findItem(R.id.action_testing)?.isVisible = BuildConfig.HIDE_TEST_ACTION.not()
 
+        // Not supported now
+        menu?.findItem(R.id.action_donate)?.isVisible = false
+
         if (menu is MenuBuilder)
             menu.setOptionalIconsVisible(true)
 
