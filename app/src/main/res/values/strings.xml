@@ -4,74 +4,40 @@
     ]>
 
 <resources>
-    <string name="dev_email" translatable="false">sergsave.dev@gmail.com</string>
-    <string name="feedback_email_subject">%1$s feedback</string>
-    <string name="sharing_text">Check out my cat in %1$s App!</string>
-    <string name="add_new_cat">Add a new cat</string>
-    <string name="name">Name</string>
-    <string name="go_to_purr">Apply</string>
-    <string name="add_sound">Add a purring sound</string>
-    <string name="sound_is_added">Purring sound is added</string>
-    <string name="purring_title">Touch for a purr</string>
-    <string name="loading">Loading</string>
-    <string name="edit_cat">Edit a cat card</string>
-    <string name="share">Share</string>
-    <string name="edit">Edit</string>
-    <string name="add_photo_with">Add photo with…</string>
-    <string name="add_audio_with">Add audio with…</string>
-    <string name="ok">OK</string>
-    <string name="_continue">Continue editing</string>
-    <string name="discard">Discard</string>
-    <string name="changes_not_saved">Changes not saved. Discard them?</string>
-    <string name="fill_the_form">Please choose a photo, name and sound</string>
-    <string name="close">Close</string>
-    <string name="save_snackbar_message_text">Cat successfully added to your collection</string>
-    <string name="file_size_exceeded_message_text">The file is too large. Please select a file less than %1$d&nbsp;MB</string>
-    <string name="connection_error">No internet connection</string>
-    <string name="general_sharing_error">Loading failed. Please check internet connection and free space in the device memory</string>
-    <string name="invalid_link_error">Сat is no longer available at this link. You can ask to send you a cat again.</string>
-    <string name="retry">Retry</string>
+    <!-- Main screen tabs -->
+    <string name="samples_tab">Samples</string>
+    <string name="user_cats_tab">My cats</string>
+
+    <!-- Main screen menu -->
     <string name="settings">Settings</string>
     <string name="donate">Donate</string>
     <string name="about">About</string>
-    <string name="vibration">Enable vibration</string>
-    <string name="vibration_summary">Vibration occurs when you touch a cat</string>
+
+    <!-- Main screen menu test action (dev build only) -->
+    <string name="testing" translatable="false">Testing</string>
+
+    <!-- Empty user cats list -->
+    <string name="empty_users_cats_dummy">There are no cats yet,\nadd the first one</string>
+
+    <!-- User cat remove dialog -->
+    <string name="remove_confirmation">Do you really want to remove?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <!-- Sample cats name -->
+    <!-- TODO: Real cat names-->
     <string name="sample_cat_1_name">Cat 1</string>
     <string name="sample_cat_2_name">Cat 2</string>
     <string name="sample_cat_3_name">Cat 3</string>
     <string name="sample_cat_4_name">Cat 4</string>
     <string name="sample_cat_5_name">Cat 5</string>
     <string name="sample_cat_6_name">Cat 6</string>
-    <string name="sample_audio_1_name">Purr 1</string>
-    <string name="sample_audio_2_name">Purr 2</string>
-    <string name="sample_audio_3_name">Purr 3</string>
-    <string name="sample_audio_4_name">Purr 4</string>
-    <string name="sample_audio_5_name">Purr 5</string>
-    <string name="sample_audio_6_name">Purr 6</string>
-    <string name="not_valid_data">Not valid cat</string>
-    <string name="choose_sound">Choose a sound</string>
-    <string name="samples_title">Samples</string>
-    <string name="samples_summary">Choose from prepared application files</string>
-    <string name="recorder_title">Recorder</string>
-    <string name="recorder_summary">Record your sound. File size limited to %1$d&nbsp;MB (~%2$d&nbsp;min)</string>
-    <string name="pick_audio_title">Device files</string>
-    <string name="pick_audio_summary">Add your file from the device memory. File size limited to %1$d&nbsp;MB</string>
-    <string name="tutorial_text">Pet for purring</string>
-    <string name="make_louder">Please turn up the volume</string>
-    <string name="audio_changed">Audio was changed</string>
-    <string name="samples_tab">Samples</string>
-    <string name="user_cats_tab">My cats</string>
-    <string name="remove_confirmation">Do you really want to remove?</string>
-    <string name="yes">Yes</string>
-    <string name="no">No</string>
-    <string name="empty_users_cats_dummy">There are no cats yet,\nadd the first one</string>
-    <string name="testing">Testing</string>
-    <string name="copy_cats">Clone all cats</string>
-    <string name="copy_in_progress">Сloning in progress…</string>
-    <string name="need_permission">Permission required</string>
-    <string name="need_storage_permission">For full-fledged work, you should give the storage access permission for %1$s</string>
-    <string name="show_settings">Show settings</string>
-    <string name="send_data">Send data</string>
+
+    <!-- Settings -->
+    <string name="vibration">Enable vibration</string>
+    <string name="vibration_summary">Vibration occurs when you touch a cat</string>
+
+    <!-- About -->
     <string name="version">Version</string>
     <string name="rate_on_play_market">Rate app on Google Play</string>
     <string name="contact_us">Send feedback</string>
@@ -79,4 +45,95 @@
     <string name="credits">Credits</string>
     <string name="how_to_use">How to use</string>
     <string name="how_to_use_text">Pet the cat and enjoy the purring sounds.\n\nAdd your cats and share them with your friends.</string>
+
+    <!-- Send email -->
+    <string name="dev_email" translatable="false">sergsave.dev@gmail.com</string>
+    <!-- %1$s - App Name -->
+    <string name="feedback_email_subject">%1$s feedback</string>
+
+    <!-- Test screen (dev build only) -->
+    <string name="copy_cats" translatable="false">Clone all cats</string>
+    <string name="copy_in_progress" translatable="false">Сloning in progress…</string>
+
+    <!-- Tutorial screen -->
+    <string name="tutorial_text">Pet for purring</string>
+
+    <!-- Sound off popup -->
+    <string name="make_louder">Please turn up the volume</string>
+
+    <!-- Cat form screen  -->
+    <string name="name">Name</string>
+    <string name="apply">Apply</string>
+    <string name="add_new_cat">Add a new cat</string>
+    <string name="edit_cat">Edit a cat card</string> titles
+
+    <!-- Cat form sound selection button  -->
+    <string name="add_sound">Add a purring sound</string>
+    <string name="sound_is_added">Purring sound is added</string>
+
+    <!-- Sound changed popup. Shown after repeated sound change -->
+    <string name="audio_changed">Audio was changed</string>
+
+    <!-- Cat form "discard changes" dialog  -->
+    <string name="_continue">Continue editing</string>
+    <string name="discard">Discard</string>
+    <string name="changes_not_saved">Changes not saved. Discard them?</string>
+
+    <!-- Cat form not "not everything is filled" popup -->
+    <string name="fill_the_form">Please choose a photo, name and sound</string>
+    <string name="ok">OK</string>
+
+    <!-- Add photo choosers title -->
+    <string name="add_photo_with">Add photo with…</string>
+
+    <!-- Storage permission required dialog -->
+    <string name="need_permission">Permission required</string>
+    <!-- %1$s - App Name -->
+    <string name="need_storage_permission">For full-fledged work, you should give the storage access permission for %1$s</string>
+    <string name="show_settings">Show settings</string>
+
+    <!-- Sound selection screen  -->
+    <string name="choose_sound">Choose a sound</string>
+    <string name="samples_title">Samples</string>
+    <string name="samples_summary">Choose from prepared application files</string>
+    <string name="recorder_title">Recorder</string>
+    <string name="recorder_summary">Record your sound. File size limited to %1$d&nbsp;MB (~%2$d&nbsp;min)</string>
+    <string name="pick_audio_title">Device files</string>
+    <string name="pick_audio_summary">Add your file from the device memory. File size limited to %1$d&nbsp;MB</string>
+
+    <!-- Add audio from device chooser title -->
+    <string name="add_audio_with">Add audio with…</string>
+
+    <!-- Sound selection "too big file" popup -->
+    <string name="file_size_exceeded_message_text">The file is too large. Please select a file less than %1$d&nbsp;MB</string>
+
+    <!-- Sound samples screen -->
+    <string name="sample_audio_1_name">Purr 1</string>
+    <string name="sample_audio_2_name">Purr 2</string>
+    <string name="sample_audio_3_name">Purr 3</string>
+    <string name="sample_audio_4_name">Purr 4</string>
+    <string name="sample_audio_5_name">Purr 5</string>
+    <string name="sample_audio_6_name">Purr 6</string>
+
+    <!-- Sharing app selection chooser title -->
+    <string name="send_data">Send data</string>
+
+    <!-- Sharing text in message with link. %1$s - App name -->
+    <string name="sharing_text">Check out my cat in %1$s App!</string>
+
+    <!-- Sharing errors -->
+    <string name="connection_error">No internet connection</string>
+    <string name="general_sharing_error">Loading failed. Please check internet connection and free space in the device memory</string>
+
+    <!-- Loading cat by link -->
+    <string name="loading">Loading</string>
+
+    <!-- Loading cat errors -->
+    <string name="invalid_link_error">Сat is no longer available at this link. You can ask to send you a cat again.</string>
+    <string name="retry">Retry</string>
+    <string name="not_valid_data">Not valid cat</string>
+
+    <!-- "On save loaded cat" popup -->
+    <string name="save_snackbar_message_text">Cat successfully added to your collection</string>
+
 </resources>

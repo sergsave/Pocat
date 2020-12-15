@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE resources [
+    <!ENTITY nbsp "&#160;"><!-- non-breaking space, U+00A0 -->
+    ]>
+
+<resources>
+    <!-- Main screen tabs -->
+    <string name="samples_tab">Стандартные</string>
+    <string name="user_cats_tab">Мои коты</string>
+
+    <!-- Main screen menu -->
+    <string name="settings">Настройки</string>
+    <string name="donate">Сказать спасибо</string>
+    <string name="about">О программе</string>
+
+    <!-- Main screen menu test action (dev build only) -->
+    <string name="testing" translatable="false">Testing</string>
+
+    <!-- Empty user cats list -->
+    <string name="empty_users_cats_dummy">Здесь еще нет котов,\nдобавьте первого</string>
+
+    <!-- User cat remove dialog -->
+    <string name="remove_confirmation">Вы действительно хотите удалить?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+
+    <!-- Sample cats name -->
+    <!-- TODO: Real cat names-->
+    <string name="sample_cat_1_name">Котик 1</string>
+    <string name="sample_cat_2_name">Котик 2</string>
+    <string name="sample_cat_3_name">Котик 3</string>
+    <string name="sample_cat_4_name">Котик 4</string>
+    <string name="sample_cat_5_name">Котик 5</string>
+    <string name="sample_cat_6_name">Котик 6</string>
+
+    <!-- Settings -->
+    <string name="vibration">Вибрация</string>
+    <string name="vibration_summary">Устройство вибрирует, когда кот мурчит</string>
+
+    <!-- About -->
+    <string name="version">Версия</string>
+    <string name="rate_on_play_market">Оценить на Google Play</string>
+    <string name="contact_us">Связаться с разработчиком</string>
+    <string name="licenses">Лицензии открытого ПО</string>
+    <string name="credits">Лицензии ресурсов</string>
+    <string name="how_to_use">Как использовать?</string>
+    <string name="how_to_use_text">Гладьте кота и наслаждайтесь звуками мурчания.\n\nДобавьте своих питомцев и делитесь ими с друзьями.</string>
+
+    <!-- Send email -->
+    <string name="dev_email" translatable="false">sergsave.dev@gmail.com</string>
+    <!-- %1$s - App Name -->
+    <string name="feedback_email_subject">%1$s обратная связь</string>
+
+    <!-- Test screen (dev build only) -->
+    <string name="copy_cats" translatable="false">Clone all cats</string>
+    <string name="copy_in_progress" translatable="false">Сloning in progress…</string>
+
+    <!-- Tutorial screen -->
+    <string name="tutorial_text">Погладьте котика</string>
+
+    <!-- Sound off popup -->
+    <string name="make_louder">Пожалуйста, выключите беззвучный режим</string>
+
+    <!-- Cat form screen  -->
+    <string name="name">Имя</string>
+    <string name="apply">Применить</string>
+    <string name="add_new_cat">Создание кота</string>
+    <string name="edit_cat">Редактирование кота</string> titles
+
+    <!-- Cat form sound selection button  -->
+    <string name="add_sound">Добавить звук мурчания</string>
+    <string name="sound_is_added">Звук мурчания выбран</string>
+
+    <!-- Sound changed popup. Shown after repeated sound change -->
+    <string name="audio_changed">Выбран новый звук</string>
+
+    <!-- Cat form "discard changes" dialog  -->
+    <string name="_continue">Продолжить</string>
+    <string name="discard">Отменить</string>
+    <string name="changes_not_saved">Есть несохраненные изменения. Отменить их?</string>
+
+    <!-- Cat form not "not everything is filled" popup -->
+    <string name="fill_the_form">Пожалуйста, выберите фото, имя и звук мурчания</string>
+    <string name="ok">Ok</string>
+
+    <!-- Add photo chooser title -->
+    <string name="add_photo_with">Добавьте фото</string>
+
+    <!-- Storage permission required dialog -->
+    <string name="need_permission">Требуются разрешения</string>
+    <!-- %1$s - App Name -->
+    <string name="need_storage_permission">Для полноценной необходимо дать %1$s разрешение на доступ к хранилищу</string>
+    <string name="show_settings">Показать настройки</string>
+
+    <!-- Sound selection screen  -->
+    <string name="choose_sound">Выбор звука</string>
+    <string name="samples_title">Стандартные</string>
+    <string name="samples_summary">Выберите из стандартных звуков</string>
+    <string name="recorder_title">Диктофон</string>
+    <string name="recorder_summary">Запишите мурчание. Максимальный размер файла - %1$d&nbsp;МБ (~%2$d&nbsp;мин)</string>
+    <string name="pick_audio_title">Память устройства</string>
+    <string name="pick_audio_summary">Выберите файла с устройства. Максимальный размер файла - %1$d&nbsp;МБ</string>
+
+    <!-- Add audio from device chooser title -->
+    <string name="add_audio_with">Добавьте аудио</string>
+
+    <!-- Sound selection "too big file" popup -->
+    <string name="file_size_exceeded_message_text">Файл слишком большой. Пожалуйста, выберите файл меньше, чем %1$d&nbsp;МБ</string>
+
+    <!-- Sound samples screen -->
+    <string name="sample_audio_1_name">Мурка 1</string>
+    <string name="sample_audio_2_name">Мурка 2</string>
+    <string name="sample_audio_3_name">Мурка 3</string>
+    <string name="sample_audio_4_name">Мурка 4</string>
+    <string name="sample_audio_5_name">Мурка 5</string>
+    <string name="sample_audio_6_name">Мурка 6</string>
+
+    <!-- Sharing app selection chooser title -->
+    <string name="send_data">Отправить данные</string>
+
+    <!-- Sharing text in message with link. %1$s - App name -->
+    <string name="sharing_text">Погладь моего кота в приложении %1$s!</string>
+
+    <!-- Sharing errors -->
+    <string name="connection_error">Нет интернета</string>
+    <string name="general_sharing_error">Ошибка загрузки. Пожалуйста, проверьте интернет-соединение и наличие свободного места на устройстве</string>
+
+    <!-- Loading cat by link -->
+    <string name="loading">Загрузка</string>
+
+    <!-- Loading cat errors -->
+    <string name="invalid_link_error">Кот больше не доступен по этой ссылке. Вы можете попросить отправить вам его еще раз</string>
+    <string name="retry">Попробовать снова</string>
+    <string name="not_valid_data">Ошибка загрузки. Данные повреждены.</string>
+
+    <!-- "On save loaded cat" popup -->
+    <string name="save_snackbar_message_text">Кот добавлен в вашу коллекцию</string>
+
+</resources>
