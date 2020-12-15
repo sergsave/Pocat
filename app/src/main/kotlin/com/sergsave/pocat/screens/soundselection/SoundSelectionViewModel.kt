@@ -1,14 +1,11 @@
 package com.sergsave.pocat.screens.soundselection
 
-import android.content.Context
-import android.content.Intent
 import android.net.Uri
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.sergsave.pocat.helpers.Event
 import com.sergsave.pocat.R
-import com.sergsave.pocat.helpers.FileUtils
+import com.sergsave.pocat.helpers.Event
 import com.sergsave.pocat.screens.soundselection.analytics.SoundSelectionAnalyticsHelper
 import kotlin.math.roundToLong
 
@@ -16,11 +13,11 @@ class SoundSelectionViewModel(private val fileSizeByteCalculator: (Uri) -> Long,
                               private val maxFileSizeMB: Long,
                               private val analytics: SoundSelectionAnalyticsHelper)
     : ViewModel() {
-    data class Message (val stringId: Int, val stringArgs: Array<Any>)
+    data class Message (val stringId: Int, val stringArgs: List<Any>)
 
     val samplesSummary: Message
         get() {
-            return Message(R.string.samples_summary, arrayOf<Any>())
+            return Message(R.string.samples_summary, listOf<Any>())
         }
 
     val recorderSummary: Message
@@ -29,12 +26,12 @@ class SoundSelectionViewModel(private val fileSizeByteCalculator: (Uri) -> Long,
             val approxMaxDurationMin = (maxFileSizeMB.toFloat() / averageSizeMBPerMin).roundToLong()
 
             return Message(R.string.recorder_summary,
-                arrayOf<Any>(maxFileSizeMB, approxMaxDurationMin))
+                listOf<Any>(maxFileSizeMB, approxMaxDurationMin))
         }
 
     val pickAudioSummary: Message
         get() {
-            return Message(R.string.pick_audio_summary, arrayOf<Any>(maxFileSizeMB))
+            return Message(R.string.pick_audio_summary, listOf<Any>(maxFileSizeMB))
         }
 
     private val _validationFailedEvent = MutableLiveData<Event<Message>>()
@@ -46,7 +43,7 @@ class SoundSelectionViewModel(private val fileSizeByteCalculator: (Uri) -> Long,
         get() = _validationSuccessEvent
 
     fun validateResult(uri: Uri) {
-        val error = Message(R.string.file_size_exceeded_message_text, arrayOf(maxFileSizeMB))
+        val error = Message(R.string.file_size_exceeded_message_text, listOf(maxFileSizeMB))
         val size = fileSizeByteCalculator(uri)
 
         val result = size < maxFileSizeMB * 1000000

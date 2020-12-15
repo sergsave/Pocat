@@ -14,7 +14,6 @@
     <string name="about">О программе</string>
 
     <!-- Main screen menu test action (dev build only) -->
-    <string name="testing" translatable="false">Testing</string>
 
     <!-- Empty user cats list -->
     <string name="empty_users_cats_dummy">Здесь еще нет котов,\nдобавьте первого</string>
@@ -38,7 +37,7 @@
     <string name="vibration_summary">Устройство вибрирует, когда кот мурчит</string>
 
     <!-- About -->
-    <string name="version">Версия</string>
+    <string name="version_text">Версия %1$s</string>
     <string name="rate_on_play_market">Оценить на Google Play</string>
     <string name="contact_us">Связаться с разработчиком</string>
     <string name="licenses">Лицензии открытого ПО</string>
@@ -47,13 +46,10 @@
     <string name="how_to_use_text">Гладьте кота и наслаждайтесь звуками мурчания.\n\nДобавьте своих питомцев и делитесь ими с друзьями.</string>
 
     <!-- Send email -->
-    <string name="dev_email" translatable="false">sergsave.dev@gmail.com</string>
     <!-- %1$s - App Name -->
     <string name="feedback_email_subject">%1$s обратная связь</string>
 
     <!-- Test screen (dev build only) -->
-    <string name="copy_cats" translatable="false">Clone all cats</string>
-    <string name="copy_in_progress" translatable="false">Сloning in progress…</string>
 
     <!-- Tutorial screen -->
     <string name="tutorial_text">Погладьте котика</string>
@@ -131,7 +127,6 @@
     <!-- Loading cat errors -->
     <string name="invalid_link_error">Кот больше не доступен по этой ссылке. Вы можете попросить отправить вам его еще раз</string>
     <string name="retry">Попробовать снова</string>
-    <string name="not_valid_data">Ошибка загрузки. Данные повреждены.</string>
 
     <!-- "On save loaded cat" popup -->
     <string name="save_snackbar_message_text">Кот добавлен в вашу коллекцию</string>

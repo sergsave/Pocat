@@ -3,13 +3,11 @@ package com.sergsave.pocat.screens.main
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.sergsave.pocat.persistent.CatDataRepository
 import com.sergsave.pocat.helpers.DisposableViewModel
-import com.sergsave.pocat.helpers.Event
-import com.sergsave.pocat.models.CatData
 import com.sergsave.pocat.models.Card
+import com.sergsave.pocat.models.CatData
+import com.sergsave.pocat.persistent.CatDataRepository
 import com.sergsave.pocat.screens.main.analytics.MainAnalyticsHelper
-import io.reactivex.Observable
 
 class UserCatsViewModel(private val catDataRepository: CatDataRepository,
                         private val analytics: MainAnalyticsHelper): DisposableViewModel() {

@@ -1,24 +1,22 @@
 package com.sergsave.pocat.screens.soundselection
 
-import android.Manifest
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.preference.PreferenceFragmentCompat
 import androidx.fragment.app.viewModels
 import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.snackbar.Snackbar
-import com.sergsave.pocat.screens.soundselection.SoundSelectionViewModel.Message
 import com.sergsave.pocat.MyApplication
 import com.sergsave.pocat.R
+import com.sergsave.pocat.dialogs.StoragePermissionPermanentlyDeniedDialog
 import com.sergsave.pocat.helpers.*
 import com.sergsave.pocat.helpers.PermissionDenyTypeQualifier.Type.DENIED_PERMANENTLY
-import com.sergsave.pocat.dialogs.StoragePermissionPermanentlyDeniedDialog
+import com.sergsave.pocat.screens.soundselection.SoundSelectionViewModel.Message
 
 class SoundSelectionFragment: PreferenceFragmentCompat() {
     private val viewModel: SoundSelectionViewModel by viewModels {
@@ -33,12 +31,10 @@ class SoundSelectionFragment: PreferenceFragmentCompat() {
 
         val registerPreference = { keyId: Int, summary: Message, onClickListener: () -> Unit ->
             findPreference<Preference>(getString(keyId))?.apply {
-                this.summary = getString(summary.stringId, *summary.stringArgs)
-                onPreferenceClickListener = object: Preference.OnPreferenceClickListener {
-                    override fun onPreferenceClick(preference: Preference?): Boolean {
-                        onClickListener()
-                        return true
-                    }
+                this.summary = getString(summary.stringId, *summary.stringArgs.toTypedArray())
+                onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                    onClickListener()
+                    true
                 }
             }
         }
@@ -76,7 +72,7 @@ class SoundSelectionFragment: PreferenceFragmentCompat() {
             })
 
             validationFailedEvent.observe(viewLifecycleOwner, EventObserver {
-                val message = getString(it.stringId, *it.stringArgs)
+                val message = getString(it.stringId, *it.stringArgs.toTypedArray())
                 view?.let { Snackbar.make(it, message, Snackbar.LENGTH_LONG).show() }
             })
         }

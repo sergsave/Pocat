@@ -4,10 +4,6 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
-import java.io.*
-import java.net.HttpURLConnection
-import java.net.URL
-import java.net.URLConnection
 
 object NetworkUtils {
     fun isNetworkAvailable(context: Context): Boolean {

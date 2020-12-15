@@ -14,7 +14,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -24,10 +23,10 @@ import com.google.android.material.snackbar.Snackbar
 import com.sergsave.pocat.BuildConfig
 import com.sergsave.pocat.MyApplication
 import com.sergsave.pocat.R
+import com.sergsave.pocat.dialogs.StoragePermissionPermanentlyDeniedDialog
 import com.sergsave.pocat.helpers.*
 import com.sergsave.pocat.helpers.PermissionDenyTypeQualifier.Type.DENIED_PERMANENTLY
 import com.sergsave.pocat.models.Card
-import com.sergsave.pocat.dialogs.StoragePermissionPermanentlyDeniedDialog
 import com.sergsave.pocat.screens.catcard.FormViewModel.SoundButtonType
 import com.sergsave.pocat.screens.soundselection.SoundSelectionActivity
 import kotlinx.android.synthetic.main.fragment_cat_form.*
@@ -70,7 +69,6 @@ class FormFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_cat_form, container, false)
     }
 
-    // TODO? or in onViewCreate
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

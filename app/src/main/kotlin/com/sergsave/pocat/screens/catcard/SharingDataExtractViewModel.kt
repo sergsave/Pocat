@@ -4,18 +4,17 @@ import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.rxkotlin.Singles
 import com.sergsave.pocat.content.ContentRepository
-import com.sergsave.pocat.models.CatData
-import com.sergsave.pocat.models.Card
-import com.sergsave.pocat.helpers.Event
 import com.sergsave.pocat.helpers.DisposableViewModel
-import com.sergsave.pocat.sharing.WebSharingManager
-import com.sergsave.pocat.R
+import com.sergsave.pocat.helpers.Event
+import com.sergsave.pocat.models.Card
+import com.sergsave.pocat.models.CatData
 import com.sergsave.pocat.screens.catcard.analytics.CatCardAnalyticsHelper
 import com.sergsave.pocat.sharing.Pack
+import com.sergsave.pocat.sharing.WebSharingManager
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.zipWith
 import java.util.concurrent.TimeUnit
 

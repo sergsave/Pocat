@@ -1,4 +1,4 @@
-package com.sergsave.pocat.screens.catcard
+package com.sergsave.pocat.screens.main
 
 import android.app.Dialog
 import android.os.Bundle

@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.OpenableColumns
 import android.util.TypedValue
+import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import java.io.*
 import java.text.SimpleDateFormat
@@ -79,12 +80,11 @@ object FileUtils {
     }
 
     private fun getResourceSize(context: Context, resId: Int): Long {
-        val size = try {
+        return try {
             context.resources.openRawResource(resId).use { it.available().toLong() }
         } catch(e: Exception) {
             0L
         }
-        return size
     }
 
     private fun cutLastSegment(path: String): String {
@@ -204,7 +204,7 @@ object FileUtils {
     }
 
     private fun generateImageName(): String {
-        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss_SSS").format(Date())
+        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss_SSS", Locale.US).format(Date())
         return "IMG_$timestamp.jpg"
     }
 
@@ -224,6 +224,7 @@ object FileUtils {
         return FileProvider.getUriForFile(context, providerAuthority, file)
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun prepareMediaStoreImageUri(context: Context, subPath: String): Uri? {
         val values = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, generateImageName())

@@ -2,7 +2,6 @@ package com.sergsave.pocat.screens.about
 
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.sergsave.pocat.R
 import com.sergsave.pocat.helpers.setToolbarAsActionBar

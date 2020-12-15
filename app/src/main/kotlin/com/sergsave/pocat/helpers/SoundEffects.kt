@@ -1,7 +1,6 @@
 package com.sergsave.pocat.helpers
 
 import android.media.MediaPlayer
-import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -24,7 +23,7 @@ open class VolumeChangeSoundEffect(private val player: MediaPlayer,
         val stepsQuantity = durationMillis / TIME_STEP
         val step = (endVolume - startVolume) / stepsQuantity
         volumes = mutableListOf<Float>().apply {
-            for (i in 0..stepsQuantity - 1)
+            for (i in 0 until stepsQuantity)
                 add(startVolume + step * i)
             add(endVolume)
         }
@@ -41,7 +40,7 @@ open class VolumeChangeSoundEffect(private val player: MediaPlayer,
             .doOnNext { player.setVolume(it.first, it.first) }
             .observeOn(AndroidSchedulers.mainThread())
             .ignoreElements()
-            .subscribe({ onCompleteListener() }, { _ -> onCompleteListener() })
+            .subscribe({ onCompleteListener() }, { onCompleteListener() })
     }
 
     override fun stop() {
@@ -53,8 +52,8 @@ open class VolumeChangeSoundEffect(private val player: MediaPlayer,
 
 // Just change volume, doesn't control play state
 class FadeInSoundEffect(player: MediaPlayer, durationMillis: Long)
-    : VolumeChangeSoundEffect(player, durationMillis, 0f, 1f) {}
+    : VolumeChangeSoundEffect(player, durationMillis, 0f, 1f)
 
 // Just change volume, doesn't control play state
 class FadeOutSoundEffect(player: MediaPlayer, durationMillis: Long)
-    : VolumeChangeSoundEffect(player, durationMillis, 1f, 0f) {}
+    : VolumeChangeSoundEffect(player, durationMillis, 1f, 0f)

@@ -44,7 +44,7 @@ class PurringTutorialFragment: Fragment() {
                 finish()
             true
         }
-        navigation.backPressedEvent.observe(this, EventObserver { finish() })
+        navigation.backPressedEvent.observe(viewLifecycleOwner, EventObserver { finish() })
     }
 
     private fun finish() {

@@ -5,6 +5,7 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Bundle
 import android.os.Parcelable
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import kotlinx.android.parcel.Parcelize
 
@@ -40,16 +41,18 @@ class PermissionDenyTypeQualifier(private val activity: AppCompatActivity,
 
     fun onRequestPermission(permission: String) {
         state.permission2shouldShow[permission] =
-            activity.shouldShowRequestPermissionRationale(permission)
+            ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)
     }
 
     // Return null if permission is granted or there was no call onRequestPermission before
     fun handleRequestPermissionResult(permission: String): Type? {
         val cached = state.permission2shouldShow[permission]
-        if (cached == null || activity.checkSelfPermission(permission) == PERMISSION_GRANTED)
+        if (cached == null ||
+            ActivityCompat.checkSelfPermission(activity, permission) == PERMISSION_GRANTED) {
             return null
+        }
 
-        val current = activity.shouldShowRequestPermissionRationale(permission)
+        val current = ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)
         return when {
             cached && current -> Type.DENIED
             cached.not() && current -> Type.DENIED_FIRST_TIME

@@ -1,12 +1,12 @@
 package com.sergsave.pocat.screens.main
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.menu.MenuBuilder
-import androidx.activity.viewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import com.sergsave.pocat.BuildConfig
@@ -17,11 +17,8 @@ import com.sergsave.pocat.helpers.EventObserver
 import com.sergsave.pocat.helpers.FirstTimeLaunchBugWorkaround
 import com.sergsave.pocat.helpers.setToolbarAsActionBar
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlin.math.abs
 
-// TODO: Check sdk version of all function
 // TODO: Names of constants (XX_BUNDLE_KEY or BUNDLE_KEY_XX)
-// TODO: Code inspect and warnings
 // TODO: Require context and requireActivity
 // TODO: Check all unhadled exception (in not rxjava code). Specify type of exception. Don't ignore. Use cause for custom exceptions.
 

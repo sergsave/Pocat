@@ -1,6 +1,5 @@
 package com.sergsave.pocat.screens.catcard
 
-import android.Manifest
 import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
@@ -8,12 +7,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.transition.Transition.TransitionListener
 import android.transition.Transition
+import android.transition.Transition.TransitionListener
 import android.view.*
 import android.view.MotionEvent.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -21,14 +19,14 @@ import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
 import com.sergsave.pocat.MyApplication
 import com.sergsave.pocat.R
-import com.sergsave.pocat.helpers.*
+import com.sergsave.pocat.helpers.EventObserver
+import com.sergsave.pocat.helpers.FadeOutSoundEffect
+import com.sergsave.pocat.helpers.ImageUtils
+import com.sergsave.pocat.helpers.SupportTransitionListenerAdapter
 import com.sergsave.pocat.models.Card
 import com.sergsave.pocat.models.CatData
-import com.sergsave.pocat.screens.catcard.PurringViewModel.MenuState
 import com.sergsave.pocat.vibration.RingdroidSoundBeatDetector
 import com.sergsave.pocat.vibration.RythmOfSoundVibrator
-import com.sergsave.pocat.vibration.RythmOfSoundVibrator.OnPrepareFinishedListener
-import com.sergsave.pocat.vibration.SoundBeatDetector
 import kotlinx.android.synthetic.main.fragment_purring.*
 
 class PurringFragment : Fragment() {
@@ -206,10 +204,10 @@ class PurringFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(viewModel.onActionSelected(item.itemId))
-            return true
+        return if(viewModel.onActionSelected(item.itemId))
+            true
         else
-            return super.onOptionsItemSelected(item)
+            super.onOptionsItemSelected(item)
     }
 
     private fun initAudio(audioUri: Uri?) {

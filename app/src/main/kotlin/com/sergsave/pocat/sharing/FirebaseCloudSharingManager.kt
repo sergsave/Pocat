@@ -4,10 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.dynamiclinks.ktx.dynamicLinks
-import com.google.firebase.dynamiclinks.ktx.shortLinkAsync
 import com.google.firebase.dynamiclinks.ShortDynamicLink
 import com.google.firebase.dynamiclinks.ktx.androidParameters
+import com.google.firebase.dynamiclinks.ktx.dynamicLinks
+import com.google.firebase.dynamiclinks.ktx.shortLinkAsync
 import com.google.firebase.dynamiclinks.ktx.socialMetaTagParameters
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FileDownloadTask
@@ -15,20 +15,19 @@ import com.google.firebase.storage.StorageException
 import com.google.firebase.storage.UploadTask
 import com.google.firebase.storage.ktx.storage
 import com.sergsave.pocat.BuildConfig
-import java.io.File
-import io.reactivex.Single
-import io.reactivex.Completable
+import com.sergsave.pocat.R
 import com.sergsave.pocat.helpers.ImageUtils
 import com.sergsave.pocat.helpers.NetworkUtils
+import com.sergsave.pocat.helpers.createIntentChooser
+import io.reactivex.Completable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.zipWith
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.BehaviorSubject
+import java.io.File
 import java.io.IOException
 import java.util.*
-import com.sergsave.pocat.R
-import com.sergsave.pocat.helpers.createIntentChooser
-import io.reactivex.SingleSource
-import io.reactivex.rxkotlin.zipWith
-import io.reactivex.subjects.BehaviorSubject
 
 class FirebaseCloudSharingManager(
     private val context: Context,
@@ -56,7 +55,7 @@ class FirebaseCloudSharingManager(
 
     private fun waitCleanupFinish(): Completable {
         return Completable.fromSingle(
-            cleanupInProcess.filter { it == false }.first(false)
+            cleanupInProcess.filter { !it }.first(false)
         )
     }
 
@@ -146,7 +145,7 @@ private fun resizePreview(previewUri: Uri, tempDir: File, context: Context): Sin
     val width = 640
     val height = 360
 
-    return Single.create<File> { emitter ->
+    return Single.create { emitter ->
         if(tempDir.exists().not()) tempDir.mkdirs()
 
         ImageUtils.loadInto(context, previewUri, resizedFile, width, height) { res ->
