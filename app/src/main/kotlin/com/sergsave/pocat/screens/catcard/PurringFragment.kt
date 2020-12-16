@@ -65,7 +65,7 @@ class PurringFragment : Fragment() {
     override fun onDetach() {
         // Avoid fragment leakage
         transitionListener?.let {
-            activity?.window?.sharedElementEnterTransition?.removeListener(it)
+            requireActivity().window.sharedElementEnterTransition.removeListener(it)
         }
         super.onDetach()
     }
@@ -104,7 +104,7 @@ class PurringFragment : Fragment() {
 
         viewModel.apply {
             catData.observe(viewLifecycleOwner, Observer {
-                ImageUtils.loadInto(context, it.photoUri, photo_image) {
+                ImageUtils.loadInto(requireContext(), it.photoUri, photo_image) {
                     startTransition()
                 }
                 initAudio(it.purrAudioUri)
@@ -116,11 +116,11 @@ class PurringFragment : Fragment() {
             })
 
             menuState.observe(viewLifecycleOwner, Observer {
-                activity?.invalidateOptionsMenu()
+                requireActivity().invalidateOptionsMenu()
             })
 
             sharingLoaderIsVisible.observe(viewLifecycleOwner, Observer {
-                activity?.invalidateOptionsMenu()
+                requireActivity().invalidateOptionsMenu()
             })
 
             sharingSuccessEvent.observe(viewLifecycleOwner, EventObserver {
@@ -157,7 +157,7 @@ class PurringFragment : Fragment() {
     }
 
     private fun checkVolumeLevel(): Boolean {
-        val audioManager = activity?.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
+        val audioManager = requireContext().getSystemService(Context.AUDIO_SERVICE) as? AudioManager
         return audioManager?.getStreamVolume(AudioManager.STREAM_MUSIC) != 0
     }
 
@@ -211,17 +211,17 @@ class PurringFragment : Fragment() {
     }
 
     private fun initAudio(audioUri: Uri?) {
-        if(audioUri == null || context == null || mediaPlayer != null)
+        if(audioUri == null || mediaPlayer != null)
             return
 
-        activity?.volumeControlStream = AudioManager.STREAM_MUSIC
+        requireActivity().volumeControlStream = AudioManager.STREAM_MUSIC
         mediaPlayer = MediaPlayer.create(requireContext(), audioUri)?.apply { isLooping = true }
         fadeOutEffect = mediaPlayer?.let { FadeOutSoundEffect(it, FADE_DURATION) }
 
         if(viewModel.isVibrationEnabled.not())
             return
 
-        vibrator = createVibrator(audioUri).apply { prepareAsync() }
+        vibrator = createVibrator(requireContext(), audioUri).apply { prepareAsync() }
     }
 
     private fun deinitAudio() {
@@ -231,14 +231,14 @@ class PurringFragment : Fragment() {
         mediaPlayer?.release()
         vibrator = null
         mediaPlayer = null
-        activity?.volumeControlStream = AudioManager.USE_DEFAULT_STREAM_TYPE
+        requireActivity().volumeControlStream = AudioManager.USE_DEFAULT_STREAM_TYPE
     }
 
-    private fun createVibrator(audioUri: Uri): RythmOfSoundVibrator {
-        val detector = RingdroidSoundBeatDetector(requireContext(), audioUri,
+    private fun createVibrator(context: Context, audioUri: Uri): RythmOfSoundVibrator {
+        val detector = RingdroidSoundBeatDetector(context, audioUri,
             { mediaPlayer?.currentPosition }
         )
-        return RythmOfSoundVibrator(requireContext(), detector)
+        return RythmOfSoundVibrator(context, detector)
     }
 
     private fun playAudio() {

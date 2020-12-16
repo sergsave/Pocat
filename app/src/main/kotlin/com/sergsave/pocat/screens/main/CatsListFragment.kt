@@ -120,9 +120,8 @@ class CatsListFragment : Fragment() {
             }
         }
 
-        // TODO: remove hardcode
-        val columnWidth = 180
-        val itemMargin = 16
+        val columnWidth = resources.getDimensionPixelSize(R.dimen.list_column_width)
+        val itemMargin = resources.getDimensionPixelSize(R.dimen.list_item_margin)
 
         val viewManager = AutoFitGridLayoutManager(requireContext(), columnWidth)
         val itemDecoration = MarginItemDecoration(itemMargin) { viewManager.spanCount }

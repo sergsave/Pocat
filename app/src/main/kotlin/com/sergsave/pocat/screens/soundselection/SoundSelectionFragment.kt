@@ -64,11 +64,14 @@ class SoundSelectionFragment: PreferenceFragmentCompat() {
     private fun setupViewModel() {
         viewModel.apply {
             validationSuccessEvent.observe(viewLifecycleOwner, EventObserver {
-                activity?.setResult(Activity.RESULT_OK, Intent().apply {
+                val intent = Intent().apply {
                     data = it
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                })
-                activity?.finish()
+                }
+                requireActivity().apply {
+                    setResult(Activity.RESULT_OK, intent)
+                    finish()
+                }
             })
 
             validationFailedEvent.observe(viewLifecycleOwner, EventObserver {
@@ -135,7 +138,7 @@ class SoundSelectionFragment: PreferenceFragmentCompat() {
 
     private fun sendRecorderIntent() {
         val intent = Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION)
-        if (intent.resolveActivity(requireActivity().packageManager) != null)
+        if (intent.resolveActivity(requireContext().packageManager) != null)
             startActivityForResult(intent, RECORDER_CODE)
         else
             viewModel.onRecorderNotFound()
@@ -150,7 +153,7 @@ class SoundSelectionFragment: PreferenceFragmentCompat() {
             Intent(Intent.ACTION_GET_CONTENT).also {
                 it.type = type
             }
-        ).filter { it.resolveActivity(requireActivity().packageManager) != null }
+        ).filter { it.resolveActivity(requireContext().packageManager) != null }
 
         val title = getString(R.string.add_audio_with)
         createIntentChooser(intents, title)?.let {

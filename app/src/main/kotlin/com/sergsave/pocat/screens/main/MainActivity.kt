@@ -19,7 +19,6 @@ import com.sergsave.pocat.helpers.setToolbarAsActionBar
 import kotlinx.android.synthetic.main.activity_main.*
 
 // TODO: Names of constants (XX_BUNDLE_KEY or BUNDLE_KEY_XX)
-// TODO: Require context and requireActivity
 // TODO: Check all unhadled exception (in not rxjava code). Specify type of exception. Don't ignore. Use cause for custom exceptions.
 
 class MainActivity : AppCompatActivity() {

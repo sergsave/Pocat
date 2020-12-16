@@ -17,12 +17,8 @@ import java.io.FileOutputStream
 import java.io.IOException
 
 object ImageUtils {
-    fun loadInto(context: Context?, uri: Uri?, imageView: ImageView,
+    fun loadInto(context: Context, uri: Uri?, imageView: ImageView,
                  finishCallback: ((Boolean)->Unit)? = null) {
-        if(context == null) {
-            finishCallback?.invoke(false)
-            return
-        }
 
         if(uri == null) {
             Glide.with(context).clear(imageView)
@@ -59,9 +55,9 @@ object ImageUtils {
     }
 
     // https://code.luasoftware.com/tutorials/android/android-resize-image-file-with-glide/
-    fun loadInto(context: Context?, uri: Uri?, outputFile: File, width: Int, height: Int,
+    fun loadInto(context: Context, uri: Uri?, outputFile: File, width: Int, height: Int,
                  finishCallback: ((Boolean)->Unit)? = null) {
-        if(context == null || uri == null) {
+        if(uri == null) {
             finishCallback?.invoke(false)
             return
         }

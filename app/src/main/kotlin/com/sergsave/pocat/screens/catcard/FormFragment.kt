@@ -86,7 +86,7 @@ class FormFragment : Fragment() {
             })
 
             photoUri.observe(viewLifecycleOwner, Observer {
-                ImageUtils.loadInto(context, it, photo_image)
+                ImageUtils.loadInto(requireContext(), it, photo_image)
             })
 
             soundButtonType.observe(viewLifecycleOwner, Observer {
@@ -174,9 +174,6 @@ class FormFragment : Fragment() {
     }
 
     private fun addPhoto() {
-        if(context == null)
-            return
-
         val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
 
         if (isPermissionGranted(permission))
@@ -189,9 +186,6 @@ class FormFragment : Fragment() {
     }
 
     private fun addAudio() {
-        if(context == null)
-            return
-
         val intent = Intent(requireContext(), SoundSelectionActivity::class.java)
         startActivityForResult(intent, PICK_AUDIO_CODE)
     }
@@ -227,20 +221,24 @@ class FormFragment : Fragment() {
         )
     }
 
-    private fun createCameraIntent(): Intent? {
-        val pictureSubPath = getString(R.string.app_name)
-        val providerAuth = "${BuildConfig.APPLICATION_ID}.fileprovider"
-
-        cameraImageUri = FileUtils.provideImageUriInPublicStorage(requireContext(),
-            pictureSubPath, providerAuth)
-        return cameraImageUri?.let { uri ->
+    private fun createCameraIntent(imageUri: Uri?): Intent? {
+        return imageUri?.let { uri ->
             Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply { putExtra(MediaStore.EXTRA_OUTPUT, uri) }
         }
     }
 
+    private fun resolveCameraImageUri(context: Context): Uri? {
+        val pictureSubPath = getString(R.string.app_name)
+        val providerAuth = "${BuildConfig.APPLICATION_ID}.fileprovider"
+        return FileUtils.provideImageUriInPublicStorage(context, pictureSubPath, providerAuth)
+    }
+
     private fun sendPhotoIntent() {
-        val intents = (createPickIntents() + listOf(createCameraIntent())).filterNotNull().filter {
-            it.resolveActivity(requireActivity().packageManager) != null
+        cameraImageUri = resolveCameraImageUri(requireContext())
+        val cameraIntent = createCameraIntent(cameraImageUri)
+
+        val intents = (createPickIntents() + listOf(cameraIntent)).filterNotNull().filter {
+            it.resolveActivity(requireContext().packageManager) != null
         }
 
         val title = resources.getString(R.string.add_photo_with)
@@ -265,7 +263,7 @@ class FormFragment : Fragment() {
     }
 
     private fun hideKeyboard() {
-        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+        val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
         imm?.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 

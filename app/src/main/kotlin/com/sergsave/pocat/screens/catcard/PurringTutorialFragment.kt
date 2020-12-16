@@ -48,7 +48,7 @@ class PurringTutorialFragment: Fragment() {
     }
 
     private fun finish() {
-        activity?.supportFragmentManager?.popBackStack()
+        requireActivity().supportFragmentManager.popBackStack()
         navigation.onTutorialFinished()
     }
 }
