@@ -12,16 +12,10 @@ class RemoveConfirmationDialog: DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         super.onCreateDialog(savedInstanceState)
 
-        val resources = requireContext().resources
-        val positiveText = resources.getString(R.string.yes)
-        val negativeText = resources.getString(R.string.no)
-        val message = resources.getString(R.string.remove_confirmation)
-
-        val builder = MaterialAlertDialogBuilder(context)
-        builder.setTitle(message).apply {
-            setPositiveButton(positiveText, { _, _ -> onRemoveConfirmListener?.invoke() })
-            setNegativeButton(negativeText, { _, _ -> })
-        }
-        return builder.create()
+        return MaterialAlertDialogBuilder(context)
+            .setTitle(R.string.remove_confirmation)
+            .setPositiveButton(R.string.yes, { _, _ -> onRemoveConfirmListener?.invoke() })
+            .setNegativeButton(R.string.no, { _, _ -> })
+            .create()
     }
 }

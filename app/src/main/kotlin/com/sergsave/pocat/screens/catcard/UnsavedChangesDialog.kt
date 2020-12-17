@@ -11,17 +11,11 @@ class UnsavedChangesDialog: DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         super.onCreateDialog(savedInstanceState)
-        // TODO: simplify dialogs
-        val resources = requireContext().resources
-        val positiveText = resources.getString(R.string.discard)
-        val negativeText = resources.getString(R.string._continue)
-        val message = resources.getString(R.string.changes_not_saved)
 
-        val builder = MaterialAlertDialogBuilder(context)
-        builder.setTitle(message).apply {
-            setPositiveButton(positiveText, { _, _ -> onDiscardChangesListener?.invoke() })
-            setNegativeButton(negativeText, { _, _ -> })
-        }
-        return builder.create()
+        return MaterialAlertDialogBuilder(context)
+            .setTitle(R.string.changes_not_saved)
+            .setPositiveButton(R.string.discard, { _, _ -> onDiscardChangesListener?.invoke() })
+            .setNegativeButton(R.string._continue, { _, _ -> })
+            .create()
     }
 }

@@ -35,6 +35,12 @@ android {
                     "-Xuse-experimental=kotlinx.serialization.ImplicitReflectionSerializer"
             ]
         }
+
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas")
+            }
+        }
     }
 
     buildTypes {
