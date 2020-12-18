@@ -15,6 +15,7 @@ import com.sergsave.pocat.sharing.WebSharingManager
 import com.sergsave.pocat.R
 import com.sergsave.pocat.screens.catcard.analytics.CatCardAnalyticsHelper
 import io.reactivex.disposables.Disposable
+import java.io.IOException
 
 class PurringViewModel(
     private val catDataRepository: CatDataRepository,
@@ -39,17 +40,13 @@ class PurringViewModel(
     val menuState: LiveData<MenuState>
         get() = _menuState
 
-    private val _dataSavedEvent = MutableLiveData<Event<Unit>>()
-    val dataSavedEvent: LiveData<Event<Unit>>
-        get() = _dataSavedEvent
-
     private val _sharingLoaderIsVisible = MutableLiveData<Boolean>()
     val sharingLoaderIsVisible: LiveData<Boolean>
         get() = _sharingLoaderIsVisible
 
-    private val _sharingFailedStringIdEvent = MutableLiveData<Event<Int>>()
-    val sharingFailedStringIdEvent: LiveData<Event<Int>>
-        get() = _sharingFailedStringIdEvent
+    private val _snackbarMessageEvent = MutableLiveData<Event<Int>>()
+    val snackbarMessageEvent: LiveData<Event<Int>>
+        get() = _snackbarMessageEvent
 
     // Use intent is safe here because we don't save reference to any context.
     private val _sharingSuccessEvent = MutableLiveData<Event<Intent>>()
@@ -103,9 +100,10 @@ class PurringViewModel(
         val handleError = { throwable: Throwable ->
             val stringId = when (throwable) {
                 is WebSharingManager.NoConnectionException -> R.string.connection_error
-                else -> R.string.general_sharing_error
+                is IOException -> R.string.general_sharing_error
+                else -> throw throwable
             }
-            _sharingFailedStringIdEvent.value = Event(stringId)
+            _snackbarMessageEvent.value = Event(stringId)
         }
 
         val disposable = upload
@@ -127,9 +125,13 @@ class PurringViewModel(
             { id ->
                 card = card.copy(persistentId = id)
                 updateMenu(true)
-                _dataSavedEvent.value = Event(Unit)
+                _snackbarMessageEvent.value = Event(R.string.save_success_snackbar_message_text)
             },
-            { Log.e("PurringViewModel", "Save failed", it) }
+            {
+                // TODO: analytics
+                Log.e(TAG, "Save failed", it)
+                _snackbarMessageEvent.value = Event(R.string.save_failed_snackbar_message_text)
+            }
         )
         addDisposable(disposable)
     }
@@ -140,6 +142,13 @@ class PurringViewModel(
         if(card.persistentId != null)
             _editCatEvent.value = Event(card)
     }
+
+    val isVibrationEnabled: Boolean
+        get() = preferences.isVibrationEnabled
+
+    var isTutorialAchieved: Boolean
+        get() = preferences.isPurringTutorialAchieved
+        set(value) { preferences.isPurringTutorialAchieved = value }
 
     fun onActionSelected(id: Int): Boolean {
         when(id) {
@@ -158,10 +167,7 @@ class PurringViewModel(
         sharingDisposable?.dispose()
     }
 
-    val isVibrationEnabled: Boolean
-        get() = preferences.isVibrationEnabled
-
-    var isTutorialAchieved: Boolean
-        get() = preferences.isPurringTutorialAchieved
-        set(value) { preferences.isPurringTutorialAchieved = value }
+    companion object {
+        private const val TAG = "PurringViewModel"
+    }
 }

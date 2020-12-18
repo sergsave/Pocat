@@ -37,10 +37,10 @@ open class VolumeChangeSoundEffect(private val player: MediaPlayer,
             Observable.fromIterable(volumes),
             Observable.interval(TIME_STEP, TimeUnit.MILLISECONDS)
         )
-            .doOnNext { player.setVolume(it.first, it.first) }
+            .map { player.setVolume(it.first, it.first) }
             .observeOn(AndroidSchedulers.mainThread())
             .ignoreElements()
-            .subscribe({ onCompleteListener() }, { onCompleteListener() })
+            .subscribe({ onCompleteListener() })
     }
 
     override fun stop() {

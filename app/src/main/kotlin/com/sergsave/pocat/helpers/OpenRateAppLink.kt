@@ -8,11 +8,13 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 
 fun AppCompatActivity.openRateAppLink() {
-    try {
-        startActivity(makeRateIntent(this, "market://details"))
-    } catch (e: ActivityNotFoundException) {
-        startActivity(makeRateIntent(this, "https://play.google.com/store/apps/details"))
-    }
+    var intent1 = makeRateIntent(this, "market://details")
+    var intent2 = makeRateIntent(this, "https://play.google.com/store/apps/details")
+
+    if (intent1.resolveActivity(packageManager) != null)
+        startActivity(intent1)
+    else if (intent2.resolveActivity(packageManager) != null)
+        startActivity(intent2)
 }
 
 private fun makeRateIntent(context: Context, baseUrl: String): Intent {

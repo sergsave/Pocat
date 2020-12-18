@@ -85,6 +85,10 @@ object ImageUtils {
                     }
                 }
 
+                override fun onLoadFailed(errorDrawable: Drawable?) {
+                    finishCallback?.invoke(false)
+                }
+
                 override fun onLoadCleared(placeholder: Drawable?) {}
             })
     }

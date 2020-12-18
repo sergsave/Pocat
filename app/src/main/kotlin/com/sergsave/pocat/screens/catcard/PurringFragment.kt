@@ -127,13 +127,8 @@ class PurringFragment : Fragment() {
                 startActivity(it)
             })
 
-            sharingFailedStringIdEvent.observe(viewLifecycleOwner, EventObserver {
+            snackbarMessageEvent.observe(viewLifecycleOwner, EventObserver {
                 showSnackbar(resources.getString(it))
-            })
-
-            dataSavedEvent.observe(viewLifecycleOwner, EventObserver {
-                val message = resources.getString(R.string.save_snackbar_message_text)
-                showSnackbar(message)
             })
         }
     }
@@ -156,9 +151,9 @@ class PurringFragment : Fragment() {
         Snackbar.make(main_layout, message, Snackbar.LENGTH_LONG).show()
     }
 
-    private fun checkVolumeLevel(): Boolean {
+    private fun isDeviceInSilentMode(): Boolean {
         val audioManager = requireContext().getSystemService(Context.AUDIO_SERVICE) as? AudioManager
-        return audioManager?.getStreamVolume(AudioManager.STREAM_MUSIC) != 0
+        return audioManager?.getStreamVolume(AudioManager.STREAM_MUSIC) == 0
     }
 
     private fun onTouchEvent(event: MotionEvent): Boolean {
@@ -171,7 +166,7 @@ class PurringFragment : Fragment() {
         if(event.action != ACTION_DOWN && event.action != ACTION_MOVE)
             return false
 
-        if(event.action == ACTION_DOWN && checkVolumeLevel().not()) {
+        if(event.action == ACTION_DOWN && isDeviceInSilentMode()) {
             showSnackbar(getString(R.string.make_louder))
             return true
         }
@@ -221,6 +216,7 @@ class PurringFragment : Fragment() {
         if(viewModel.isVibrationEnabled.not())
             return
 
+        // TODO: analytics on fail
         vibrator = createVibrator(requireContext(), audioUri).apply { prepareAsync() }
     }
 

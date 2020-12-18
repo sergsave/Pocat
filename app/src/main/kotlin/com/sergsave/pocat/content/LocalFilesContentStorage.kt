@@ -32,20 +32,24 @@ class LocalFilesContentStorage(private val context: Context,
             .toFlowable(BackpressureStrategy.LATEST)
             .map{ readFileUris() }
             .startWith(Flowable.fromCallable{ readFileUris() })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
     }
 
     override fun add(sourceContent: Uri, keepFileName: Boolean): Single<Uri> {
-        // This implementation always keep file name
-        val name = FileUtils.resolveContentFileName(context, sourceContent)
+        return Single.create<File> { emitter ->
+            // This implementation always keep file name
+            val name = FileUtils.resolveContentFileName(context, sourceContent)
 
-        if(name == null)
-            return Single.error(IOException("Invalid file name"))
-        
-        val dir = createUniqueDir()
-        dir.mkdirs()
-        val file = File(dir, name)
-
-        return savingStrategy.save(sourceContent, file).toSingle { Uri.fromFile(file) }
+            if(name == null) {
+                emitter.onError(IOException("Invalid file name"))
+            } else {
+                val dir = createUniqueDir()
+                dir.mkdirs()
+                emitter.onSuccess(File(dir, name))
+            }
+        }
+            .flatMap { savingStrategy.save(sourceContent, it).toSingle { Uri.fromFile(it) } }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSuccess { sendNotification() }

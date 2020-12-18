@@ -48,13 +48,9 @@ class FormViewModel(
     val unsavedChangesMessageEvent: LiveData<Event<Unit>>
         get() = _unsavedChangesMessageEvent
 
-    private val _notValidDataMessageEvent = MutableLiveData<Event<Unit>>()
-    val notValidDataMessageEvent: LiveData<Event<Unit>>
-        get() = _notValidDataMessageEvent
-
-    private val _audioChangedMessageEvent = MutableLiveData<Event<Unit>>()
-    val audioChangedMessageEvent: LiveData<Event<Unit>>
-        get() = _audioChangedMessageEvent
+    private val _snackbarMessageEvent = MutableLiveData<Event<Int>>()
+    val snackbarMessageEvent: LiveData<Event<Int>>
+        get() = _snackbarMessageEvent
 
     private val _openCardEvent = MutableLiveData<Event<Card>>()
     val openCardEvent: LiveData<Event<Card>>
@@ -86,7 +82,11 @@ class FormViewModel(
         if(uri != _photoUri.value) {
             addDisposable(contentRepository.addImage(uri).subscribe(
                 { newUri -> _photoUri.value = newUri },
-                { Log.e(TAG, "Adding failed", it) }
+                {
+                    // TODO: analytics
+                    Log.e(TAG, "Photo add failed", it)
+                    _snackbarMessageEvent.value = Event(R.string.file_add_failed)
+                }
             ))
         }
     }
@@ -95,12 +95,16 @@ class FormViewModel(
         analytics.onChangeAudio()
 
         if(_audioUri.value != null)
-            _audioChangedMessageEvent.value = Event(Unit)
+            _snackbarMessageEvent.value = Event(R.string.audio_changed)
 
         if(uri != _audioUri.value) {
             addDisposable(contentRepository.addAudio(uri).subscribe(
                 { newUri -> _audioUri.value = newUri },
-                { Log.e(TAG, "Adding failed", it) }
+                {
+                    // TODO: analytics
+                    Log.e(TAG, "Audio add failed", it)
+                    _snackbarMessageEvent.value = Event(R.string.file_add_failed)
+                }
             ))
         }
     }
@@ -109,7 +113,7 @@ class FormViewModel(
         analytics.onTryApplyChanges(isCurrentDataValid())
 
         if (isCurrentDataValid().not()) {
-            _notValidDataMessageEvent.value = Event(Unit)
+            _snackbarMessageEvent.value = Event(R.string.fill_the_form)
             return
         }
 
@@ -133,12 +137,13 @@ class FormViewModel(
         val currentCard = card?.copy(data = data)
         val id = currentCard?.persistentId
 
-        val message = "Sync failed"
-
         if(currentCard != null && id != null) {
             addDisposable(catDataRepository.update(id, currentCard.data).subscribe(
                 { _openCardEvent.value = Event(currentCard) },
-                { Log.e(TAG, message, it) }
+                {
+                    // TODO: analytics
+                    Log.e(TAG, "Update failed", it)
+                }
             ))
             return
         }
@@ -147,7 +152,10 @@ class FormViewModel(
             .doOnSuccess { analytics.onCatAdded() }
             .subscribe(
             { newId -> _openCardEvent.value = Event(Card(newId, data, true, true)) },
-            { Log.e(TAG, message, it) }
+            {
+                // TODO: analytics
+                Log.e(TAG, "Add failed", it)
+            }
         ))
     }
 

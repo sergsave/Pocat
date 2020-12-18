@@ -21,9 +21,9 @@ class UserCatsViewModel(private val catDataRepository: CatDataRepository,
             { catMap ->
                 val sortedByTime = catMap.toList().sortedByDescending { it.second.timestamp.time }
                 _cats.value = sortedByTime.map { (id, timed) -> Pair(id, timed.data) }
-            },
-            { Log.e(TAG, "Read failed", it) })
-        )
+            }
+            // Don't handle error, because it's unexpected
+        ))
     }
 
     fun makeCard(listItemId: String, data: CatData): Card {
@@ -38,7 +38,10 @@ class UserCatsViewModel(private val catDataRepository: CatDataRepository,
         addDisposable(
             catDataRepository.remove(catIds)
                 .doOnComplete { analytics.onCatsRemoved(catIds.size) }
-                .subscribe({}, { Log.e(TAG, "Remove failed", it) })
+                .subscribe({}, {
+                    // TODO: analytics
+                    Log.e(TAG, "Remove failed", it)
+                })
         )
     }
 

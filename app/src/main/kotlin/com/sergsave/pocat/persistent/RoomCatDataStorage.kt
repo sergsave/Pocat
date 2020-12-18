@@ -15,6 +15,7 @@ import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 
+// TODO? To singletone
 class RoomCatDataStorage(context: Context): CatDataStorage {
 
     private val database = Room.databaseBuilder(

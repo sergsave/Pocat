@@ -2,6 +2,7 @@ package com.sergsave.pocat.screens.catcard
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sergsave.pocat.content.ContentRepository
@@ -17,6 +18,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.zipWith
 import java.util.concurrent.TimeUnit
+import java.io.IOException
 
 class SharingDataExtractViewModel(
     private val sharingManager: WebSharingManager,
@@ -62,7 +64,8 @@ class SharingDataExtractViewModel(
             val state = when(throwable) {
                 is WebSharingManager.NoConnectionException -> ExtractState.NO_CONNECTION_ERROR
                 is WebSharingManager.InvalidLinkException -> ExtractState.INVALID_LINK_ERROR
-                else -> ExtractState.UNKNOWN_ERROR
+                is IOException -> ExtractState.UNKNOWN_ERROR
+                else -> throw throwable
             }
             _extractState.value = state
         }
@@ -94,8 +97,10 @@ class SharingDataExtractViewModel(
                 contentRepo.addAudio(data.purrAudioUri).onErrorReturnItem(Uri.EMPTY)
             )
             .subscribe({ (photo, audio) ->
-                    if (photo == Uri.EMPTY || audio == Uri.EMPTY)
+                    if (photo == Uri.EMPTY || audio == Uri.EMPTY) {
+                        // TODO: analytics?
                         _extractState.value = ExtractState.INVALID_LINK_ERROR
+                    }
                     else {
                         val updated = data.copy(photoUri = photo, purrAudioUri = audio)
                         _extractSuccessEvent.value = Event(Card(null, updated, true, true))

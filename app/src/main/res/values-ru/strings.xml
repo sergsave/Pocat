@@ -61,7 +61,8 @@
     <string name="name">Имя</string>
     <string name="apply">Применить</string>
     <string name="add_new_cat">Создание кота</string>
-    <string name="edit_cat">Редактирование кота</string> titles
+    <string name="edit_cat">Редактирование кота</string>
+    <string name="file_add_failed">Не получилось добавить файл</string>
 
     <!-- Cat form sound selection button  -->
     <string name="add_sound">Добавить звук мурчания</string>
@@ -129,6 +130,7 @@
     <string name="retry">Попробовать снова</string>
 
     <!-- "On save loaded cat" popup -->
-    <string name="save_snackbar_message_text">Кот добавлен в вашу коллекцию</string>
+    <string name="save_success_snackbar_message_text">Кот добавлен в вашу коллекцию</string>
+    <string name="save_failed_snackbar_message_text">К сожалению, не получилось сохранить кот</string>
 
 </resources>

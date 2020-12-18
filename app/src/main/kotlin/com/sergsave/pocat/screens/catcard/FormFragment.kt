@@ -108,17 +108,8 @@ class FormFragment : Fragment() {
                 }
             })
 
-            val showSnackbar = { messageStringId: Int ->
-                val message = resources.getString(messageStringId)
-                Snackbar.make(main_layout, message, Snackbar.LENGTH_LONG).show()
-            }
-
-            notValidDataMessageEvent.observe(viewLifecycleOwner, EventObserver {
-                showSnackbar(R.string.fill_the_form)
-            })
-
-            audioChangedMessageEvent.observe(viewLifecycleOwner, EventObserver {
-                showSnackbar(R.string.audio_changed)
+            snackbarMessageEvent.observe(viewLifecycleOwner, EventObserver {
+                Snackbar.make(main_layout, getString(it), Snackbar.LENGTH_LONG).show()
             })
 
             openCardEvent.observe(viewLifecycleOwner, EventObserver {

@@ -127,9 +127,9 @@ private fun uploadFile(file: File, folderName: String): Single<Uri> {
             }.addOnFailureListener {
                 val errorCode = (it as? StorageException)?.errorCode
                 if (errorCode == StorageException.ERROR_RETRY_LIMIT_EXCEEDED)
-                    emitter.onError(WebSharingManager.NoConnectionException("Retry limit"))
+                    emitter.onError(WebSharingManager.NoConnectionException("Retry limit", it))
                 else
-                    emitter.onError(IOException("Uploading error"))
+                    emitter.onError(IOException("Uploading error", it))
             }
         }
     }.doOnDispose {
@@ -152,7 +152,7 @@ private fun resizePreview(previewUri: Uri, tempDir: File, context: Context): Sin
             if(res)
                 emitter.onSuccess(resizedFile)
             else
-                emitter.onError(IOException("Image load error"))
+                emitter.onError(IOException("Sharing preview resize error"))
         }
     }
 }
@@ -161,7 +161,8 @@ private fun createDynamicLink(downloadLink: Uri,
                               header: String?,
                               previewLink: Uri?,
                               catName: String?): Single<Uri> {
-    val error = IOException("Error in deeplink create")
+    val error = { cause: Throwable? -> IOException("Error in deeplink create", cause) }
+
     return Single.create<Uri> { emitter ->
         Firebase.dynamicLinks.shortLinkAsync(ShortDynamicLink.Suffix.SHORT) {
             link = downloadLink
@@ -173,9 +174,9 @@ private fun createDynamicLink(downloadLink: Uri,
                 previewLink?.let { imageUrl = it }
             }
         }.addOnSuccessListener { result ->
-            result.shortLink?.let { emitter.onSuccess(it) } ?: emitter.onError(error)
+            result.shortLink?.let { emitter.onSuccess(it) } ?: emitter.onError(error(null))
         }.addOnFailureListener {
-            emitter.onError(error)
+            emitter.onError(error(it))
         }
     }
 }
@@ -190,7 +191,9 @@ private fun makeIntent(context: Context, link: Uri): Intent {
 }
 
 private fun extractDownloadLink(intent: Intent): Single<Uri> {
-    val error = WebSharingManager.InvalidLinkException("Extract link error")
+    val error = { cause: Throwable? ->
+        WebSharingManager.InvalidLinkException("Extract link error", cause)
+    }
     return Single.create<Uri> { emitter ->
         Firebase.dynamicLinks
             .getDynamicLink(intent)
@@ -203,9 +206,9 @@ private fun extractDownloadLink(intent: Intent): Single<Uri> {
                 else
                     pendingLinkData.link
 
-                link?.let { emitter.onSuccess(it) } ?: emitter.onError(error)
+                link?.let { emitter.onSuccess(it) } ?: emitter.onError(error(null))
             }
-            .addOnFailureListener { emitter.onError(error) }
+            .addOnFailureListener { emitter.onError(error(it)) }
     }
 }
 
@@ -226,11 +229,11 @@ private fun downloadFile(uri: Uri, dir: File): Single<File> {
             }.addOnFailureListener {
                 val error = when ((it as? StorageException)?.errorCode) {
                     StorageException.ERROR_RETRY_LIMIT_EXCEEDED ->
-                        WebSharingManager.NoConnectionException("Retry limit")
+                        WebSharingManager.NoConnectionException("Retry limit", it)
                     StorageException.ERROR_OBJECT_NOT_FOUND,
                     StorageException.ERROR_BUCKET_NOT_FOUND ->
-                        WebSharingManager.InvalidLinkException("Object not found")
-                    else -> IOException("Downloading error")
+                        WebSharingManager.InvalidLinkException("Object not found", it)
+                    else -> IOException("Downloading error", it)
                 }
                 emitter.onError(error)
             }
@@ -249,7 +252,7 @@ private fun auth(): Completable {
                 if (task.isSuccessful) {
                     emitter.onComplete()
                 } else {
-                    emitter.onError(IOException("Auth error"))
+                    emitter.onError(IOException("Auth error", task.exception))
                 }
             }
     }

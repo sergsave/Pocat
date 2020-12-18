@@ -4,6 +4,7 @@ import android.provider.MediaStore
 import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
+import android.content.res.Resources
 import android.database.Cursor
 import android.net.Uri
 import android.os.Build
@@ -12,6 +13,7 @@ import android.provider.OpenableColumns
 import android.util.TypedValue
 import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
+import java.io.IOException
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -21,6 +23,7 @@ import java.util.zip.ZipOutputStream
 
 object FileUtils {
     // https://stackoverflow.com/questions/10854211/android-store-inputstream-in-file
+    @Throws(IOException::class)
     fun copyStreamToFile(inputStream: InputStream, outputFile: File) {
         inputStream.use { input ->
             val outputStream = FileOutputStream(outputFile)
@@ -49,7 +52,7 @@ object FileUtils {
         if (uri.scheme.equals(ContentResolver.SCHEME_ANDROID_RESOURCE).not())
             return null
 
-        // Call of "getgetIdentifier" can be long.
+        // Call of "getIdentifier" can be long.
         // But when using the id of the resource when composing the uri,
         // there may be problems with caching images.
         val type = uri.pathSegments[0]
@@ -72,7 +75,7 @@ object FileUtils {
 
         try {
             context.resources.getValue(resId, typedValue, true)
-        } catch(e: Exception) {
+        } catch(e: Resources.NotFoundException) {
             return null
         }
 
@@ -83,7 +86,10 @@ object FileUtils {
         return try {
             context.resources.openRawResource(resId).use { it.available().toLong() }
         } catch(e: Exception) {
-            0L
+            when(e) {
+                is Resources.NotFoundException, is IOException -> return 0L
+                else -> throw e
+            }
         }
     }
 

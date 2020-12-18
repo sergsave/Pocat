@@ -47,7 +47,10 @@ class RythmOfSoundVibrator(
         val duration = beatDetector.detectionPeriodMs / 3
         workDisposable = beatDetector.detect().subscribe(
             { vibrate(duration) },
-            { Log.e("RythmOfSoundVibrator", "Detection failed", it) }
+            {
+                assert(false)
+                Log.e("RythmOfSoundVibrator", "Detection failed", it)
+            }
         )
     }
 
