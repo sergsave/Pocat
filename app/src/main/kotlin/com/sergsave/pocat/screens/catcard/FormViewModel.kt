@@ -76,23 +76,32 @@ class FormViewModel(
         _name.value = if(name.isNotEmpty()) name else null
     }
 
-    fun changePhoto(uri: Uri) {
+    fun changePhoto(uri: Uri?) {
         analytics.onChangePhoto()
+
+        if (uri == null) {
+            onFileAddFailed()
+            return
+        }
 
         if(uri != _photoUri.value) {
             addDisposable(contentRepository.addImage(uri).subscribe(
                 { newUri -> _photoUri.value = newUri },
                 {
-                    // TODO: analytics
                     Log.e(TAG, "Photo add failed", it)
-                    _snackbarMessageEvent.value = Event(R.string.file_add_failed)
+                    onFileAddFailed()
                 }
             ))
         }
     }
 
-    fun changeAudio(uri: Uri) {
+    fun changeAudio(uri: Uri?) {
         analytics.onChangeAudio()
+
+        if (uri == null) {
+            onFileAddFailed()
+            return
+        }
 
         if(_audioUri.value != null)
             _snackbarMessageEvent.value = Event(R.string.audio_changed)
@@ -101,12 +110,16 @@ class FormViewModel(
             addDisposable(contentRepository.addAudio(uri).subscribe(
                 { newUri -> _audioUri.value = newUri },
                 {
-                    // TODO: analytics
                     Log.e(TAG, "Audio add failed", it)
-                    _snackbarMessageEvent.value = Event(R.string.file_add_failed)
+                    onFileAddFailed()
                 }
             ))
         }
+    }
+
+    private fun onFileAddFailed() {
+        // TODO: analytics
+        _snackbarMessageEvent.value = Event(R.string.file_add_failed)
     }
 
     fun onApplyPressed() {

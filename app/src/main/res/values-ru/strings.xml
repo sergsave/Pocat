@@ -127,6 +127,7 @@
 
     <!-- Loading cat errors -->
     <string name="invalid_link_error">Кот больше не доступен по этой ссылке. Вы можете попросить отправить вам его еще раз</string>
+    <string name="invalid_data_error">Данные повреждены</string>
     <string name="retry">Попробовать снова</string>
 
     <!-- "On save loaded cat" popup -->

@@ -131,6 +131,7 @@
 
     <!-- Loading cat errors -->
     <string name="invalid_link_error">Сat is no longer available at this link. You can ask to send you a cat again.</string>
+    <string name="invalid_data_error">Cat data is corrupted.</string>
     <string name="retry">Retry</string>
 
     <!-- "On save loaded cat" popup -->

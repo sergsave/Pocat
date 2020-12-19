@@ -245,10 +245,10 @@ class FormFragment : Fragment() {
             PICK_IMAGE_CODE -> {
                 // Null data - image from camera
                 val uri = data?.data ?: cameraImageUri
-                uri?.let{ viewModel.changePhoto(it) }
+                viewModel.changePhoto(uri)
             }
             PICK_AUDIO_CODE -> {
-                data?.data?.let { viewModel.changeAudio(it) }
+                viewModel.changeAudio(data?.data)
             }
         }
     }

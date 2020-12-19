@@ -58,18 +58,28 @@ class SharingDataExtractFragment: Fragment() {
 
         viewModel.apply {
             extractState.observe(viewLifecycleOwner, Observer {
-                listOf(progress_bar, no_connection_layout, invalid_link_text, unknown_error_text)
+                listOf(progress_bar, no_connection_layout, error_text)
                     .forEach { it.visibility = View.INVISIBLE }
 
+                val errorTexts = mapOf(
+                    ExtractState.INVALID_LINK_ERROR to R.string.invalid_link_error,
+                    ExtractState.INVALID_DATA_ERROR to R.string.invalid_data_error,
+                    ExtractState.UNKNOWN_ERROR to R.string.general_sharing_error
+                )
+
                 when (it) {
-                    ExtractState.INITIAL -> null
-                    ExtractState.LOADING -> progress_bar
-                    ExtractState.NO_CONNECTION_ERROR -> no_connection_layout
-                    ExtractState.INVALID_LINK_ERROR -> invalid_link_text
-                    ExtractState.UNKNOWN_ERROR -> unknown_error_text
-                    else -> null
+                    ExtractState.INITIAL -> {}
+                    ExtractState.LOADING ->
+                        progress_bar.visibility = View.VISIBLE
+                    ExtractState.NO_CONNECTION_ERROR ->
+                        no_connection_layout.visibility = View.VISIBLE
+                    ExtractState.INVALID_LINK_ERROR,
+                    ExtractState.INVALID_DATA_ERROR,
+                    ExtractState.UNKNOWN_ERROR -> {
+                        error_text.visibility = View.VISIBLE
+                        error_text.text = getString(errorTexts.getValue(it))
+                    }
                 }
-                    ?.visibility = View.VISIBLE
             })
 
             extractSuccessEvent.observe(viewLifecycleOwner, EventObserver {

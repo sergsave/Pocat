@@ -17,25 +17,19 @@ class ContentRepository (
             .map { (audios, images) -> audios + images }
     }
 
-    private fun add(storage: ContentStorage, sourceContent: Uri?): Single<Uri> {
-        if(sourceContent == null)
-            return Single.error(IllegalArgumentException("Null content"))
-
+    private fun add(storage: ContentStorage, sourceContent: Uri): Single<Uri> {
         return storage.add(sourceContent, true)
     }
 
-    fun addAudio(sourceContent: Uri?): Single<Uri> {
+    fun addAudio(sourceContent: Uri): Single<Uri> {
         return add(audioStorage, sourceContent)
     }
 
-    fun addImage(sourceContent: Uri?): Single<Uri> {
+    fun addImage(sourceContent: Uri): Single<Uri> {
         return add(imageStorage, sourceContent)
     }
 
-    fun remove(uri: Uri?): Completable {
-        if(uri == null)
-            return Completable.error(IllegalArgumentException("Null uri"))
-
+    fun remove(uri: Uri): Completable {
         return audioStorage.remove(uri)
             .onErrorResumeNext { imageStorage.remove(uri) }
     }

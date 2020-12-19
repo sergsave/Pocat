@@ -2,7 +2,6 @@ package com.sergsave.pocat.screens.catcard
 
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sergsave.pocat.content.ContentRepository
@@ -17,8 +16,8 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.zipWith
-import java.util.concurrent.TimeUnit
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 class SharingDataExtractViewModel(
     private val sharingManager: WebSharingManager,
@@ -31,6 +30,7 @@ class SharingDataExtractViewModel(
         LOADING,
         NO_CONNECTION_ERROR,
         INVALID_LINK_ERROR,
+        INVALID_DATA_ERROR,
         UNKNOWN_ERROR
     }
 
@@ -91,16 +91,24 @@ class SharingDataExtractViewModel(
         addDisposable(disposable)
     }
 
+    private fun onInvalidDataExtracted() {
+        // TODO: analytics?
+        _extractState.value = ExtractState.INVALID_DATA_ERROR
+    }
+
     private fun updateContent(data: CatData) {
+        if (data.photoUri == null || data.purrAudioUri == null) {
+            onInvalidDataExtracted()
+            return
+        }
+
         val disposable = Singles.zip(
                 contentRepo.addImage(data.photoUri).onErrorReturnItem(Uri.EMPTY),
                 contentRepo.addAudio(data.purrAudioUri).onErrorReturnItem(Uri.EMPTY)
             )
             .subscribe({ (photo, audio) ->
-                    if (photo == Uri.EMPTY || audio == Uri.EMPTY) {
-                        // TODO: analytics?
-                        _extractState.value = ExtractState.INVALID_LINK_ERROR
-                    }
+                    if (photo == Uri.EMPTY || audio == Uri.EMPTY)
+                        onInvalidDataExtracted()
                     else {
                         val updated = data.copy(photoUri = photo, purrAudioUri = audio)
                         _extractSuccessEvent.value = Event(Card(null, updated, true, true))
