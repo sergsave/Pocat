@@ -8,10 +8,8 @@ import com.sergsave.pocat.models.withUpdatedContent
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
-import kotlinx.serialization.json.JsonLiteral
-import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.*
 import java.io.File
 import java.io.IOException
 
@@ -54,7 +52,10 @@ private fun readPackFromBundleFile(file: File): Pack? {
         return jsoner.fromJson(packJsonObj)
     }
     catch (e: Exception) {
-        return null
+        when(e) {
+            is NoSuchElementException, is JsonException, is SerializationException -> return null
+            else -> throw e
+        }
     }
 }
 
@@ -99,12 +100,13 @@ class ZipDataPacker(private val context: Context): DataPacker {
         return Pack(withFixedUris)
     }
 
-    private val error = IOException("Packing error")
-
     override fun pack(pack: Pack, buildDir: File): Single<File> {
         return Single.create<File> { emitter ->
             val file = packSync(pack, buildDir)
-            if(file != null) emitter.onSuccess(file) else emitter.onError(error)
+            if(file != null)
+                emitter.onSuccess(file)
+            else
+                emitter.onError(IOException("Packing error"))
         }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -113,7 +115,10 @@ class ZipDataPacker(private val context: Context): DataPacker {
     override fun unpack(file: File, buildDir: File): Single<Pack> {
         return Single.create<Pack> { emitter ->
             val pack = unpackSync(file, buildDir)
-            if(pack != null) emitter.onSuccess(pack) else emitter.onError(error)
+            if(pack != null)
+                emitter.onSuccess(pack)
+            else
+                emitter.onError(IOException("Unpacking error"))
         }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

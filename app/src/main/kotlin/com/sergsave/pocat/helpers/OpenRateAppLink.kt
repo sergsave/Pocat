@@ -1,18 +1,19 @@
 package com.sergsave.pocat.helpers
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 
 fun AppCompatActivity.openRateAppLink() {
-    try {
-        startActivity(makeRateIntent(this, "market://details"))
-    } catch (e: ActivityNotFoundException) {
-        startActivity(makeRateIntent(this, "https://play.google.com/store/apps/details"))
-    }
+    val intent1 = makeRateIntent(this, "market://details")
+    val intent2 = makeRateIntent(this, "https://play.google.com/store/apps/details")
+
+    if (intent1.resolveActivity(packageManager) != null)
+        startActivity(intent1)
+    else if (intent2.resolveActivity(packageManager) != null)
+        startActivity(intent2)
 }
 
 private fun makeRateIntent(context: Context, baseUrl: String): Intent {

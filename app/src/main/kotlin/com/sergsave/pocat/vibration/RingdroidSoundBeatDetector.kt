@@ -12,7 +12,6 @@ import io.reactivex.schedulers.Schedulers
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
-import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -23,7 +22,7 @@ class RingdroidSoundBeatDetector(
 ) : SoundBeatDetector {
 
     data class FileData(
-        val frameGains: IntArray,
+        val frameGains: List<Int>,
         val frameDurationMs: Int,
         val averageGain: Double,
         val minGain: Int,
@@ -41,7 +40,6 @@ class RingdroidSoundBeatDetector(
         if (inputStream == null)
             return null
 
-        // TODO: To constants
         val tempDir = File(context.cacheDir, "ringdroid_beat_detector")
         tempDir.mkdir()
 
@@ -67,7 +65,7 @@ class RingdroidSoundBeatDetector(
         val frameDuration = (1000.0 * soundFile.samplesPerFrame / soundFile.sampleRate).roundToInt()
 
         return FileData(
-            frameGains = frameGains,
+            frameGains = frameGains.toList(),
             frameDurationMs = frameDuration,
             averageGain = trimmedGains.average(),
             minGain = trimmedGains.min() ?: 0,

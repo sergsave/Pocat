@@ -4,19 +4,19 @@ import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.rxkotlin.Singles
 import com.sergsave.pocat.content.ContentRepository
-import com.sergsave.pocat.models.CatData
-import com.sergsave.pocat.models.Card
-import com.sergsave.pocat.helpers.Event
 import com.sergsave.pocat.helpers.DisposableViewModel
-import com.sergsave.pocat.sharing.WebSharingManager
-import com.sergsave.pocat.R
+import com.sergsave.pocat.helpers.Event
+import com.sergsave.pocat.models.Card
+import com.sergsave.pocat.models.CatData
 import com.sergsave.pocat.screens.catcard.analytics.CatCardAnalyticsHelper
 import com.sergsave.pocat.sharing.Pack
+import com.sergsave.pocat.sharing.WebSharingManager
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.zipWith
+import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 class SharingDataExtractViewModel(
@@ -30,6 +30,7 @@ class SharingDataExtractViewModel(
         LOADING,
         NO_CONNECTION_ERROR,
         INVALID_LINK_ERROR,
+        INVALID_DATA_ERROR,
         UNKNOWN_ERROR
     }
 
@@ -63,7 +64,8 @@ class SharingDataExtractViewModel(
             val state = when(throwable) {
                 is WebSharingManager.NoConnectionException -> ExtractState.NO_CONNECTION_ERROR
                 is WebSharingManager.InvalidLinkException -> ExtractState.INVALID_LINK_ERROR
-                else -> ExtractState.UNKNOWN_ERROR
+                is IOException -> ExtractState.UNKNOWN_ERROR
+                else -> throw throwable
             }
             _extractState.value = state
         }
@@ -89,14 +91,24 @@ class SharingDataExtractViewModel(
         addDisposable(disposable)
     }
 
+    private fun onInvalidDataExtracted() {
+        // TODO: analytics?
+        _extractState.value = ExtractState.INVALID_DATA_ERROR
+    }
+
     private fun updateContent(data: CatData) {
+        if (data.photoUri == null || data.purrAudioUri == null) {
+            onInvalidDataExtracted()
+            return
+        }
+
         val disposable = Singles.zip(
                 contentRepo.addImage(data.photoUri).onErrorReturnItem(Uri.EMPTY),
                 contentRepo.addAudio(data.purrAudioUri).onErrorReturnItem(Uri.EMPTY)
             )
             .subscribe({ (photo, audio) ->
                     if (photo == Uri.EMPTY || audio == Uri.EMPTY)
-                        _extractState.value = ExtractState.INVALID_LINK_ERROR
+                        onInvalidDataExtracted()
                     else {
                         val updated = data.copy(photoUri = photo, purrAudioUri = audio)
                         _extractSuccessEvent.value = Event(Card(null, updated, true, true))

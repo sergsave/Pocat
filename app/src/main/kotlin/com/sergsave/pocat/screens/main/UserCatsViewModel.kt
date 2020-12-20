@@ -3,13 +3,11 @@ package com.sergsave.pocat.screens.main
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.sergsave.pocat.persistent.CatDataRepository
 import com.sergsave.pocat.helpers.DisposableViewModel
-import com.sergsave.pocat.helpers.Event
-import com.sergsave.pocat.models.CatData
 import com.sergsave.pocat.models.Card
+import com.sergsave.pocat.models.CatData
+import com.sergsave.pocat.persistent.CatDataRepository
 import com.sergsave.pocat.screens.main.analytics.MainAnalyticsHelper
-import io.reactivex.Observable
 
 class UserCatsViewModel(private val catDataRepository: CatDataRepository,
                         private val analytics: MainAnalyticsHelper): DisposableViewModel() {
@@ -23,9 +21,9 @@ class UserCatsViewModel(private val catDataRepository: CatDataRepository,
             { catMap ->
                 val sortedByTime = catMap.toList().sortedByDescending { it.second.timestamp.time }
                 _cats.value = sortedByTime.map { (id, timed) -> Pair(id, timed.data) }
-            },
-            { Log.e(TAG, "Read failed", it) })
-        )
+            }
+            // Don't handle error, because it's unexpected
+        ))
     }
 
     fun makeCard(listItemId: String, data: CatData): Card {
@@ -40,7 +38,10 @@ class UserCatsViewModel(private val catDataRepository: CatDataRepository,
         addDisposable(
             catDataRepository.remove(catIds)
                 .doOnComplete { analytics.onCatsRemoved(catIds.size) }
-                .subscribe({}, { Log.e(TAG, "Remove failed", it) })
+                .subscribe({}, {
+                    // TODO: analytics
+                    Log.e(TAG, "Remove failed", it)
+                })
         )
     }
 

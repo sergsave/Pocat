@@ -4,13 +4,16 @@ import android.provider.MediaStore
 import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
+import android.content.res.Resources
 import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.OpenableColumns
 import android.util.TypedValue
+import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
+import java.io.IOException
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -20,6 +23,7 @@ import java.util.zip.ZipOutputStream
 
 object FileUtils {
     // https://stackoverflow.com/questions/10854211/android-store-inputstream-in-file
+    @Throws(IOException::class)
     fun copyStreamToFile(inputStream: InputStream, outputFile: File) {
         inputStream.use { input ->
             val outputStream = FileOutputStream(outputFile)
@@ -48,7 +52,7 @@ object FileUtils {
         if (uri.scheme.equals(ContentResolver.SCHEME_ANDROID_RESOURCE).not())
             return null
 
-        // Call of "getgetIdentifier" can be long.
+        // Call of "getIdentifier" can be long.
         // But when using the id of the resource when composing the uri,
         // there may be problems with caching images.
         val type = uri.pathSegments[0]
@@ -71,7 +75,7 @@ object FileUtils {
 
         try {
             context.resources.getValue(resId, typedValue, true)
-        } catch(e: Exception) {
+        } catch(e: Resources.NotFoundException) {
             return null
         }
 
@@ -79,12 +83,14 @@ object FileUtils {
     }
 
     private fun getResourceSize(context: Context, resId: Int): Long {
-        val size = try {
+        return try {
             context.resources.openRawResource(resId).use { it.available().toLong() }
         } catch(e: Exception) {
-            0L
+            when(e) {
+                is Resources.NotFoundException, is IOException -> return 0L
+                else -> throw e
+            }
         }
-        return size
     }
 
     private fun cutLastSegment(path: String): String {
@@ -204,7 +210,7 @@ object FileUtils {
     }
 
     private fun generateImageName(): String {
-        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss_SSS").format(Date())
+        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss_SSS", Locale.US).format(Date())
         return "IMG_$timestamp.jpg"
     }
 
@@ -224,6 +230,7 @@ object FileUtils {
         return FileProvider.getUriForFile(context, providerAuthority, file)
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun prepareMediaStoreImageUri(context: Context, subPath: String): Uri? {
         val values = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, generateImageName())

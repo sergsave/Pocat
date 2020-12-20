@@ -2,7 +2,6 @@ package com.sergsave.pocat.screens.main
 
 import android.os.Bundle
 import android.view.*
-import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -13,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sergsave.pocat.R
 import com.sergsave.pocat.helpers.*
 import com.sergsave.pocat.models.CatData
-import com.sergsave.pocat.screens.catcard.RemoveConfirmationDialog
 import kotlinx.android.synthetic.main.fragment_cats_list.*
 
 class CatsListFragment : Fragment() {
@@ -122,9 +120,8 @@ class CatsListFragment : Fragment() {
             }
         }
 
-        // TODO: remove hardcode
-        val columnWidth = 180
-        val itemMargin = 16
+        val columnWidth = resources.getDimensionPixelSize(R.dimen.list_column_width)
+        val itemMargin = resources.getDimensionPixelSize(R.dimen.list_item_margin)
 
         val viewManager = AutoFitGridLayoutManager(requireContext(), columnWidth)
         val itemDecoration = MarginItemDecoration(itemMargin) { viewManager.spanCount }
@@ -155,7 +152,7 @@ class CatsListFragment : Fragment() {
     }
 
     private fun RecyclerView.setScrollBarVisibleOnlyOnTouch() {
-        getViewTreeObserver().addOnGlobalLayoutListener {
+        viewTreeObserver.addOnGlobalLayoutListener {
             isVerticalScrollBarEnabled = false
         }
 

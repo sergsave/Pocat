@@ -45,21 +45,11 @@
         android:layout_gravity="center" />
 
     <TextView
-        android:id="@+id/unknown_error_text"
+        android:id="@+id/error_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
-        android:textAppearance="?attr/textAppearanceHeadline6"
-        android:text="@string/general_sharing_error" />
-
-    <TextView
-        android:id="@+id/invalid_link_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:textAppearance="?attr/textAppearanceHeadline6"
-        android:text="@string/invalid_link_error" />
+        android:textAppearance="?attr/textAppearanceHeadline6" />
 
 </FrameLayout>

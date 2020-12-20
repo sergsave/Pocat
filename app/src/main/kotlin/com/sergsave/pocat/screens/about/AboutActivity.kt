@@ -5,12 +5,11 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.sergsave.pocat.BuildConfig
-import com.sergsave.pocat.helpers.setToolbarAsActionBar
 import com.sergsave.pocat.R
 import com.sergsave.pocat.helpers.openRateAppLink
+import com.sergsave.pocat.helpers.setToolbarAsActionBar
 import de.psdev.licensesdialog.LicensesDialogFragment
 import kotlinx.android.synthetic.main.activity_about.*
-import kotlinx.android.synthetic.main.view_about_list_item.*
 import kotlinx.android.synthetic.main.view_about_list_item.view.*
 
 class AboutActivity : AppCompatActivity() {
@@ -25,7 +24,7 @@ class AboutActivity : AppCompatActivity() {
         setContentView(R.layout.activity_about)
         setToolbarAsActionBar(toolbar, showBackButton = true)
 
-        version_text.text = "${getString(R.string.version)} ${BuildConfig.VERSION_NAME}"
+        version_text.text = getString(R.string.version_text, BuildConfig.VERSION_NAME)
 
         rate_item.text.text = getString(R.string.rate_on_play_market)
         rate_item.setOnClickListener { openRateAppLink() }

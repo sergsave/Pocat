@@ -1,18 +1,17 @@
 package com.sergsave.pocat.screens.catcard
 
-import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.sergsave.pocat.R
-import com.sergsave.pocat.persistent.CatDataRepository
 import com.sergsave.pocat.content.ContentRepository
-import com.sergsave.pocat.helpers.Event
 import com.sergsave.pocat.helpers.DisposableViewModel
-import com.sergsave.pocat.models.CatData
+import com.sergsave.pocat.helpers.Event
 import com.sergsave.pocat.models.Card
+import com.sergsave.pocat.models.CatData
+import com.sergsave.pocat.persistent.CatDataRepository
 import com.sergsave.pocat.screens.catcard.analytics.CatCardAnalyticsHelper
 
 class FormViewModel(
@@ -49,13 +48,9 @@ class FormViewModel(
     val unsavedChangesMessageEvent: LiveData<Event<Unit>>
         get() = _unsavedChangesMessageEvent
 
-    private val _notValidDataMessageEvent = MutableLiveData<Event<Unit>>()
-    val notValidDataMessageEvent: LiveData<Event<Unit>>
-        get() = _notValidDataMessageEvent
-
-    private val _audioChangedMessageEvent = MutableLiveData<Event<Unit>>()
-    val audioChangedMessageEvent: LiveData<Event<Unit>>
-        get() = _audioChangedMessageEvent
+    private val _snackbarMessageEvent = MutableLiveData<Event<Int>>()
+    val snackbarMessageEvent: LiveData<Event<Int>>
+        get() = _snackbarMessageEvent
 
     private val _openCardEvent = MutableLiveData<Event<Card>>()
     val openCardEvent: LiveData<Event<Card>>
@@ -81,36 +76,57 @@ class FormViewModel(
         _name.value = if(name.isNotEmpty()) name else null
     }
 
-    fun changePhoto(uri: Uri) {
+    fun changePhoto(uri: Uri?) {
         analytics.onChangePhoto()
+
+        if (uri == null) {
+            onFileAddFailed()
+            return
+        }
 
         if(uri != _photoUri.value) {
             addDisposable(contentRepository.addImage(uri).subscribe(
                 { newUri -> _photoUri.value = newUri },
-                { Log.e(TAG, "Adding failed", it) }
+                {
+                    Log.e(TAG, "Photo add failed", it)
+                    onFileAddFailed()
+                }
             ))
         }
     }
 
-    fun changeAudio(uri: Uri) {
+    fun changeAudio(uri: Uri?) {
         analytics.onChangeAudio()
 
+        if (uri == null) {
+            onFileAddFailed()
+            return
+        }
+
         if(_audioUri.value != null)
-            _audioChangedMessageEvent.value = Event(Unit)
+            _snackbarMessageEvent.value = Event(R.string.audio_changed)
 
         if(uri != _audioUri.value) {
             addDisposable(contentRepository.addAudio(uri).subscribe(
                 { newUri -> _audioUri.value = newUri },
-                { Log.e(TAG, "Adding failed", it) }
+                {
+                    Log.e(TAG, "Audio add failed", it)
+                    onFileAddFailed()
+                }
             ))
         }
+    }
+
+    private fun onFileAddFailed() {
+        // TODO: analytics
+        _snackbarMessageEvent.value = Event(R.string.file_add_failed)
     }
 
     fun onApplyPressed() {
         analytics.onTryApplyChanges(isCurrentDataValid())
 
         if (isCurrentDataValid().not()) {
-            _notValidDataMessageEvent.value = Event(Unit)
+            _snackbarMessageEvent.value = Event(R.string.fill_the_form)
             return
         }
 
@@ -134,12 +150,13 @@ class FormViewModel(
         val currentCard = card?.copy(data = data)
         val id = currentCard?.persistentId
 
-        val message = "Sync failed"
-
         if(currentCard != null && id != null) {
             addDisposable(catDataRepository.update(id, currentCard.data).subscribe(
                 { _openCardEvent.value = Event(currentCard) },
-                { Log.e(TAG, message, it) }
+                {
+                    // TODO: analytics
+                    Log.e(TAG, "Update failed", it)
+                }
             ))
             return
         }
@@ -148,7 +165,10 @@ class FormViewModel(
             .doOnSuccess { analytics.onCatAdded() }
             .subscribe(
             { newId -> _openCardEvent.value = Event(Card(newId, data, true, true)) },
-            { Log.e(TAG, message, it) }
+            {
+                // TODO: analytics
+                Log.e(TAG, "Add failed", it)
+            }
         ))
     }
 

@@ -14,7 +14,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -24,10 +23,10 @@ import com.google.android.material.snackbar.Snackbar
 import com.sergsave.pocat.BuildConfig
 import com.sergsave.pocat.MyApplication
 import com.sergsave.pocat.R
+import com.sergsave.pocat.dialogs.StoragePermissionPermanentlyDeniedDialog
 import com.sergsave.pocat.helpers.*
 import com.sergsave.pocat.helpers.PermissionDenyTypeQualifier.Type.DENIED_PERMANENTLY
 import com.sergsave.pocat.models.Card
-import com.sergsave.pocat.dialogs.StoragePermissionPermanentlyDeniedDialog
 import com.sergsave.pocat.screens.catcard.FormViewModel.SoundButtonType
 import com.sergsave.pocat.screens.soundselection.SoundSelectionActivity
 import kotlinx.android.synthetic.main.fragment_cat_form.*
@@ -70,7 +69,6 @@ class FormFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_cat_form, container, false)
     }
 
-    // TODO? or in onViewCreate
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -88,7 +86,7 @@ class FormFragment : Fragment() {
             })
 
             photoUri.observe(viewLifecycleOwner, Observer {
-                ImageUtils.loadInto(context, it, photo_image)
+                ImageUtils.loadInto(requireContext(), it, photo_image)
             })
 
             soundButtonType.observe(viewLifecycleOwner, Observer {
@@ -110,17 +108,8 @@ class FormFragment : Fragment() {
                 }
             })
 
-            val showSnackbar = { messageStringId: Int ->
-                val message = resources.getString(messageStringId)
-                Snackbar.make(main_layout, message, Snackbar.LENGTH_LONG).show()
-            }
-
-            notValidDataMessageEvent.observe(viewLifecycleOwner, EventObserver {
-                showSnackbar(R.string.fill_the_form)
-            })
-
-            audioChangedMessageEvent.observe(viewLifecycleOwner, EventObserver {
-                showSnackbar(R.string.audio_changed)
+            snackbarMessageEvent.observe(viewLifecycleOwner, EventObserver {
+                Snackbar.make(main_layout, getString(it), Snackbar.LENGTH_LONG).show()
             })
 
             openCardEvent.observe(viewLifecycleOwner, EventObserver {
@@ -176,9 +165,6 @@ class FormFragment : Fragment() {
     }
 
     private fun addPhoto() {
-        if(context == null)
-            return
-
         val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
 
         if (isPermissionGranted(permission))
@@ -191,9 +177,6 @@ class FormFragment : Fragment() {
     }
 
     private fun addAudio() {
-        if(context == null)
-            return
-
         val intent = Intent(requireContext(), SoundSelectionActivity::class.java)
         startActivityForResult(intent, PICK_AUDIO_CODE)
     }
@@ -229,20 +212,24 @@ class FormFragment : Fragment() {
         )
     }
 
-    private fun createCameraIntent(): Intent? {
-        val pictureSubPath = getString(R.string.app_name)
-        val providerAuth = "${BuildConfig.APPLICATION_ID}.fileprovider"
-
-        cameraImageUri = FileUtils.provideImageUriInPublicStorage(requireContext(),
-            pictureSubPath, providerAuth)
-        return cameraImageUri?.let { uri ->
+    private fun createCameraIntent(imageUri: Uri?): Intent? {
+        return imageUri?.let { uri ->
             Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply { putExtra(MediaStore.EXTRA_OUTPUT, uri) }
         }
     }
 
+    private fun resolveCameraImageUri(context: Context): Uri? {
+        val pictureSubPath = getString(R.string.app_name)
+        val providerAuth = "${BuildConfig.APPLICATION_ID}.fileprovider"
+        return FileUtils.provideImageUriInPublicStorage(context, pictureSubPath, providerAuth)
+    }
+
     private fun sendPhotoIntent() {
-        val intents = (createPickIntents() + listOf(createCameraIntent())).filterNotNull().filter {
-            it.resolveActivity(requireActivity().packageManager) != null
+        cameraImageUri = resolveCameraImageUri(requireContext())
+        val cameraIntent = createCameraIntent(cameraImageUri)
+
+        val intents = (createPickIntents() + listOf(cameraIntent)).filterNotNull().filter {
+            it.resolveActivity(requireContext().packageManager) != null
         }
 
         val title = resources.getString(R.string.add_photo_with)
@@ -258,16 +245,16 @@ class FormFragment : Fragment() {
             PICK_IMAGE_CODE -> {
                 // Null data - image from camera
                 val uri = data?.data ?: cameraImageUri
-                uri?.let{ viewModel.changePhoto(it) }
+                viewModel.changePhoto(uri)
             }
             PICK_AUDIO_CODE -> {
-                data?.data?.let { viewModel.changeAudio(it) }
+                viewModel.changeAudio(data?.data)
             }
         }
     }
 
     private fun hideKeyboard() {
-        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+        val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
         imm?.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 

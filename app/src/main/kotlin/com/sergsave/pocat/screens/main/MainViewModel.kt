@@ -1,17 +1,16 @@
 package com.sergsave.pocat.screens.main
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import android.util.Log
 import com.sergsave.pocat.content.ContentRepository
-import com.sergsave.pocat.persistent.CatDataRepository
 import com.sergsave.pocat.helpers.DisposableViewModel
 import com.sergsave.pocat.helpers.Event
 import com.sergsave.pocat.models.extractContent
+import com.sergsave.pocat.persistent.CatDataRepository
 import com.sergsave.pocat.preference.PreferenceManager
-import com.sergsave.pocat.sharing.WebSharingManager
-import com.sergsave.pocat.R
 import com.sergsave.pocat.screens.main.analytics.MainAnalyticsHelper
+import com.sergsave.pocat.sharing.WebSharingManager
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.Flowables
 
@@ -52,7 +51,10 @@ class MainViewModel(
     }
 
     fun cleanUnusedFiles() {
-        addDisposable(sharingManager.cleanup().subscribe({}, { Log.e(TAG, "Cleanup failed", it) }))
+        addDisposable(sharingManager.cleanup().subscribe({}, {
+            // TODO: analytics
+            Log.e(TAG, "Cleanup failed", it)
+        }))
         cleanUpUnusedContent()
     }
 
@@ -85,7 +87,10 @@ class MainViewModel(
                     .concatMapCompletable { contentRepository.remove(it) }
                     .toFlowable<Unit>()
             }
-            .subscribe({}, { Log.e(TAG, "Cleanup failed", it) })
+            .subscribe({}, {
+                // TODO: analytics
+                Log.e(TAG, "Cleanup failed", it)
+            })
         addDisposable(disposable)
     }
 

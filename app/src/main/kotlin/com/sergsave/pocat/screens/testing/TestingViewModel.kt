@@ -18,24 +18,28 @@ class TestingViewModel(
     private val contentRepository: ContentRepository
 ): DisposableViewModel() {
 
+    private fun createCatCopyObservable(cat: CatData): Single<CatData> {
+        val error = IllegalStateException("Bad cat!")
+
+        if (cat.photoUri == null || cat.purrAudioUri == null)
+            return Single.error(error)
+
+        return Singles.zip(
+            contentRepository.addImage(cat.photoUri).onErrorReturnItem(Uri.EMPTY),
+            contentRepository.addAudio(cat.purrAudioUri).onErrorReturnItem(Uri.EMPTY)
+        )
+            .map { (photo, audio) ->
+                if (photo == Uri.EMPTY || audio == Uri.EMPTY)
+                    throw error
+                else
+                    cat.copy(photoUri = photo, purrAudioUri = audio)
+            }
+    }
     fun onCopyAllClicked() {
         if(isCopyInProgress.value == true)
             return
 
         isCopyInProgress.value = true
-
-        val createCatCopyObservable = { cat: CatData ->
-            Singles.zip(
-                contentRepository.addImage(cat.photoUri).onErrorReturnItem(Uri.EMPTY),
-                contentRepository.addAudio(cat.purrAudioUri).onErrorReturnItem(Uri.EMPTY)
-            )
-                .map { (photo, audio) ->
-                    if (photo == Uri.EMPTY || audio == Uri.EMPTY)
-                        throw IllegalStateException("Bad cat!")
-                    else
-                        cat.copy(photoUri = photo, purrAudioUri = audio)
-                }
-        }
 
         val disposable = catDataRepository.read()
             .take(1)

@@ -3,11 +3,10 @@ package com.sergsave.pocat.screens.main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.sergsave.pocat.models.CatData
 import com.sergsave.pocat.models.Card
+import com.sergsave.pocat.models.CatData
 import com.sergsave.pocat.samples.CatSampleProvider
 import com.sergsave.pocat.screens.main.analytics.MainAnalyticsHelper
-import java.util.*
 
 class SamplesViewModel(provider: CatSampleProvider,
                        private val analytics: MainAnalyticsHelper): ViewModel() {

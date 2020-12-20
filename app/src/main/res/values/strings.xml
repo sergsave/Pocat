@@ -38,7 +38,7 @@
     <string name="vibration_summary">Vibration occurs when you touch a cat</string>
 
     <!-- About -->
-    <string name="version">Version</string>
+    <string name="version_text">Version %1$s</string>
     <string name="rate_on_play_market">Rate app on Google Play</string>
     <string name="contact_us">Send feedback</string>
     <string name="licenses">Licenses</string>
@@ -66,6 +66,7 @@
     <string name="apply">Apply</string>
     <string name="add_new_cat">Add a new cat</string>
     <string name="edit_cat">Edit a cat card</string> titles
+    <string name="file_add_failed">Failed to add file</string> titles
 
     <!-- Cat form sound selection button  -->
     <string name="add_sound">Add a purring sound</string>
@@ -130,10 +131,11 @@
 
     <!-- Loading cat errors -->
     <string name="invalid_link_error">Сat is no longer available at this link. You can ask to send you a cat again.</string>
+    <string name="invalid_data_error">Cat data is corrupted.</string>
     <string name="retry">Retry</string>
-    <string name="not_valid_data">Not valid cat</string>
 
     <!-- "On save loaded cat" popup -->
-    <string name="save_snackbar_message_text">Cat successfully added to your collection</string>
+    <string name="save_success_snackbar_message_text">Cat successfully added to your collection</string>
+    <string name="save_failed_snackbar_message_text">Sorry, we couldn\'t save the cat</string>
 
 </resources>

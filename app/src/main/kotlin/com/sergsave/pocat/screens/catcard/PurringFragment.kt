@@ -1,6 +1,5 @@
 package com.sergsave.pocat.screens.catcard
 
-import android.Manifest
 import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
@@ -8,12 +7,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.transition.Transition.TransitionListener
 import android.transition.Transition
+import android.transition.Transition.TransitionListener
 import android.view.*
 import android.view.MotionEvent.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -21,14 +19,14 @@ import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
 import com.sergsave.pocat.MyApplication
 import com.sergsave.pocat.R
-import com.sergsave.pocat.helpers.*
+import com.sergsave.pocat.helpers.EventObserver
+import com.sergsave.pocat.helpers.FadeOutSoundEffect
+import com.sergsave.pocat.helpers.ImageUtils
+import com.sergsave.pocat.helpers.SupportTransitionListenerAdapter
 import com.sergsave.pocat.models.Card
 import com.sergsave.pocat.models.CatData
-import com.sergsave.pocat.screens.catcard.PurringViewModel.MenuState
 import com.sergsave.pocat.vibration.RingdroidSoundBeatDetector
 import com.sergsave.pocat.vibration.RythmOfSoundVibrator
-import com.sergsave.pocat.vibration.RythmOfSoundVibrator.OnPrepareFinishedListener
-import com.sergsave.pocat.vibration.SoundBeatDetector
 import kotlinx.android.synthetic.main.fragment_purring.*
 
 class PurringFragment : Fragment() {
@@ -67,7 +65,7 @@ class PurringFragment : Fragment() {
     override fun onDetach() {
         // Avoid fragment leakage
         transitionListener?.let {
-            activity?.window?.sharedElementEnterTransition?.removeListener(it)
+            requireActivity().window.sharedElementEnterTransition.removeListener(it)
         }
         super.onDetach()
     }
@@ -106,7 +104,7 @@ class PurringFragment : Fragment() {
 
         viewModel.apply {
             catData.observe(viewLifecycleOwner, Observer {
-                ImageUtils.loadInto(context, it.photoUri, photo_image) {
+                ImageUtils.loadInto(requireContext(), it.photoUri, photo_image) {
                     startTransition()
                 }
                 initAudio(it.purrAudioUri)
@@ -118,24 +116,19 @@ class PurringFragment : Fragment() {
             })
 
             menuState.observe(viewLifecycleOwner, Observer {
-                activity?.invalidateOptionsMenu()
+                requireActivity().invalidateOptionsMenu()
             })
 
             sharingLoaderIsVisible.observe(viewLifecycleOwner, Observer {
-                activity?.invalidateOptionsMenu()
+                requireActivity().invalidateOptionsMenu()
             })
 
             sharingSuccessEvent.observe(viewLifecycleOwner, EventObserver {
                 startActivity(it)
             })
 
-            sharingFailedStringIdEvent.observe(viewLifecycleOwner, EventObserver {
+            snackbarMessageEvent.observe(viewLifecycleOwner, EventObserver {
                 showSnackbar(resources.getString(it))
-            })
-
-            dataSavedEvent.observe(viewLifecycleOwner, EventObserver {
-                val message = resources.getString(R.string.save_snackbar_message_text)
-                showSnackbar(message)
             })
         }
     }
@@ -158,9 +151,9 @@ class PurringFragment : Fragment() {
         Snackbar.make(main_layout, message, Snackbar.LENGTH_LONG).show()
     }
 
-    private fun checkVolumeLevel(): Boolean {
-        val audioManager = activity?.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
-        return audioManager?.getStreamVolume(AudioManager.STREAM_MUSIC) != 0
+    private fun isDeviceInSilentMode(): Boolean {
+        val audioManager = requireContext().getSystemService(Context.AUDIO_SERVICE) as? AudioManager
+        return audioManager?.getStreamVolume(AudioManager.STREAM_MUSIC) == 0
     }
 
     private fun onTouchEvent(event: MotionEvent): Boolean {
@@ -173,7 +166,7 @@ class PurringFragment : Fragment() {
         if(event.action != ACTION_DOWN && event.action != ACTION_MOVE)
             return false
 
-        if(event.action == ACTION_DOWN && checkVolumeLevel().not()) {
+        if(event.action == ACTION_DOWN && isDeviceInSilentMode()) {
             showSnackbar(getString(R.string.make_louder))
             return true
         }
@@ -206,24 +199,25 @@ class PurringFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(viewModel.onActionSelected(item.itemId))
-            return true
+        return if(viewModel.onActionSelected(item.itemId))
+            true
         else
-            return super.onOptionsItemSelected(item)
+            super.onOptionsItemSelected(item)
     }
 
     private fun initAudio(audioUri: Uri?) {
-        if(audioUri == null || context == null || mediaPlayer != null)
+        if(audioUri == null || mediaPlayer != null)
             return
 
-        activity?.volumeControlStream = AudioManager.STREAM_MUSIC
+        requireActivity().volumeControlStream = AudioManager.STREAM_MUSIC
         mediaPlayer = MediaPlayer.create(requireContext(), audioUri)?.apply { isLooping = true }
         fadeOutEffect = mediaPlayer?.let { FadeOutSoundEffect(it, FADE_DURATION) }
 
         if(viewModel.isVibrationEnabled.not())
             return
 
-        vibrator = createVibrator(audioUri).apply { prepareAsync() }
+        // TODO: analytics on fail
+        vibrator = createVibrator(requireContext(), audioUri).apply { prepareAsync() }
     }
 
     private fun deinitAudio() {
@@ -233,14 +227,14 @@ class PurringFragment : Fragment() {
         mediaPlayer?.release()
         vibrator = null
         mediaPlayer = null
-        activity?.volumeControlStream = AudioManager.USE_DEFAULT_STREAM_TYPE
+        requireActivity().volumeControlStream = AudioManager.USE_DEFAULT_STREAM_TYPE
     }
 
-    private fun createVibrator(audioUri: Uri): RythmOfSoundVibrator {
-        val detector = RingdroidSoundBeatDetector(requireContext(), audioUri,
+    private fun createVibrator(context: Context, audioUri: Uri): RythmOfSoundVibrator {
+        val detector = RingdroidSoundBeatDetector(context, audioUri,
             { mediaPlayer?.currentPosition }
         )
-        return RythmOfSoundVibrator(requireContext(), detector)
+        return RythmOfSoundVibrator(context, detector)
     }
 
     private fun playAudio() {

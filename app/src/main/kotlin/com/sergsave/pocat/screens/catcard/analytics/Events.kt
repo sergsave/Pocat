@@ -1,23 +1,22 @@
 package com.sergsave.pocat.screens.catcard.analytics
 
-import android.net.Uri
 import com.sergsave.pocat.AnalyticsConstants.Events
+import com.sergsave.pocat.AnalyticsConstants.Events.AudioChange
+import com.sergsave.pocat.AnalyticsConstants.Events.CatAdd
 import com.sergsave.pocat.AnalyticsConstants.Events.CatTouch
 import com.sergsave.pocat.AnalyticsConstants.Events.EditActionClick
+import com.sergsave.pocat.AnalyticsConstants.Events.PhotoChange
 import com.sergsave.pocat.AnalyticsConstants.Events.SaveActionClick
 import com.sergsave.pocat.AnalyticsConstants.Events.ShareActionClick
-import com.sergsave.pocat.AnalyticsConstants.Events.AudioChange
-import com.sergsave.pocat.AnalyticsConstants.Events.PhotoChange
-import com.sergsave.pocat.AnalyticsConstants.Events.CatAdd
-import com.sergsave.pocat.AnalyticsConstants.Events.TryApplyFormChanges
-import com.sergsave.pocat.AnalyticsConstants.Events.SharingTransferParams
-import com.sergsave.pocat.AnalyticsConstants.Events.SharingDataUpload
-import com.sergsave.pocat.AnalyticsConstants.Events.SharingDataUploadError
 import com.sergsave.pocat.AnalyticsConstants.Events.SharingDataDownload
 import com.sergsave.pocat.AnalyticsConstants.Events.SharingDataDownloadError
+import com.sergsave.pocat.AnalyticsConstants.Events.SharingDataUpload
+import com.sergsave.pocat.AnalyticsConstants.Events.SharingDataUploadError
+import com.sergsave.pocat.AnalyticsConstants.Events.SharingTransferParams
+import com.sergsave.pocat.AnalyticsConstants.Events.TryApplyFormChanges
 import com.sergsave.pocat.analytics.AnalyticsEvent
 
-class CatTouch(val durationSec: Long):
+class CatTouch(durationSec: Long):
     AnalyticsEvent(CatTouch.NAME, mapOf(CatTouch.Params.DURATION to durationSec))
 
 class ShareActionClick: AnalyticsEvent(ShareActionClick.NAME)

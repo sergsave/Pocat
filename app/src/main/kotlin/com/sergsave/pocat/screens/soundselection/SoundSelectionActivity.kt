@@ -1,7 +1,6 @@
 package com.sergsave.pocat.screens.soundselection
 
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.sergsave.pocat.R
 import com.sergsave.pocat.helpers.setToolbarAsActionBar

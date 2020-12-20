@@ -12,7 +12,7 @@ import com.sergsave.pocat.AnalyticsConstants.Events.CatsRemove
 import com.sergsave.pocat.analytics.AnalyticsEvent
 import com.sergsave.pocat.screens.main.TabInfo
 
-class AppStarted(): AnalyticsEvent(AppStart.NAME)
+class AppStarted : AnalyticsEvent(AppStart.NAME)
 
 private fun TabInfo.toConstant() = when(this) {
     TabInfo.SAMPLES -> TabOpen.TabType.SAMPLES
@@ -22,15 +22,15 @@ private fun TabInfo.toConstant() = when(this) {
 class TabOpen(tab: TabInfo):
     AnalyticsEvent(TabOpen.NAME, mapOf(TabOpen.Params.TAB to tab.toConstant()))
 
-class UserCardClick(): AnalyticsEvent(UserCardClick.NAME)
+class UserCardClick : AnalyticsEvent(UserCardClick.NAME)
 
 class SampleCardClick(id: String):
     AnalyticsEvent(SampleCardClick.NAME, mapOf(SampleCardClick.Params.ID to id))
 
-class AddButtonClick(): AnalyticsEvent(AddButtonClick.NAME)
+class AddButtonClick : AnalyticsEvent(AddButtonClick.NAME)
 class CatsRemove(count: Int):
     AnalyticsEvent(CatsRemove.NAME, mapOf(CatsRemove.Params.COUNT to count))
 
-class SettingsActionClick(): AnalyticsEvent(SettingsActionClick.NAME)
-class AboutActionClick(): AnalyticsEvent(AboutActionClick.NAME)
-class DonateActionClick(): AnalyticsEvent(DonateActionClick.NAME)
+class SettingsActionClick : AnalyticsEvent(SettingsActionClick.NAME)
+class AboutActionClick : AnalyticsEvent(AboutActionClick.NAME)
+class DonateActionClick : AnalyticsEvent(DonateActionClick.NAME)

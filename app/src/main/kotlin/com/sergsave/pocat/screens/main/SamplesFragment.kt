@@ -1,14 +1,15 @@
 package com.sergsave.pocat.screens.main
 
-import androidx.fragment.app.Fragment
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.sergsave.pocat.MyApplication
 import com.sergsave.pocat.R
 import com.sergsave.pocat.models.CatData
-import com.sergsave.pocat.MyApplication
-import kotlinx.android.synthetic.main.fragment_samples.*
 
 class SamplesFragment : Fragment() {
     private val viewModel: SamplesViewModel by viewModels {

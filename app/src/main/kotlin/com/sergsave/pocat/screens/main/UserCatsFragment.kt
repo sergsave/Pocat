@@ -76,7 +76,7 @@ class UserCatsFragment : Fragment() {
         fab.setOnClickListener {
             viewModel.onAddClicked()
             fragment.clearSelection()
-            activity?.launchCatCard()
+            requireActivity().launchCatCard()
         }
 
         fab_clickable_layout.setOnClickListener { fab.performClick() }

@@ -11,8 +11,6 @@ class ImageResizeSavingStrategy(private val context: Context): SavingStrategy {
     private val width = 1440
     private val height = 2560
 
-    // TODO: DON'T resize little images
-
     override fun save(sourceContent: Uri, outputFile: File): Completable {
         return Completable.create { emitter ->
             ImageUtils.loadInto(context, sourceContent, outputFile, width, height) { res ->

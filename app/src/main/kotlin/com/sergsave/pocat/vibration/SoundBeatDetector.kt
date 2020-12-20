@@ -3,8 +3,6 @@ package com.sergsave.pocat.vibration
 import io.reactivex.Completable
 import io.reactivex.Observable
 
-// TODO? Adjustable beat level
-
 // Use prepare() for acquire necessary resources, don't use detect() before prepare()
 // Use release() for free any resources, don't use detect() after release()
 interface SoundBeatDetector {
