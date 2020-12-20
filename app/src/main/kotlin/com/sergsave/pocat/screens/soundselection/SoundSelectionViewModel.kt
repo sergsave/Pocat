@@ -50,10 +50,10 @@ class SoundSelectionViewModel(private val fileSizeByteCalculator: (Uri) -> Long,
 
         if(result)
             _validationSuccessEvent.value = Event(uri)
-        else
+        else {
+            analytics.onSizeExceededError()
             _validationFailedEvent.value = Event(error)
-
-        analytics.onValidateResult(result)
+        }
     }
 
     fun onAddFromSamplesRequested() = analytics.onAddFromSamplesRequested()

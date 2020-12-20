@@ -80,7 +80,7 @@ class FormViewModel(
         analytics.onChangePhoto()
 
         if (uri == null) {
-            onFileAddFailed()
+            onPhotoChangeError()
             return
         }
 
@@ -89,17 +89,22 @@ class FormViewModel(
                 { newUri -> _photoUri.value = newUri },
                 {
                     Log.e(TAG, "Photo add failed", it)
-                    onFileAddFailed()
+                    onPhotoChangeError()
                 }
             ))
         }
+    }
+
+    private fun onPhotoChangeError() {
+        _snackbarMessageEvent.value = Event(R.string.file_add_failed)
+        analytics.onPhotoChangeError()
     }
 
     fun changeAudio(uri: Uri?) {
         analytics.onChangeAudio()
 
         if (uri == null) {
-            onFileAddFailed()
+            onAudioChangeError()
             return
         }
 
@@ -111,15 +116,15 @@ class FormViewModel(
                 { newUri -> _audioUri.value = newUri },
                 {
                     Log.e(TAG, "Audio add failed", it)
-                    onFileAddFailed()
+                    onAudioChangeError()
                 }
             ))
         }
     }
 
-    private fun onFileAddFailed() {
-        // TODO: analytics
+    private fun onAudioChangeError() {
         _snackbarMessageEvent.value = Event(R.string.file_add_failed)
+        analytics.onAudioChangeError()
     }
 
     fun onApplyPressed() {
@@ -152,11 +157,8 @@ class FormViewModel(
 
         if(currentCard != null && id != null) {
             addDisposable(catDataRepository.update(id, currentCard.data).subscribe(
-                { _openCardEvent.value = Event(currentCard) },
-                {
-                    // TODO: analytics
-                    Log.e(TAG, "Update failed", it)
-                }
+                { _openCardEvent.value = Event(currentCard) }
+                // Don't handle error because it's critical bug
             ))
             return
         }
@@ -164,11 +166,8 @@ class FormViewModel(
         addDisposable(catDataRepository.add(data)
             .doOnSuccess { analytics.onCatAdded() }
             .subscribe(
-            { newId -> _openCardEvent.value = Event(Card(newId, data, true, true)) },
-            {
-                // TODO: analytics
-                Log.e(TAG, "Add failed", it)
-            }
+            { newId -> _openCardEvent.value = Event(Card(newId, data, true, true)) }
+            // Don't handle error because it's critical bug
         ))
     }
 

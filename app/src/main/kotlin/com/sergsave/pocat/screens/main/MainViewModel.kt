@@ -52,7 +52,7 @@ class MainViewModel(
 
     fun cleanUnusedFiles() {
         addDisposable(sharingManager.cleanup().subscribe({}, {
-            // TODO: analytics
+            analytics.onCleanupError()
             Log.e(TAG, "Cleanup failed", it)
         }))
         cleanUpUnusedContent()
@@ -88,8 +88,8 @@ class MainViewModel(
                     .toFlowable<Unit>()
             }
             .subscribe({}, {
-                // TODO: analytics
                 Log.e(TAG, "Cleanup failed", it)
+                analytics.onCleanupError()
             })
         addDisposable(disposable)
     }

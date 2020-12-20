@@ -1,14 +1,13 @@
 package com.sergsave.pocat.screens.soundselection.analytics
 
 import com.sergsave.pocat.analytics.AnalyticsTracker
-import com.sergsave.pocat.screens.soundselection.analytics.AudioSelectionStart.Source
 
 class SoundSelectionAnalyticsHelper(private val tracker: AnalyticsTracker) {
-    fun onValidateResult(result: Boolean) = tracker.sendEvent(AudioSelected(result))
+    fun onSizeExceededError() = tracker.sendEvent(AudioSizeError())
 
-    fun onAddFromSamplesRequested() = tracker.sendEvent(AudioSelectionStart(Source.SAMPLES))
-    fun onAddFromRecorderRequested() = tracker.sendEvent(AudioSelectionStart(Source.RECORDER))
-    fun onAddFromDeviceRequested() = tracker.sendEvent(AudioSelectionStart(Source.DEVICE))
+    fun onAddFromSamplesRequested() = tracker.sendEvent(AudioFromSamplesClick())
+    fun onAddFromRecorderRequested() = tracker.sendEvent(AudioFromRecorderClick())
+    fun onAddFromDeviceRequested() = tracker.sendEvent(AudioFromMemoryClick())
 
     fun onRecorderNotFound() = tracker.sendEvent(RecorderNotFound())
 }

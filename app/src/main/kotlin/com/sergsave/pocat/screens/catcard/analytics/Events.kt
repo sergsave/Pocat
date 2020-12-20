@@ -1,19 +1,24 @@
 package com.sergsave.pocat.screens.catcard.analytics
 
 import com.sergsave.pocat.AnalyticsConstants.Events
-import com.sergsave.pocat.AnalyticsConstants.Events.AudioChange
-import com.sergsave.pocat.AnalyticsConstants.Events.CatAdd
+import com.sergsave.pocat.AnalyticsConstants.Events.AudioAdded
+import com.sergsave.pocat.AnalyticsConstants.Events.AudioAddingError
+import com.sergsave.pocat.AnalyticsConstants.Events.NewCatAdded
 import com.sergsave.pocat.AnalyticsConstants.Events.CatTouch
 import com.sergsave.pocat.AnalyticsConstants.Events.EditActionClick
-import com.sergsave.pocat.AnalyticsConstants.Events.PhotoChange
+import com.sergsave.pocat.AnalyticsConstants.Events.PhotoAdded
+import com.sergsave.pocat.AnalyticsConstants.Events.PhotoAddingError
 import com.sergsave.pocat.AnalyticsConstants.Events.SaveActionClick
 import com.sergsave.pocat.AnalyticsConstants.Events.ShareActionClick
 import com.sergsave.pocat.AnalyticsConstants.Events.SharingDataDownload
 import com.sergsave.pocat.AnalyticsConstants.Events.SharingDataDownloadError
 import com.sergsave.pocat.AnalyticsConstants.Events.SharingDataUpload
 import com.sergsave.pocat.AnalyticsConstants.Events.SharingDataUploadError
+import com.sergsave.pocat.AnalyticsConstants.Events.SharingDataSaveError
+import com.sergsave.pocat.AnalyticsConstants.Events.InvalidSharingDataDownloadedError
 import com.sergsave.pocat.AnalyticsConstants.Events.SharingTransferParams
 import com.sergsave.pocat.AnalyticsConstants.Events.TryApplyFormChanges
+import com.sergsave.pocat.AnalyticsConstants.Events.VibrationNotWorkingError
 import com.sergsave.pocat.analytics.AnalyticsEvent
 
 class CatTouch(durationSec: Long):
@@ -26,10 +31,13 @@ class SaveActionClick: AnalyticsEvent(SaveActionClick.NAME)
 class TryApplyFormChanges(result: Boolean):
     AnalyticsEvent(TryApplyFormChanges.NAME, mapOf(TryApplyFormChanges.Params.RESULT to result))
 
-class AudioChange: AnalyticsEvent(AudioChange.NAME)
-class PhotoChange: AnalyticsEvent(PhotoChange.NAME)
+class AudioAdded: AnalyticsEvent(AudioAdded.NAME)
+class PhotoAdded: AnalyticsEvent(PhotoAdded.NAME)
 
-class CatAdd: AnalyticsEvent(CatAdd.NAME)
+class AudioAddingError: AnalyticsEvent(AudioAddingError.NAME)
+class PhotoAddingError: AnalyticsEvent(PhotoAddingError.NAME)
+
+class NewCatAdded: AnalyticsEvent(NewCatAdded.NAME)
 
 data class SharingTransferInfo(val durationSec: Long, val photoSize: Long, val audioSize: Long)
 
@@ -65,3 +73,8 @@ class SharingDataDownloadError(cause: SharingError):
     AnalyticsEvent(SharingDataDownloadError.NAME, mapOf(
         SharingDataDownloadError.Params.CAUSE to cause.toString()
     ))
+
+class VibrationNotWorkingError: AnalyticsEvent(VibrationNotWorkingError.NAME)
+
+class InvalidSharingDataDownloadedError: AnalyticsEvent(InvalidSharingDataDownloadedError.NAME)
+class SharingDataSaveError: AnalyticsEvent(SharingDataSaveError.NAME)

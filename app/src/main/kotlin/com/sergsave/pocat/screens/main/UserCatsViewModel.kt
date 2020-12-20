@@ -19,6 +19,7 @@ class UserCatsViewModel(private val catDataRepository: CatDataRepository,
     init {
         addDisposable(catDataRepository.read().subscribe(
             { catMap ->
+                analytics.onCatsReadedFromRepo(catMap.size)
                 val sortedByTime = catMap.toList().sortedByDescending { it.second.timestamp.time }
                 _cats.value = sortedByTime.map { (id, timed) -> Pair(id, timed.data) }
             }
@@ -39,7 +40,7 @@ class UserCatsViewModel(private val catDataRepository: CatDataRepository,
             catDataRepository.remove(catIds)
                 .doOnComplete { analytics.onCatsRemoved(catIds.size) }
                 .subscribe({}, {
-                    // TODO: analytics
+                    analytics.onCatsRemoveError()
                     Log.e(TAG, "Remove failed", it)
                 })
         )

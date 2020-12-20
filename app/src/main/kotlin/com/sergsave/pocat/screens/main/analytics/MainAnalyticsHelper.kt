@@ -7,9 +7,11 @@ import com.sergsave.pocat.R
 class MainAnalyticsHelper(private val tracker: AnalyticsTracker) {
     fun onAppStarted() = tracker.sendEvent(AppStarted())
 
+    fun onCatsReadedFromRepo(catsCount: Int) = tracker.sendEvent(UsersCatsListUpdate(catsCount))
+
     fun onTabOpened(tab: TabInfo) = tracker.sendEvent(TabOpen(tab))
 
-    fun onUserCardClicked() = tracker.sendEvent(UserCardClick())
+    fun onUserCardClicked() = tracker.sendEvent(UsersCatCardClick())
     fun onSampleCardClicked(id: String) = tracker.sendEvent(SampleCardClick(id))
 
     fun onAddClicked() = tracker.sendEvent(AddButtonClick())
@@ -23,4 +25,7 @@ class MainAnalyticsHelper(private val tracker: AnalyticsTracker) {
             R.id.action_about -> tracker.sendEvent(AboutActionClick())
         }
     }
+
+    fun onCatsRemoveError() = tracker.sendEvent(CatsRemovingError())
+    fun onCleanupError() = tracker.sendEvent(CleanupError())
 }

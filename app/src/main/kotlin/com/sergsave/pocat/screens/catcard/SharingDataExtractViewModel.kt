@@ -92,7 +92,7 @@ class SharingDataExtractViewModel(
     }
 
     private fun onInvalidDataExtracted() {
-        // TODO: analytics?
+        analytics.onInvalidDataExtracted()
         _extractState.value = ExtractState.INVALID_DATA_ERROR
     }
 

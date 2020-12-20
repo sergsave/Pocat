@@ -31,12 +31,17 @@ class CatCardAnalyticsHelper(
     fun onEditClicked() = tracker.sendEvent(EditActionClick())
     fun onSaveClicked() = tracker.sendEvent(SaveActionClick())
 
-    fun onChangePhoto() = tracker.sendEvent(PhotoChange())
-    fun onChangeAudio() = tracker.sendEvent(AudioChange())
+    fun onChangePhoto() = tracker.sendEvent(PhotoAdded())
+    fun onChangeAudio() = tracker.sendEvent(AudioAdded())
 
-    fun onCatAdded() = tracker.sendEvent(CatAdd())
+    fun onPhotoChangeError() = tracker.sendEvent(PhotoAddingError())
+    fun onAudioChangeError() = tracker.sendEvent(AudioAddingError())
+
+    fun onCatAdded() = tracker.sendEvent(NewCatAdded())
 
     fun onTryApplyChanges(result: Boolean) = tracker.sendEvent(TryApplyFormChanges(result))
+
+    fun onVibratorCreateFailed() = tracker.sendEvent(VibrationNotWorkingError())
 
     private fun makeTransferInfo(pack: Pack, transferStartTime: Long) = SharingTransferInfo(
         diffTimeInSec(transferStartTime),
@@ -93,4 +98,7 @@ class CatCardAnalyticsHelper(
         }
         tracker.sendEvent(SharingDataDownloadError(cause))
     }
+
+    fun onSharingDataSaveError() = tracker.sendEvent(SharingDataSaveError())
+    fun onInvalidDataExtracted() = tracker.sendEvent(InvalidSharingDataDownloadedError())
 }

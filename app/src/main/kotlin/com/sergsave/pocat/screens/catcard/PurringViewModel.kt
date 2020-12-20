@@ -128,7 +128,7 @@ class PurringViewModel(
                 _snackbarMessageEvent.value = Event(R.string.save_success_snackbar_message_text)
             },
             {
-                // TODO: analytics
+                analytics.onSharingDataSaveError()
                 Log.e(TAG, "Save failed", it)
                 _snackbarMessageEvent.value = Event(R.string.save_failed_snackbar_message_text)
             }
@@ -166,6 +166,8 @@ class PurringViewModel(
     fun onSharingLoaderClicked() {
         sharingDisposable?.dispose()
     }
+
+    fun onVibratorCreateFailed() = analytics.onVibratorCreateFailed()
 
     companion object {
         private const val TAG = "PurringViewModel"

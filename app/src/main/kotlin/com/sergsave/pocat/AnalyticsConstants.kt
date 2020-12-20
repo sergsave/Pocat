@@ -19,8 +19,16 @@ object AnalyticsConstants {
             }
         }
 
-        object UserCardClick {
-            const val NAME = "user_card_click"
+        object UsersCatsListUpdate {
+            const val NAME = "users_cats_list_update"
+
+            object Params {
+                const val COUNT = "count"
+            }
+        }
+
+        object UsersCatCardClick {
+            const val NAME = "users_cat_card_click"
         }
 
         object SampleCardClick {
@@ -63,26 +71,20 @@ object AnalyticsConstants {
             }
         }
 
-        object AudioSelected {
-            const val NAME = "audio_selected"
-
-            object Params {
-                const val VALIDATION_RESULT = "validation_result"
-            }
+        object AudioFromSamplesClick {
+            const val NAME = "audio_from_samples_click"
         }
 
-        object AudioSelectionStart {
-            const val NAME = "audio_selection_start"
+        object AudioFromRecorderClick {
+            const val NAME = "audio_from_recorder_click"
+        }
 
-            object Params {
-                const val SOURCE = "source"
-            }
+        object AudioFromMemoryClick {
+            const val NAME = "audio_from_memory_click"
+        }
 
-            object Source {
-                const val SAMPLES = "samples"
-                const val RECORDER = "recorder"
-                const val DEVICE = "device"
-            }
+        object AudioSizeError {
+            const val NAME = "audio_size_error"
         }
 
         object RecorderNotFound {
@@ -109,12 +111,20 @@ object AnalyticsConstants {
             const val NAME = "edit_action_click"
         }
 
-        object AudioChange {
-            const val NAME = "audio_change"
+        object AudioAdded {
+            const val NAME = "audio_added"
         }
 
-        object PhotoChange {
-            const val NAME = "photo_change"
+        object AudioAddingError {
+            const val NAME = "audio_adding_error"
+        }
+
+        object PhotoAdded {
+            const val NAME = "photo_added"
+        }
+
+        object PhotoAddingError {
+            const val NAME = "photo_adding_error"
         }
 
         object TryApplyFormChanges {
@@ -125,8 +135,8 @@ object AnalyticsConstants {
             }
         }
 
-        object CatAdd {
-            const val NAME = "cat_add"
+        object NewCatAdded {
+            const val NAME = "new_cat_added"
         }
 
         object SharingTransferParams {
@@ -164,6 +174,27 @@ object AnalyticsConstants {
             object Params {
                 const val CAUSE = "cause"
             }
+        }
+
+        // WTF errors
+        object InvalidSharingDataDownloadedError {
+            const val NAME = "invalid_sharing_data_downloaded_error"
+        }
+
+        object SharingDataSaveError {
+            const val NAME = "sharing_data_save_error"
+        }
+
+        object VibrationNotWorkingError {
+            const val NAME = "vibration_not_working_error"
+        }
+
+        object CatsRemovingError {
+            const val NAME = "cats_removing_error"
+        }
+
+        object CleanupError {
+            const val NAME = "cleanup_error"
         }
     }
 }

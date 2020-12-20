@@ -216,8 +216,11 @@ class PurringFragment : Fragment() {
         if(viewModel.isVibrationEnabled.not())
             return
 
-        // TODO: analytics on fail
         vibrator = createVibrator(requireContext(), audioUri).apply { prepareAsync() }
+        vibrator?.onPrepareFinishedListener = object: RythmOfSoundVibrator.OnPrepareFinishedListener {
+            override fun onSuccess() { }
+            override fun onFailed() { viewModel.onVibratorCreateFailed() }
+        }
     }
 
     private fun deinitAudio() {
