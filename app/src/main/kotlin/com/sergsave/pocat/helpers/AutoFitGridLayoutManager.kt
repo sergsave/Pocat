@@ -24,10 +24,12 @@ class AutoFitGridLayoutManager(context: Context, private var columnWidthPx : Int
     }
 
     override fun onLayoutChildren(recycler: Recycler, state: RecyclerView.State) {
-        if (columnWidthChanged.not() || columnWidthPx <= 0)
+        if (columnWidthChanged.not() || columnWidthPx <= 0) {
+            super.onLayoutChildren(recycler, state)
             return
+        }
 
-        val totalSpace : Int = if (orientation == LinearLayoutManager.VERTICAL) {
+        val totalSpace = if (orientation == LinearLayoutManager.VERTICAL) {
             width - paddingRight - paddingLeft
         } else {
             height - paddingTop - paddingBottom
