@@ -7,13 +7,13 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 
 fun AppCompatActivity.openRateAppLink() {
-    val intent1 = makeRateIntent(this, "market://details")
-    val intent2 = makeRateIntent(this, "https://play.google.com/store/apps/details")
+    val marketIntent = makeRateIntent(this, "market://details")
+    val storeIntent = makeRateIntent(this, "https://play.google.com/store/apps/details")
 
-    if (intent1.resolveActivity(packageManager) != null)
-        startActivity(intent1)
-    else if (intent2.resolveActivity(packageManager) != null)
-        startActivity(intent2)
+    if (marketIntent.resolveActivity(packageManager) != null)
+        startActivity(marketIntent)
+    else if (storeIntent.resolveActivity(packageManager) != null)
+        startActivity(storeIntent)
 }
 
 private fun makeRateIntent(context: Context, baseUrl: String): Intent {

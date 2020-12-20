@@ -15,8 +15,8 @@ object FirstTimeLaunchBugWorkaround {
 
         val intent = mainActivity.intent
         if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && Intent.ACTION_MAIN == intent.action) {
-            val tag = "LaunchBugWorkaround"
-            Log.w(tag, "Main Activity is not the root. Finishing Main Activity instead of launching.")
+            Log.w("LaunchBugWorkaround",
+                "Main Activity is not the root. Finishing Main Activity instead of launching.")
             return true
         }
 
