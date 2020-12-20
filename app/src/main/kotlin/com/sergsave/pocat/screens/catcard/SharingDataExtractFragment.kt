@@ -68,7 +68,6 @@ class SharingDataExtractFragment: Fragment() {
                 )
 
                 when (it) {
-                    ExtractState.INITIAL -> {}
                     ExtractState.LOADING ->
                         progress_bar.visibility = View.VISIBLE
                     ExtractState.NO_CONNECTION_ERROR ->
@@ -79,6 +78,7 @@ class SharingDataExtractFragment: Fragment() {
                         error_text.visibility = View.VISIBLE
                         error_text.text = getString(errorTexts.getValue(it))
                     }
+                    else -> { }
                 }
             })
 
