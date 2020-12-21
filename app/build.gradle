@@ -62,6 +62,7 @@ android {
             resValue "string", "app_label", "$appName Dev"
             buildConfigField("String", "DYNAMIC_LINK_DOMAIN", "\"https://pocatappdev.page.link\"")
             buildConfigField("Boolean", "HIDE_TEST_ACTION", "false")
+            buildConfigField("Boolean", "LOG_ENABLED", "true")
             manifestPlaceholders = [firebaseProjectId:"pocat-app-dev"]
         }
         production {
@@ -70,6 +71,7 @@ android {
             resValue "string", "app_label", "$appName"
             buildConfigField("String", "DYNAMIC_LINK_DOMAIN", "\"https://pocatapp.page.link\"")
             buildConfigField("Boolean", "HIDE_TEST_ACTION", "true")
+            buildConfigField("Boolean", "LOG_ENABLED", "false")
             manifestPlaceholders = [firebaseProjectId:"pocat-app"]
         }
     }
@@ -114,7 +116,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-dynamic-links-ktx'
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
     implementation 'com.google.firebase:firebase-analytics-ktx'
+
     implementation 'de.psdev.licensesdialog:licensesdialog:2.1.0'
+    implementation 'com.jakewharton.timber:timber:4.7.1'
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.4'
 

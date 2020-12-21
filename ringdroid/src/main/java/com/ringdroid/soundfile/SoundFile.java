@@ -38,6 +38,8 @@ import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 
+import com.ringdroid.BuildConfig;
+
 public class SoundFile {
     private ProgressListener mProgressListener = null;
     private File mInputFile = null;
@@ -61,6 +63,8 @@ public class SoundFile {
     private int[] mFrameGains;
     private int[] mFrameLens;
     private int[] mFrameOffsets;
+
+    private static final boolean LOG_ENABLED = !BuildConfig.DEBUG;
 
     // Progress listener interface.
     public interface ProgressListener {
@@ -194,6 +198,7 @@ public class SoundFile {
         mProgressListener = progressListener;
     }
 
+    @SuppressWarnings("deprecation") // MediaCodec
     private void ReadFile(File inputFile)
         throws java.io.FileNotFoundException,
                java.io.IOException, InvalidInputException {
@@ -501,6 +506,7 @@ public class SoundFile {
         WriteFile(outputFile, startTime, endTime);
     }
 
+    @SuppressWarnings("deprecation") // MediaCodec
     public void WriteFile(File outputFile, float startTime, float endTime)
             throws java.io.IOException {
         int startOffset = (int)(startTime * mSampleRate) * 2 * mChannels;
@@ -638,8 +644,10 @@ public class SoundFile {
             }
             outputStream.close();
         } catch (IOException e) {
-            Log.e("Ringdroid", "Failed to create the .m4a file.");
-            Log.e("Ringdroid", getStackTrace(e));
+            if (LOG_ENABLED) {
+                Log.e("Ringdroid", "Failed to create the .m4a file.");
+                Log.e("Ringdroid", getStackTrace(e));
+            }
         }
     }
 
@@ -727,6 +735,10 @@ public class SoundFile {
     // File will be written on the SDCard under media/audio/debug/
     // If fileName is null or empty, then the default file name (samples.tsv) is used.
     private void DumpSamples(String fileName) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            return;
+
+        @SuppressWarnings("deprecation")
         String externalRootDir = Environment.getExternalStorageDirectory().getPath();
         if (!externalRootDir.endsWith("/")) {
             externalRootDir += "/";
@@ -761,15 +773,19 @@ public class SoundFile {
                 writer.write(row);
             }
         } catch (IOException e) {
-            Log.w("Ringdroid", "Failed to create the sample TSV file.");
-            Log.w("Ringdroid", getStackTrace(e));
+            if (LOG_ENABLED) {
+                Log.w("Ringdroid", "Failed to create the sample TSV file.");
+                Log.w("Ringdroid", getStackTrace(e));
+            }
         }
         // We are done here. Close the file and rewind the buffer.
         try {
             writer.close();
         } catch (Exception e) {
-            Log.w("Ringdroid", "Failed to close sample TSV file.");
-            Log.w("Ringdroid", getStackTrace(e));
+            if (LOG_ENABLED) {
+                Log.w("Ringdroid", "Failed to close sample TSV file.");
+                Log.w("Ringdroid", getStackTrace(e));
+            }
         }
         mDecodedSamples.rewind();
     }

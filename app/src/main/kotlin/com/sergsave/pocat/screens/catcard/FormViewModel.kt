@@ -1,7 +1,6 @@
 package com.sergsave.pocat.screens.catcard
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -13,6 +12,7 @@ import com.sergsave.pocat.models.Card
 import com.sergsave.pocat.models.CatData
 import com.sergsave.pocat.persistent.CatDataRepository
 import com.sergsave.pocat.screens.catcard.analytics.CatCardAnalyticsHelper
+import timber.log.Timber
 
 class FormViewModel(
     private val catDataRepository: CatDataRepository,
@@ -88,7 +88,7 @@ class FormViewModel(
             addDisposable(contentRepository.addImage(uri).subscribe(
                 { newUri -> _photoUri.value = newUri },
                 {
-                    Log.e(TAG, "Photo add failed", it)
+                    Timber.e(it, "Photo add failed")
                     onPhotoChangeError()
                 }
             ))
@@ -115,7 +115,7 @@ class FormViewModel(
             addDisposable(contentRepository.addAudio(uri).subscribe(
                 { newUri -> _audioUri.value = newUri },
                 {
-                    Log.e(TAG, "Audio add failed", it)
+                    Timber.e(it, "Audio add failed")
                     onAudioChangeError()
                 }
             ))
@@ -187,9 +187,5 @@ class FormViewModel(
 
     private fun wereChangesAfterBackup(): Boolean {
         return currentData() != backup
-    }
-
-    companion object {
-        private const val TAG = "FormViewModel"
     }
 }

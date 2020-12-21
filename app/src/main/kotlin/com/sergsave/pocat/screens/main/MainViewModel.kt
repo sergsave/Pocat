@@ -1,6 +1,5 @@
 package com.sergsave.pocat.screens.main
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sergsave.pocat.content.ContentRepository
@@ -13,6 +12,7 @@ import com.sergsave.pocat.screens.main.analytics.MainAnalyticsHelper
 import com.sergsave.pocat.sharing.WebSharingManager
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.Flowables
+import timber.log.Timber
 
 class MainViewModel(
     private val catDataRepository: CatDataRepository,
@@ -53,7 +53,7 @@ class MainViewModel(
     fun cleanUnusedFiles() {
         addDisposable(sharingManager.cleanup().subscribe({}, {
             analytics.onCleanupError()
-            Log.e(TAG, "Cleanup failed", it)
+            Timber.e(it, "Cleanup failed")
         }))
         cleanUpUnusedContent()
     }
@@ -88,14 +88,10 @@ class MainViewModel(
                     .toFlowable<Unit>()
             }
             .subscribe({}, {
-                Log.e(TAG, "Cleanup failed", it)
+                Timber.e(it, "Cleanup failed")
                 analytics.onCleanupError()
             })
         addDisposable(disposable)
-    }
-
-    companion object {
-        private const val TAG = "MainViewModel"
     }
 }
 

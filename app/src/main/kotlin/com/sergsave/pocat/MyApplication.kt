@@ -32,6 +32,7 @@ import com.sergsave.pocat.screens.soundselection.analytics.SoundSelectionAnalyti
 import com.sergsave.pocat.screens.testing.TestingViewModel
 import com.sergsave.pocat.sharing.FirebaseCloudSharingManager
 import com.sergsave.pocat.sharing.ZipDataPacker
+import timber.log.Timber
 
 // Manual dependency injection
 class AppContainer(context: Context) {
@@ -110,6 +111,9 @@ class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        if (BuildConfig.LOG_ENABLED)
+            Timber.plant(Timber.DebugTree())
 
         appContainer // init
     }

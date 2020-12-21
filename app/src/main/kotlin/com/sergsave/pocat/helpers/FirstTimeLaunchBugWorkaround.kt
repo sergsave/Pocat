@@ -2,7 +2,7 @@ package com.sergsave.pocat.helpers
 
 import android.app.Activity
 import android.content.Intent
-import android.util.Log
+import timber.log.Timber
 
 // On first launch the root activity relaunch after pressing the home button and returning to the application
 // https://issuetracker.google.com/issues/36907463
@@ -15,8 +15,7 @@ object FirstTimeLaunchBugWorkaround {
 
         val intent = mainActivity.intent
         if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && Intent.ACTION_MAIN == intent.action) {
-            Log.w("LaunchBugWorkaround",
-                "Main Activity is not the root. Finishing Main Activity instead of launching.")
+            Timber.w("Main Activity is not the root. Finishing Main Activity instead of launching.")
             return true
         }
 

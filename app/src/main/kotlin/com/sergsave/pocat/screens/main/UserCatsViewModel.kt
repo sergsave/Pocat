@@ -1,6 +1,5 @@
 package com.sergsave.pocat.screens.main
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sergsave.pocat.helpers.DisposableViewModel
@@ -8,6 +7,7 @@ import com.sergsave.pocat.models.Card
 import com.sergsave.pocat.models.CatData
 import com.sergsave.pocat.persistent.CatDataRepository
 import com.sergsave.pocat.screens.main.analytics.MainAnalyticsHelper
+import timber.log.Timber
 
 class UserCatsViewModel(private val catDataRepository: CatDataRepository,
                         private val analytics: MainAnalyticsHelper): DisposableViewModel() {
@@ -41,7 +41,7 @@ class UserCatsViewModel(private val catDataRepository: CatDataRepository,
                 .doOnComplete { analytics.onCatsRemoved(catIds.size) }
                 .subscribe({}, {
                     analytics.onCatsRemoveError()
-                    Log.e(TAG, "Remove failed", it)
+                    Timber.e(it, "Remove failed")
                 })
         )
     }
@@ -49,8 +49,4 @@ class UserCatsViewModel(private val catDataRepository: CatDataRepository,
     fun onCardClicked() = analytics.onUserCardClicked()
 
     fun onAddClicked() = analytics.onAddClicked()
-
-    companion object {
-        private const val TAG = "UserCatsViewModel"
-    }
 }

@@ -1,7 +1,6 @@
 package com.sergsave.pocat.screens.catcard
 
 import android.content.Intent
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sergsave.pocat.persistent.CatDataRepository
@@ -16,6 +15,7 @@ import com.sergsave.pocat.R
 import com.sergsave.pocat.screens.catcard.analytics.CatCardAnalyticsHelper
 import io.reactivex.disposables.Disposable
 import java.io.IOException
+import timber.log.Timber
 
 class PurringViewModel(
     private val catDataRepository: CatDataRepository,
@@ -129,7 +129,7 @@ class PurringViewModel(
             },
             {
                 analytics.onSharingDataSaveError()
-                Log.e(TAG, "Save failed", it)
+                Timber.e(it, "Save failed")
                 _snackbarMessageEvent.value = Event(R.string.save_failed_snackbar_message_text)
             }
         )
@@ -168,8 +168,4 @@ class PurringViewModel(
     }
 
     fun onVibratorCreateFailed() = analytics.onVibratorCreateFailed()
-
-    companion object {
-        private const val TAG = "PurringViewModel"
-    }
 }

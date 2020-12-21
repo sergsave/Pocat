@@ -4,8 +4,8 @@ import android.content.Context
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.util.Log
 import io.reactivex.disposables.Disposable
+import timber.log.Timber
 
 class RythmOfSoundVibrator(
     private val context: Context,
@@ -49,7 +49,7 @@ class RythmOfSoundVibrator(
             { vibrate(duration) },
             {
                 assert(false)
-                Log.e("RythmOfSoundVibrator", "Detection failed", it)
+                Timber.e(it, "Detection failed")
             }
         )
     }
