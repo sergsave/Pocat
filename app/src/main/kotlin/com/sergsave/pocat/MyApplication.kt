@@ -115,6 +115,7 @@ class MyApplication : Application() {
         if (BuildConfig.LOG_ENABLED)
             Timber.plant(Timber.DebugTree())
 
+        Timber.i("App started. Logging should be disabled in production")
         appContainer // init
     }
 }
