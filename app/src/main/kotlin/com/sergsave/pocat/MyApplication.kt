@@ -31,6 +31,7 @@ import com.sergsave.pocat.screens.soundselection.SoundSelectionViewModel
 import com.sergsave.pocat.screens.soundselection.analytics.SoundSelectionAnalyticsHelper
 import com.sergsave.pocat.screens.testing.TestingViewModel
 import com.sergsave.pocat.sharing.FirebaseCloudSharingManager
+import com.sergsave.pocat.sharing.LocalDailyQuotaStrategy
 import com.sergsave.pocat.sharing.ZipDataPacker
 import timber.log.Timber
 
@@ -41,7 +42,8 @@ class AppContainer(context: Context) {
     private val audioStorage = LocalFilesContentStorage(context, CopySavingStrategy(context))
     private val contentRepo = ContentRepository(imageStorage, audioStorage)
     private val preferences = PreferenceManager(context)
-    private val sharingManager = FirebaseCloudSharingManager(context, ZipDataPacker(context))
+    private val sharingManager = FirebaseCloudSharingManager(context, ZipDataPacker(context),
+        LocalDailyQuotaStrategy(context, Constants.SHARING_UPLOAD_QUOTA_UNIQUE_TAG, 10))
     private val analyticsTracker = FirebaseAnalyticsTracker()
     private val soundSampleProvider = SoundSampleProvider(context)
     private val catSampleProvider = CatSampleProvider(context)

@@ -3,6 +3,7 @@ package com.sergsave.pocat.persistent
 import android.content.Context
 import android.net.Uri
 import androidx.room.Room
+import com.sergsave.pocat.Constants
 import com.sergsave.pocat.persistent.database.BaseCatEntity
 import com.sergsave.pocat.persistent.database.Cat
 import com.sergsave.pocat.persistent.database.CatDatabase
@@ -19,7 +20,7 @@ class RoomCatDataStorage(context: Context): CatDataStorage {
 
     private val database = Room.databaseBuilder(
         context.applicationContext,
-        CatDatabase::class.java, "cat_database"
+        CatDatabase::class.java, Constants.PERSISTENT_DATABASE_NAME
     )
         .build()
 

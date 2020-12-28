@@ -15,6 +15,7 @@ import com.google.firebase.storage.StorageException
 import com.google.firebase.storage.UploadTask
 import com.google.firebase.storage.ktx.storage
 import com.sergsave.pocat.BuildConfig
+import com.sergsave.pocat.Constants
 import com.sergsave.pocat.R
 import com.sergsave.pocat.helpers.ImageUtils
 import com.sergsave.pocat.helpers.NetworkUtils
@@ -31,9 +32,10 @@ import java.util.*
 
 class FirebaseCloudSharingManager(
     private val context: Context,
-    private val packer: DataPacker
+    private val packer: DataPacker,
+    private val uploadQuota: DailyQuotaStrategy
 ): WebSharingManager {
-    private val cacheDir = File(context.cacheDir, "sharing")
+    private val cacheDir = File(context.cacheDir, Constants.SHARING_CACHE_DIR_NAME)
     private val cleanupInProcess = BehaviorSubject.createDefault(false)
 
     private fun createTempDir(): File {
@@ -60,6 +62,9 @@ class FirebaseCloudSharingManager(
     }
 
     override fun upload(pack: Pack): Single<Intent> {
+        if (uploadQuota.canStartAction().not())
+            return Single.error(WebSharingManager.DailyQuotaExceededException("Quota ends"))
+
         val uploadData = { _pack: Pack, tempDir: File ->
             packer.pack(_pack, File(tempDir, "pack")).flatMap { uploadFile(it, "data") }
         }
@@ -86,6 +91,7 @@ class FirebaseCloudSharingManager(
                 createDynamicLink(dataLink, header, previewLink, pack.cat.name)
             }
             .map { makeIntent(context, it) }
+            .doOnSuccess { uploadQuota.onActionFinished() }
     }
 
     override fun download(intent: Intent): Single<Pack> {

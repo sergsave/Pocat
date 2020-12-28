@@ -70,6 +70,7 @@ class CatCardAnalyticsHelper(
     fun onUploadFailed(throwable: Throwable) {
         val cause = when(throwable) {
             is NoConnectionException -> SharingError.NO_CONNECTION
+            is DailyQuotaExceededException -> SharingError.QUOTA_EXCEEDED
             else -> SharingError.UNKNOWN
         }
         tracker.sendEvent(SharingDataUploadError(cause))

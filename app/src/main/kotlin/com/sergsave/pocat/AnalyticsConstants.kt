@@ -157,6 +157,7 @@ object AnalyticsConstants {
         object SharingError {
             const val NO_CONNECTION = "no_connection"
             const val INVALID_LINK = "invalid_link"
+            const val QUOTA_EXCEEDED = "quota_exceeded"
             const val UNKNOWN = "unknown"
         }
 

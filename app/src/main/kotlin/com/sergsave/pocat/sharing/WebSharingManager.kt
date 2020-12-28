@@ -5,10 +5,14 @@ import io.reactivex.Single
 import io.reactivex.Completable
 
 interface WebSharingManager{
-    class InvalidLinkException(message: String, cause: Throwable? = null): Exception(message, cause)
-    class NoConnectionException(message: String, cause: Throwable? = null): Exception(message, cause)
+    class InvalidLinkException(message: String, cause: Throwable? = null):
+        Exception(message, cause)
+    class NoConnectionException(message: String, cause: Throwable? = null):
+        Exception(message, cause)
+    class DailyQuotaExceededException(message: String, cause: Throwable? = null):
+        Exception(message, cause)
 
-    // Expected errors: NoConnectionException, IOException
+    // Expected errors: NoConnectionException, DailyQuotaExceededException, IOException
     fun upload(pack: Pack): Single<Intent>
 
     // Expected errors: InvalidLinkException, NoConnectionException, IOException

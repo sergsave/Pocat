@@ -100,6 +100,7 @@ class PurringViewModel(
         val handleError = { throwable: Throwable ->
             val stringId = when (throwable) {
                 is WebSharingManager.NoConnectionException -> R.string.connection_error
+                is WebSharingManager.DailyQuotaExceededException -> R.string.daily_quota_error
                 is IOException -> R.string.general_sharing_error
                 else -> throw throwable
             }

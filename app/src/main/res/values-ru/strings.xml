@@ -120,6 +120,7 @@
 
     <!-- Sharing errors -->
     <string name="connection_error">Нет интернета</string>
+    <string name="daily_quota_error">Лимит шаринга на сегодня превышен. Пожалуйста попробуйте завтра</string>
     <string name="general_sharing_error">Ошибка загрузки. Пожалуйста, проверьте интернет-соединение и наличие свободного места на устройстве</string>
 
     <!-- Loading cat by link -->

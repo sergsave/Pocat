@@ -124,6 +124,7 @@
 
     <!-- Sharing errors -->
     <string name="connection_error">No internet connection</string>
+    <string name="daily_quota_error">The sharing limit has been exceeded for today. Please try tomorrow</string>
     <string name="general_sharing_error">Loading failed. Please check internet connection and free space in the device memory</string>
 
     <!-- Loading cat by link -->

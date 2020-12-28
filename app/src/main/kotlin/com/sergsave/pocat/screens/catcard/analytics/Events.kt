@@ -55,11 +55,12 @@ class SharingDataDownload(transferInfo: SharingTransferInfo):
     AnalyticsEvent(SharingDataDownload.NAME, makeSharingParams(transferInfo))
 
 enum class SharingError {
-    NO_CONNECTION, INVALID_LINK, UNKNOWN;
+    NO_CONNECTION, INVALID_LINK, QUOTA_EXCEEDED, UNKNOWN;
 
     override fun toString() = when(this) {
         NO_CONNECTION -> Events.SharingError.NO_CONNECTION
         INVALID_LINK -> Events.SharingError.INVALID_LINK
+        QUOTA_EXCEEDED -> Events.SharingError.QUOTA_EXCEEDED
         UNKNOWN -> Events.SharingError.UNKNOWN
     }
 }

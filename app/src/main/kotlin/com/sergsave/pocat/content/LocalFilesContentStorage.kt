@@ -2,6 +2,7 @@ package com.sergsave.pocat.content
 
 import android.content.Context
 import android.net.Uri
+import com.sergsave.pocat.Constants
 import com.sergsave.pocat.helpers.FileUtils
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.BackpressureStrategy
@@ -77,7 +78,7 @@ class LocalFilesContentStorage(private val context: Context,
     }
 
     private fun dir(): File {
-        return File(context.filesDir, "content")
+        return File(context.filesDir, Constants.CONTENT_FILES_DIR_NAME)
     }
 
     private fun createUniqueDir(): File {

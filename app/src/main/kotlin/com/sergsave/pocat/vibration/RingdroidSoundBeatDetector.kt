@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.core.net.toFile
 import com.ringdroid.soundfile.SoundFile
+import com.sergsave.pocat.Constants
 import com.sergsave.pocat.helpers.FileUtils
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -40,7 +41,7 @@ class RingdroidSoundBeatDetector(
         if (inputStream == null)
             return null
 
-        val tempDir = File(context.cacheDir, "ringdroid_beat_detector")
+        val tempDir = File(context.cacheDir, Constants.VIBRATION_CACHE_DIR_NAME)
         tempDir.mkdir()
 
         val suffix = fileName.substringAfterLast('.', "").let {
