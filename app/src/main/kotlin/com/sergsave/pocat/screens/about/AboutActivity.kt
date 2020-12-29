@@ -53,6 +53,10 @@ class AboutActivity : AppCompatActivity() {
         }
     }
 
+    // Workaround for webview bug inside LicenseDialog
+    // https://stackoverflow.com/questions/41025200/android-view-inflateexception-error-inflating-class-android-webkit-webview
+    override fun getAssets() = resources.assets
+
     private fun openLicensesDialog() {
         LicensesDialogFragment.Builder(this)
             .setNotices(R.raw.notices)
