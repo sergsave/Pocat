@@ -3,6 +3,7 @@ package com.sergsave.pocat
 import android.app.Application
 import android.content.Context
 import android.net.Uri
+import com.sergsave.pocat.analytics.AnalyticsLoggingDecorator
 import com.sergsave.pocat.analytics.FirebaseAnalyticsTracker
 import com.sergsave.pocat.content.ContentRepository
 import com.sergsave.pocat.content.CopySavingStrategy
@@ -44,7 +45,7 @@ class AppContainer(context: Context) {
     private val preferences = PreferenceManager(context)
     private val sharingManager = FirebaseCloudSharingManager(context, ZipDataPacker(context),
         LocalDailyQuotaStrategy(context, Constants.SHARING_UPLOAD_QUOTA_UNIQUE_TAG, 10))
-    private val analyticsTracker = FirebaseAnalyticsTracker()
+    private val analyticsTracker = AnalyticsLoggingDecorator(FirebaseAnalyticsTracker())
     private val soundSampleProvider = SoundSampleProvider(context)
     private val catSampleProvider = CatSampleProvider(context)
 

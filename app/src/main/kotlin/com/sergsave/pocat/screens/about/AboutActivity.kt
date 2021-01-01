@@ -1,6 +1,7 @@
 package com.sergsave.pocat.screens.about
 
 import android.content.Intent
+import android.content.res.AssetManager
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -55,7 +56,7 @@ class AboutActivity : AppCompatActivity() {
 
     // Workaround for webview bug inside LicenseDialog
     // https://stackoverflow.com/questions/41025200/android-view-inflateexception-error-inflating-class-android-webkit-webview
-    override fun getAssets() = resources.assets
+    override fun getAssets(): AssetManager = resources.assets
 
     private fun openLicensesDialog() {
         LicensesDialogFragment.Builder(this)
