@@ -219,8 +219,8 @@ object FileUtils {
                                                 providerAuthority: String): Uri? {
         // This function is used only for old android versions
         @Suppress("DEPRECATION")
-        val storageDir = Environment.
-        getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+        val storageDir = Environment
+            .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
 
         val targetDir = File(storageDir, subPath)
         // TODO: To background?
