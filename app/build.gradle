@@ -52,7 +52,7 @@ android {
 
     flavorDimensions "version"
     productFlavors {
-        def appName = "Pocat"
+        def appName = "PoCat"
 
         development {
             dimension "version"

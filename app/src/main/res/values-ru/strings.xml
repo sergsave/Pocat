@@ -5,32 +5,29 @@
 
 <resources>
     <!-- Main screen tabs -->
-    <string name="samples_tab">Стандартные</string>
-    <string name="user_cats_tab">Мои коты</string>
+    <string name="samples_tab">Котокафе</string>
+    <string name="user_cats_tab">Мои котики</string>
 
     <!-- Main screen menu -->
     <string name="settings">Настройки</string>
     <string name="donate">Сказать спасибо</string>
     <string name="about">О программе</string>
 
-    <!-- Main screen menu test action (dev build only) -->
-
     <!-- Empty user cats list -->
-    <string name="empty_users_cats_dummy">Здесь еще нет котов,\nдобавьте первого</string>
+    <string name="empty_users_cats_dummy">Добавьте первого котика</string>
 
     <!-- User cat remove dialog -->
-    <string name="remove_confirmation">Вы действительно хотите удалить?</string>
+    <string name="remove_confirmation">Ни минуты покоя с пушистыми. Удаляем?</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
 
     <!-- Sample cats name -->
-    <!-- TODO: Real cat names-->
-    <string name="sample_cat_1_name">Котик 1</string>
-    <string name="sample_cat_2_name">Котик 2</string>
-    <string name="sample_cat_3_name">Котик 3</string>
-    <string name="sample_cat_4_name">Котик 4</string>
-    <string name="sample_cat_5_name">Котик 5</string>
-    <string name="sample_cat_6_name">Котик 6</string>
+    <string name="sample_cat_1_name">Шейла</string>
+    <string name="sample_cat_2_name">Снежок</string>
+    <string name="sample_cat_3_name">Голди</string>
+    <string name="sample_cat_4_name">Принц</string>
+    <string name="sample_cat_5_name">Медок</string>
+    <string name="sample_cat_6_name">Лео</string>
 
     <!-- Settings -->
     <string name="vibration">Вибрация</string>
@@ -39,45 +36,42 @@
     <!-- About -->
     <string name="version_text">Версия %1$s</string>
     <string name="rate_on_play_market">Оценить на Google Play</string>
-    <string name="contact_us">Связаться с разработчиком</string>
+    <string name="contact_us">Написать разработчику</string>
     <string name="licenses">Лицензии открытого ПО</string>
     <string name="credits">Лицензии ресурсов</string>
     <string name="how_to_use">Как использовать?</string>
-    <string name="how_to_use_text">Гладьте кота и наслаждайтесь звуками мурчания.\n\nДобавьте своих питомцев и делитесь ими с друзьями.</string>
+    <string name="how_to_use_text">Погладьте котика, и он вам помурчит.\n\nДобавляйте мурчания своих любимцев и делитесь ими с друзьями.</string>
 
-    <!-- Send email -->
     <!-- %1$s - App Name -->
     <string name="feedback_email_subject">%1$s обратная связь</string>
-
-    <!-- Test screen (dev build only) -->
 
     <!-- Tutorial screen -->
     <string name="tutorial_text">Погладьте котика</string>
 
     <!-- Sound off popup -->
-    <string name="make_louder">Пожалуйста, выключите беззвучный режим</string>
+    <string name="make_louder">Выключите беззвучный режим</string>
 
     <!-- Cat form screen  -->
     <string name="name">Имя</string>
     <string name="apply">Применить</string>
-    <string name="add_new_cat">Создание кота</string>
-    <string name="edit_cat">Редактирование кота</string>
+    <string name="add_new_cat">Новый котик</string>
+    <string name="edit_cat">Редактирование</string>
     <string name="file_add_failed">Не получилось добавить файл</string>
 
     <!-- Cat form sound selection button  -->
-    <string name="add_sound">Добавить звук мурчания</string>
-    <string name="sound_is_added">Звук мурчания выбран</string>
+    <string name="add_sound">Добавить мурчание</string>
+    <string name="sound_is_added">Мурчание добавлено</string>
 
     <!-- Sound changed popup. Shown after repeated sound change -->
-    <string name="audio_changed">Выбран новый звук</string>
+    <string name="audio_changed">Мурчание изменено</string>
 
     <!-- Cat form "discard changes" dialog  -->
     <string name="_continue">Продолжить</string>
     <string name="discard">Отменить</string>
-    <string name="changes_not_saved">Есть несохраненные изменения. Отменить их?</string>
+    <string name="changes_not_saved">Вы не все сохранили. Отменить изменения?</string>
 
     <!-- Cat form not "not everything is filled" popup -->
-    <string name="fill_the_form">Пожалуйста, выберите фото, имя и звук мурчания</string>
+    <string name="fill_the_form">Котику нужны фото, имя и мурчание</string>
     <string name="ok">Ok</string>
 
     <!-- Add photo chooser title -->
@@ -90,9 +84,9 @@
     <string name="show_settings">Показать настройки</string>
 
     <!-- Sound selection screen  -->
-    <string name="choose_sound">Выбор звука</string>
+    <string name="choose_sound">Выбор мурчания</string>
     <string name="samples_title">Стандартные</string>
-    <string name="samples_summary">Выберите из стандартных звуков</string>
+    <string name="samples_summary">Выберите мурчание из библиотеки</string>
     <string name="recorder_title">Диктофон</string>
     <string name="recorder_summary">Запишите мурчание. Максимальный размер файла - %1$d&nbsp;МБ (~%2$d&nbsp;мин)</string>
     <string name="pick_audio_title">Память устройства</string>
@@ -102,7 +96,7 @@
     <string name="add_audio_with">Добавьте аудио</string>
 
     <!-- Sound selection "too big file" popup -->
-    <string name="file_size_exceeded_message_text">Файл слишком большой. Пожалуйста, выберите файл меньше, чем %1$d&nbsp;МБ</string>
+    <string name="file_size_exceeded_message_text">Файл слишком большой. Пожалуйста, выберите файл размером до %1$d&nbsp;МБ</string>
 
     <!-- Sound samples screen -->
     <string name="sample_audio_1_name">Мурка 1</string>
@@ -113,26 +107,26 @@
     <string name="sample_audio_6_name">Мурка 6</string>
 
     <!-- Sharing app selection chooser title -->
-    <string name="send_data">Отправить данные</string>
+    <string name="send_data">Отправить котика</string>
 
     <!-- Sharing text in message with link. %1$s - App name -->
     <string name="sharing_text">Погладь моего кота в приложении %1$s!</string>
 
     <!-- Sharing errors -->
-    <string name="connection_error">Нет интернета</string>
-    <string name="daily_quota_error">Лимит шаринга на сегодня превышен. Пожалуйста попробуйте завтра</string>
-    <string name="general_sharing_error">Ошибка загрузки. Пожалуйста, проверьте интернет-соединение и наличие свободного места на устройстве</string>
+    <string name="connection_error">Грустный мяу:( Нет интернета.</string>
+    <string name="daily_quota_error">Котики устали путешествовать к друзьям. Попробуйте завтра.</string>
+    <string name="general_sharing_error">Котики очень хотят вашей ласки, но не могут к вам попасть. Проверьте интернет-соединение и наличие свободного места на устройстве.</string>
 
     <!-- Loading cat by link -->
     <string name="loading">Загрузка</string>
 
     <!-- Loading cat errors -->
-    <string name="invalid_link_error">Кот больше не доступен по этой ссылке. Вы можете попросить отправить вам его еще раз</string>
-    <string name="invalid_data_error">Данные повреждены</string>
+    <string name="invalid_link_error">Котик убежал и по этой ссылке не доступен. Попросите отправить вам ссылку еще раз.</string>
+    <string name="invalid_data_error">Ошибка загрузки. Данные повреждены.</string>
     <string name="retry">Попробовать снова</string>
 
     <!-- "On save loaded cat" popup -->
-    <string name="save_success_snackbar_message_text">Кот добавлен в вашу коллекцию</string>
-    <string name="save_failed_snackbar_message_text">К сожалению, не получилось сохранить кот</string>
+    <string name="save_success_snackbar_message_text">Котик добавлен в вашу коллекцию</string>
+    <string name="save_failed_snackbar_message_text">К сожалению, не получилось сохранить кота</string>
 
 </resources>
