@@ -25,13 +25,12 @@
     <string name="no">No</string>
 
     <!-- Sample cats name -->
-    <!-- TODO: Real cat names-->
-    <string name="sample_cat_1_name">Cat 1</string>
-    <string name="sample_cat_2_name">Cat 2</string>
-    <string name="sample_cat_3_name">Cat 3</string>
-    <string name="sample_cat_4_name">Cat 4</string>
-    <string name="sample_cat_5_name">Cat 5</string>
-    <string name="sample_cat_6_name">Cat 6</string>
+    <string name="sample_cat_1_name">Sheila</string>
+    <string name="sample_cat_2_name">Snow</string>
+    <string name="sample_cat_3_name">Goldie</string>
+    <string name="sample_cat_4_name">Prince</string>
+    <string name="sample_cat_5_name">Honey</string>
+    <string name="sample_cat_6_name">Leo</string>
 
     <!-- Settings -->
     <string name="vibration">Enable vibration</string>
