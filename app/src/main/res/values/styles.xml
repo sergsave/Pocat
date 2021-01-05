@@ -58,10 +58,23 @@
         <item name="buttonBarPositiveButtonStyle">@style/AlertDialogButtonStyle</item>
         <item name="buttonBarNegativeButtonStyle">@style/AlertDialogButtonStyle</item>
         <item name="materialAlertDialogBodyTextStyle">@style/TextAppearance.MaterialComponents.Body1</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/AlertDialogTitleTextStyle</item>
+    </style>
+
+    <style name="MyThemeOverlay.MaterialComponents.MaterialAlertDialog.MessageOnly" parent="@style/MyThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="materialAlertDialogBodyTextStyle">@style/AlertDialogBodyTextStyle.MessageOnly</item>
+    </style>
+
+    <style name="AlertDialogBodyTextStyle.MessageOnly" parent="@style/TextAppearance.MaterialComponents.Subtitle1">
+        <item name="android:textSize">18sp</item>
     </style>
 
     <style name="AlertDialogButtonStyle" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
         <item name="android:textColor">?attr/colorOnBackground</item>
+    </style>
+
+    <style name="AlertDialogTitleTextStyle" parent="@style/MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Headline6</item>
     </style>
 
     <!-- Outlined Button -->
