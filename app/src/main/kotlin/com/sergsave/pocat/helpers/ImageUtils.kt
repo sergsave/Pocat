@@ -76,7 +76,7 @@ object ImageUtils {
                     }
                     try {
                         out = FileOutputStream(outputFile)
-                        val quality = 100
+                        val quality = 80
                         resource.compress(Bitmap.CompressFormat.JPEG, quality, out)
                         finish(true)
                     }
