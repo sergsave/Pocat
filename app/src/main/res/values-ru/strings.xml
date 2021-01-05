@@ -41,6 +41,7 @@
     <string name="credits">Лицензии ресурсов</string>
     <string name="how_to_use">Как использовать?</string>
     <string name="how_to_use_text">Погладьте котика, и он вам помурчит.\n\nДобавляйте мурчания своих любимцев и делитесь ими с друзьями.</string>
+    <string name="ok">Ok</string>
 
     <!-- %1$s - App Name -->
     <string name="feedback_email_subject">%1$s обратная связь</string>
@@ -72,7 +73,6 @@
 
     <!-- Cat form not "not everything is filled" popup -->
     <string name="fill_the_form">Котику нужны фото, имя и мурчание</string>
-    <string name="ok">Ok</string>
 
     <!-- Add photo chooser title -->
     <string name="add_photo_with">Добавьте фото</string>
@@ -80,7 +80,7 @@
     <!-- Storage permission required dialog -->
     <string name="need_permission">Требуются разрешения</string>
     <!-- %1$s - App Name -->
-    <string name="need_storage_permission">Для полноценной необходимо дать %1$s разрешение на доступ к хранилищу</string>
+    <string name="need_storage_permission">Для полноценной работы необходимо дать %1$s разрешение на доступ к хранилищу</string>
     <string name="show_settings">Показать настройки</string>
 
     <!-- Sound selection screen  -->
@@ -90,13 +90,13 @@
     <string name="recorder_title">Диктофон</string>
     <string name="recorder_summary">Запишите мурчание. Максимальный размер файла - %1$d&nbsp;МБ (~%2$d&nbsp;мин)</string>
     <string name="pick_audio_title">Память устройства</string>
-    <string name="pick_audio_summary">Выберите файла с устройства. Максимальный размер файла - %1$d&nbsp;МБ</string>
+    <string name="pick_audio_summary">Выберите файл с устройства. Максимальный размер файла - %1$d&nbsp;МБ</string>
 
     <!-- Add audio from device chooser title -->
     <string name="add_audio_with">Добавьте аудио</string>
 
     <!-- Sound selection "too big file" popup -->
-    <string name="file_size_exceeded_message_text">Файл слишком большой. Пожалуйста, выберите файл размером до %1$d&nbsp;МБ</string>
+    <string name="file_size_exceeded_message_text">Файл слишком большой. Выберите файл размером до %1$d&nbsp;МБ.</string>
 
     <!-- Sound samples screen -->
     <string name="sample_audio_1_name">Мурка 1</string>
@@ -113,15 +113,15 @@
     <string name="sharing_text">Погладь моего кота в приложении %1$s!</string>
 
     <!-- Sharing errors -->
-    <string name="connection_error">Грустный мяу:( Нет интернета.</string>
+    <string name="connection_error">Грустный мяу :( Нет интернета.</string>
     <string name="daily_quota_error">Котики устали путешествовать к друзьям. Попробуйте завтра.</string>
-    <string name="general_sharing_error">Котики очень хотят вашей ласки, но не могут к вам попасть. Проверьте интернет-соединение и наличие свободного места на устройстве.</string>
+    <string name="general_sharing_error">Ой, ошибка! Проверьте интернет-соединение и наличие места в памяти.</string>
 
     <!-- Loading cat by link -->
     <string name="loading">Загрузка</string>
 
     <!-- Loading cat errors -->
-    <string name="invalid_link_error">Котик убежал и по этой ссылке не доступен. Попросите отправить вам ссылку еще раз.</string>
+    <string name="invalid_link_error">Котик убежал и по этой ссылке недоступен. Попросите отправить вам ссылку еще раз.</string>
     <string name="invalid_data_error">Ошибка загрузки. Данные повреждены.</string>
     <string name="retry">Попробовать снова</string>
 
