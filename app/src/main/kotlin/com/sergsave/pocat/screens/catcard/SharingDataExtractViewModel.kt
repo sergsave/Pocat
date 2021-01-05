@@ -16,6 +16,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.Singles
 import io.reactivex.rxkotlin.zipWith
+import timber.log.Timber
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
@@ -64,7 +65,10 @@ class SharingDataExtractViewModel(
             val state = when(throwable) {
                 is WebSharingManager.NoConnectionException -> ExtractState.NO_CONNECTION_ERROR
                 is WebSharingManager.InvalidLinkException -> ExtractState.INVALID_LINK_ERROR
-                is IOException -> ExtractState.UNKNOWN_ERROR
+                is IOException -> {
+                    Timber.e(throwable, "Unknown extracting error")
+                    ExtractState.UNKNOWN_ERROR
+                }
                 else -> throw throwable
             }
             _extractState.value = state

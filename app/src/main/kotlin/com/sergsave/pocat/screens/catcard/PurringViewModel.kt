@@ -101,7 +101,10 @@ class PurringViewModel(
             val stringId = when (throwable) {
                 is WebSharingManager.NoConnectionException -> R.string.connection_error
                 is WebSharingManager.DailyQuotaExceededException -> R.string.daily_quota_error
-                is IOException -> R.string.general_sharing_error
+                is IOException -> {
+                    Timber.e(throwable, "Unknown sharing error")
+                    R.string.general_sharing_error
+                }
                 else -> throw throwable
             }
             _snackbarMessageEvent.value = Event(stringId)
