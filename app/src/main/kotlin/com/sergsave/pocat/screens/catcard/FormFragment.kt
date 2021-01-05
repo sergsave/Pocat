@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
@@ -219,9 +220,10 @@ class FormFragment : Fragment() {
     }
 
     private fun resolveCameraImageUri(context: Context): Uri? {
-        val pictureSubPath = getString(R.string.app_name)
+        val picturesDir = Environment.DIRECTORY_PICTURES
+        val subDir = getString(R.string.app_name)
         val providerAuth = "${BuildConfig.APPLICATION_ID}.fileprovider"
-        return FileUtils.provideImageUriInPublicStorage(context, pictureSubPath, providerAuth)
+        return FileUtils.provideContentUriInPublicStorage(context, picturesDir, subDir, providerAuth)
     }
 
     private fun sendPhotoIntent() {
@@ -238,6 +240,14 @@ class FormFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode != Activity.RESULT_OK && requestCode == PICK_IMAGE_CODE) {
+            cameraImageUri?.let {
+                FileUtils.releaseContentUri(requireContext(), it)
+                cameraImageUri = null
+            }
+        }
+
         if (resultCode != Activity.RESULT_OK)
             return
 
