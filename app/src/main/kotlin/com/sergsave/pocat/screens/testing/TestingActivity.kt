@@ -27,5 +27,7 @@ class TestingActivity : AppCompatActivity() {
             copy_all_button.isEnabled = it.isEnabled
             copy_all_button.text = getString(it.stringId)
         })
+
+        reset_tutorial_button.setOnClickListener { viewModel.onResetTutorialClicked() }
     }
 }

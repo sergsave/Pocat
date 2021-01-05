@@ -105,7 +105,7 @@ class AppContainer(context: Context) {
 
     fun provideTestingViewModelFactory() =
         ViewModelFactory(TestingViewModel::class.java, {
-            TestingViewModel(catDataRepo, contentRepo)
+            TestingViewModel(catDataRepo, contentRepo, preferences)
         })
 }
 

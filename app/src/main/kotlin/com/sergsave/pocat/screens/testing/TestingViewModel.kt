@@ -9,13 +9,15 @@ import com.sergsave.pocat.persistent.CatDataRepository
 import com.sergsave.pocat.helpers.DisposableViewModel
 import com.sergsave.pocat.models.CatData
 import com.sergsave.pocat.R
+import com.sergsave.pocat.preference.PreferenceManager
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
 import java.lang.IllegalStateException
 
 class TestingViewModel(
     private val catDataRepository: CatDataRepository,
-    private val contentRepository: ContentRepository
+    private val contentRepository: ContentRepository,
+    private val preferences: PreferenceManager
 ): DisposableViewModel() {
 
     private fun createCatCopyObservable(cat: CatData): Single<CatData> {
@@ -65,5 +67,9 @@ class TestingViewModel(
         val stringId = if(it) R.string.copy_in_progress else R.string.copy_cats
         CopyButtonState(stringId, it.not())
     })
+
+    fun onResetTutorialClicked() {
+        preferences.isPurringTutorialAchieved = false
+    }
 }
 

@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.sergsave.pocat.R
-import com.sergsave.pocat.helpers.EventObserver
 import kotlinx.android.synthetic.main.fragment_purring_tutorial.*
 
 class PurringTutorialFragment: Fragment() {
@@ -36,19 +35,13 @@ class PurringTutorialFragment: Fragment() {
 
         content_layout.setOnTouchListener { _, event ->
             if(event.action == MotionEvent.ACTION_DOWN)
-                finish()
+                navigation.onTutorialTouched(NavigationViewModel.TutorialTouchArea.CONTENT)
             false // Content should be transparent for touches
         }
         toolbar.setOnTouchListener { _, event ->
             if(event.action == MotionEvent.ACTION_DOWN)
-                finish()
+                navigation.onTutorialTouched(NavigationViewModel.TutorialTouchArea.TOOLBAR)
             true
         }
-        navigation.backPressedEvent.observe(viewLifecycleOwner, EventObserver { finish() })
-    }
-
-    private fun finish() {
-        requireActivity().supportFragmentManager.popBackStack()
-        navigation.onTutorialFinished()
     }
 }

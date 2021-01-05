@@ -46,9 +46,15 @@ class NavigationViewModel(card: Card?, isThereSharingInputData: Boolean)
     val showTutorialEvent: LiveData<Event<Unit>>
         get() = _showTutorialEvent
 
-    private val _tutorialFinishedEvent = MutableLiveData<Event<Unit>>()
-    val tutorialFinishedEvent: LiveData<Event<Unit>>
-        get() = _tutorialFinishedEvent
+    private val _needHideTutorialEvent = MutableLiveData<Event<Unit>>()
+    val needHideTutorialEvent: LiveData<Event<Unit>>
+        get() = _needHideTutorialEvent
+
+    private val _tutorialCompletedEvent = MutableLiveData<Event<Unit>>()
+    val tutorialCompletedEvent: LiveData<Event<Unit>>
+        get() = _tutorialCompletedEvent
+
+    val isSharedElementTransitionPostponed = MutableLiveData<Boolean>(false)
 
     init {
         when {
@@ -86,8 +92,16 @@ class NavigationViewModel(card: Card?, isThereSharingInputData: Boolean)
         _showTutorialEvent.value = Event(Unit)
     }
 
-    fun onTutorialFinished() {
-        _tutorialFinishedEvent.value = Event(Unit)
+    enum class TutorialTouchArea { TOOLBAR, CONTENT }
+    fun onTutorialTouched(area: TutorialTouchArea) {
+        _needHideTutorialEvent.value = Event(Unit)
+
+        if (area == TutorialTouchArea.CONTENT)
+            _tutorialCompletedEvent.value = Event(Unit)
+    }
+
+    fun onTutorialCompleted() {
+        _tutorialCompletedEvent.value = Event(Unit)
     }
 
     fun goToBackScreen() {

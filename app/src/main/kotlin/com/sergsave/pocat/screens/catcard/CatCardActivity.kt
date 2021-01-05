@@ -31,11 +31,12 @@ class CatCardActivity : AppCompatActivity() {
 
         // Use common toolbar for avoid transition blinking
         setToolbarAsActionBar(toolbar, true)
-
-        if(savedInstanceState == null && getTransitionName(intent) != null)
-            postponeEnterTransition()
-
         setupNavigation()
+
+        if(savedInstanceState == null && getTransitionName(intent) != null) {
+            postponeEnterTransition()
+            navigation.isSharedElementTransitionPostponed.value = true
+        }
     }
 
     private fun setupNavigation() {
@@ -74,6 +75,9 @@ class CatCardActivity : AppCompatActivity() {
             })
 
             showTutorialEvent.observe(lifecycleOwner, EventObserver {
+                if (supportFragmentManager.backStackEntryCount != 0)
+                    return@EventObserver
+
                 val fragment = PurringTutorialFragment().apply {
                     enterTransition = makeFade().apply { duration = 750 }
                 }
@@ -82,6 +86,10 @@ class CatCardActivity : AppCompatActivity() {
                     .add(android.R.id.content, fragment)
                     .addToBackStack(null)
                     .commit()
+            })
+
+            needHideTutorialEvent.observe(lifecycleOwner, EventObserver {
+                supportFragmentManager.popBackStack()
             })
         }
     }

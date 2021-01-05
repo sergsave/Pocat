@@ -34,10 +34,11 @@ class PurringFragment : Fragment() {
     private val navigation: NavigationViewModel by activityViewModels()
     private val viewModel: PurringViewModel by viewModels {
         val card = arguments?.getParcelable<Card>(ARG_CARD)
-        assert(card != null)
-        val dummy = Card(null, CatData(), false, false)
+        if (card == null)
+            throw IllegalArgumentException("Need card")
+
         (requireActivity().application as MyApplication).appContainer
-            .providePurringViewModelFactory(card ?: dummy)
+            .providePurringViewModelFactory(card)
     }
 
     private var mediaPlayer: MediaPlayer? = null
@@ -84,9 +85,6 @@ class PurringFragment : Fragment() {
         // Shared element transition
         val transitionName = arguments?.getString(ARG_TRANSITION_NAME)
         photo_image.transitionName = transitionName
-        // Otherwise show tutorial later, on transition end
-        if(transitionName == null)
-            showTutorialIfNeeded()
 
         photo_image.setOnTouchListener { _, event -> onTouchEvent(event) }
 
@@ -97,16 +95,14 @@ class PurringFragment : Fragment() {
                 navigation.goToBackScreen()
             })
 
-            tutorialFinishedEvent.observe(viewLifecycleOwner, EventObserver {
+            tutorialCompletedEvent.observe(viewLifecycleOwner, EventObserver {
                 viewModel.isTutorialAchieved = true
             })
         }
 
         viewModel.apply {
             catData.observe(viewLifecycleOwner, Observer {
-                ImageUtils.loadInto(requireContext(), it.photoUri, photo_image) {
-                    startTransition()
-                }
+                ImageUtils.loadInto(requireContext(), it.photoUri, photo_image) { onPhotoLoaded() }
                 initAudio(it.purrAudioUri)
                 setTitle(it.name)
             })
@@ -137,14 +133,33 @@ class PurringFragment : Fragment() {
         title?.let { (activity as? AppCompatActivity)?.supportActionBar?.title = it }
     }
 
-    private fun startTransition() {
+    private fun onPhotoLoaded() {
+        val needStartTransition = navigation.isSharedElementTransitionPostponed.value ?: false
+        if (needStartTransition) {
+            startPostponedTransition { showTutorialIfNeeded() }
+            navigation.isSharedElementTransitionPostponed.value = false
+            return
+        }
+
+        showTutorialIfNeeded()
+    }
+
+    private fun startPostponedTransition(onTransitionEndListener: () -> Unit) {
         activity?.supportStartPostponedEnterTransition()
 
         transitionListener = object: SupportTransitionListenerAdapter() {
-            override fun onTransitionEnd(transition: Transition?) = showTutorialIfNeeded()
+            override fun onTransitionEnd(transition: Transition?) {
+                activity?.window?.sharedElementEnterTransition?.removeListener(this)
+                onTransitionEndListener()
+            }
         }
 
         activity?.window?.sharedElementEnterTransition?.addListener(transitionListener)
+    }
+
+    private fun showTutorialIfNeeded() {
+        if (viewModel.isTutorialAchieved.not())
+            navigation.showTutorial()
     }
 
     private fun showSnackbar(message: String) {
@@ -173,11 +188,6 @@ class PurringFragment : Fragment() {
 
         playAudio()
         return true
-    }
-
-    private fun showTutorialIfNeeded() {
-        if(viewModel.isTutorialAchieved.not())
-            navigation.showTutorial()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
