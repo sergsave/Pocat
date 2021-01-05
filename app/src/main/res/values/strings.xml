@@ -53,6 +53,7 @@
     <!-- Test screen (dev build only) -->
     <string name="copy_cats" translatable="false">Clone all cats</string>
     <string name="copy_in_progress" translatable="false">Сloning in progress…</string>
+    <string name="reset_tutorial" translatable="false">Reset tutorial</string>
 
     <!-- Tutorial screen -->
     <string name="tutorial_text">Pet for purring</string>
