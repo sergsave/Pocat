@@ -261,6 +261,8 @@ object FileUtils {
     // Clear content on uri returned from "provideContentUriInPublicStorage"
     @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     fun releaseContentUri(context: Context, uri: Uri) {
-        context.contentResolver.delete(uri, null, null)
+        // Nothing to release for lower versions
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            context.contentResolver.delete(uri, null, null)
     }
 }

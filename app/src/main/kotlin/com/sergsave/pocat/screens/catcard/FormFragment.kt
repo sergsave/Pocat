@@ -1,6 +1,7 @@
 package com.sergsave.pocat.screens.catcard
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -219,15 +220,17 @@ class FormFragment : Fragment() {
         }
     }
 
-    private fun resolveCameraImageUri(context: Context): Uri? {
+    @SuppressLint("MissingPermission")
+    private fun resolveCameraImageUri(): Uri? {
         val picturesDir = Environment.DIRECTORY_PICTURES
         val subDir = getString(R.string.app_name)
         val providerAuth = "${BuildConfig.APPLICATION_ID}.fileprovider"
-        return FileUtils.provideContentUriInPublicStorage(context, picturesDir, subDir, providerAuth)
+        return FileUtils.provideContentUriInPublicStorage(requireContext(),
+            picturesDir, subDir, providerAuth)
     }
 
     private fun sendPhotoIntent() {
-        cameraImageUri = resolveCameraImageUri(requireContext())
+        cameraImageUri = resolveCameraImageUri()
         val cameraIntent = createCameraIntent(cameraImageUri)
 
         val intents = (createPickIntents() + listOf(cameraIntent)).filterNotNull().filter {
@@ -238,28 +241,36 @@ class FormFragment : Fragment() {
         createIntentChooser(intents, title)?.let { startActivityForResult(it, PICK_IMAGE_CODE) }
     }
 
+    @SuppressLint("MissingPermission")
+    private fun releaseContent(uri: Uri?) {
+        if (uri != null && isPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE))
+            FileUtils.releaseContentUri(requireContext(), uri)
+    }
+
+    private fun handlePickImageResult(resultCode: Int, data: Intent?) {
+        val dataUri = data?.data
+        val pickedFromCamera = resultCode == Activity.RESULT_OK && dataUri == null
+
+        if (resultCode == Activity.RESULT_OK)
+            viewModel.changePhoto(if (pickedFromCamera) cameraImageUri else dataUri)
+
+        if (pickedFromCamera.not()) {
+            releaseContent(cameraImageUri)
+            cameraImageUri = null
+        }
+    }
+
+    private fun handlePickAudioResult(resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK)
+            viewModel.changeAudio(data?.data)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (resultCode != Activity.RESULT_OK && requestCode == PICK_IMAGE_CODE) {
-            cameraImageUri?.let {
-                FileUtils.releaseContentUri(requireContext(), it)
-                cameraImageUri = null
-            }
-        }
-
-        if (resultCode != Activity.RESULT_OK)
-            return
-
         when(requestCode) {
-            PICK_IMAGE_CODE -> {
-                // Null data - image from camera
-                val uri = data?.data ?: cameraImageUri
-                viewModel.changePhoto(uri)
-            }
-            PICK_AUDIO_CODE -> {
-                viewModel.changeAudio(data?.data)
-            }
+            PICK_IMAGE_CODE -> handlePickImageResult(resultCode, data)
+            PICK_AUDIO_CODE -> handlePickAudioResult(resultCode, data)
         }
     }
 
