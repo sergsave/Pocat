@@ -79,9 +79,11 @@
 
     <!-- Storage permission required dialog -->
     <string name="need_permission">Требуются разрешения</string>
-    <!-- %1$s - App Name -->
-    <string name="need_storage_permission">Для полноценной работы необходимо дать %1$s разрешение на доступ к хранилищу</string>
+    <!-- %1$s - Permission name, %2$s - App Name -->
+    <string name="need_storage_permission">Для полноценной работы необходимо дать %2$s разрешение на %1$s</string>
     <string name="show_settings">Показать настройки</string>
+    <string name="storage_permission">доступ к хранилищу</string>
+    <string name="record_audio_permission">запись аудио</string>
 
     <!-- Sound selection screen  -->
     <string name="choose_sound">Выбор мурчания</string>

@@ -25,7 +25,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.sergsave.pocat.BuildConfig
 import com.sergsave.pocat.MyApplication
 import com.sergsave.pocat.R
-import com.sergsave.pocat.dialogs.StoragePermissionPermanentlyDeniedDialog
+import com.sergsave.pocat.dialogs.PermissionPermanentlyDeniedDialog
 import com.sergsave.pocat.helpers.*
 import com.sergsave.pocat.helpers.PermissionDenyTypeQualifier.Type.DENIED_PERMANENTLY
 import com.sergsave.pocat.models.Card
@@ -198,8 +198,10 @@ class FormFragment : Fragment() {
         }
 
         val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
-        if (permissionDenyQualifier.handleRequestPermissionResult(permission) == DENIED_PERMANENTLY)
-            StoragePermissionPermanentlyDeniedDialog().show(childFragmentManager, null)
+        if (permissionDenyQualifier.handleRequestPermissionResult(permission) == DENIED_PERMANENTLY) {
+            PermissionPermanentlyDeniedDialog.newInstance(R.string.storage_permission)
+                .show(childFragmentManager, null)
+        }
     }
 
     private fun createPickIntents(): List<Intent> {

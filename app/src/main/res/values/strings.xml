@@ -89,9 +89,11 @@
 
     <!-- Storage permission required dialog -->
     <string name="need_permission">Permission required</string>
-    <!-- %1$s - App Name -->
-    <string name="need_storage_permission">For full-fledged work, you should give the storage access permission for %1$s</string>
+    <!-- %1$s - Permission name, %2$s - App Name -->
+    <string name="need_storage_permission">For full-fledged work, you should give the %1$s permission for %2$s</string>
     <string name="show_settings">Show settings</string>
+    <string name="storage_permission">storage access</string>
+    <string name="record_audio_permission">record audio</string>
 
     <!-- Sound selection screen  -->
     <string name="choose_sound">Choose a sound</string>
