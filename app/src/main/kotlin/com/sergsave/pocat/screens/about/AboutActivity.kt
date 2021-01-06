@@ -12,6 +12,7 @@ import com.sergsave.pocat.helpers.setToolbarAsActionBar
 import de.psdev.licensesdialog.LicensesDialogFragment
 import kotlinx.android.synthetic.main.activity_about.*
 import kotlinx.android.synthetic.main.view_about_list_item.view.*
+import timber.log.Timber
 
 class AboutActivity : AppCompatActivity() {
 
@@ -41,6 +42,12 @@ class AboutActivity : AppCompatActivity() {
 
         credits_item.text.text = getString(R.string.credits)
         credits_item.setOnClickListener { openCreditsActivity() }
+
+        // Secret way to check error logging
+        credits_item.setOnLongClickListener {
+            Timber.e(RuntimeException("Test of error logging"))
+            false
+        }
     }
 
     private fun sendEmail() {

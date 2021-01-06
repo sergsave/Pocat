@@ -11,6 +11,7 @@ import com.sergsave.pocat.content.ImageResizeSavingStrategy
 import com.sergsave.pocat.content.LocalFilesContentStorage
 import com.sergsave.pocat.helpers.FileUtils
 import com.sergsave.pocat.helpers.ViewModelFactory
+import com.sergsave.pocat.logging.FirebaseCrashlyticsTree
 import com.sergsave.pocat.models.Card
 import com.sergsave.pocat.persistent.CatDataRepository
 import com.sergsave.pocat.persistent.RoomCatDataStorage
@@ -115,9 +116,7 @@ class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        if (BuildConfig.LOG_ENABLED)
-            Timber.plant(Timber.DebugTree())
-
+        Timber.plant(if (BuildConfig.LOG_ENABLED) Timber.DebugTree() else FirebaseCrashlyticsTree())
         Timber.i("App started. Logging should be disabled in production")
         appContainer // init
     }
