@@ -19,7 +19,8 @@
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/Widget.MaterialComponents.TabLayout.Colored" />
+        style="@style/Widget.MaterialComponents.TabLayout.Colored"
+        app:tabIndicatorColor="?attr/colorSecondary"/>
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/pager"

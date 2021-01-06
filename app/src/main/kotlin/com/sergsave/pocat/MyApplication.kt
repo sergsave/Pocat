@@ -44,7 +44,7 @@ class AppContainer(context: Context) {
     private val contentRepo = ContentRepository(imageStorage, audioStorage)
     private val preferences = PreferenceManager(context)
     private val sharingManager = FirebaseCloudSharingManager(context, ZipDataPacker(context),
-        LocalDailyQuotaStrategy(context, Constants.SHARING_UPLOAD_QUOTA_UNIQUE_TAG, 10))
+        LocalDailyQuotaStrategy(context, 10, Constants.SHARING_UPLOAD_QUOTA_UNIQUE_TAG))
     private val analyticsTracker = AnalyticsLoggingDecorator(FirebaseAnalyticsTracker())
     private val soundSampleProvider = SoundSampleProvider(context)
     private val catSampleProvider = CatSampleProvider(context)

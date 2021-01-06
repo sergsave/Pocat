@@ -2,4 +2,5 @@
 <resources>
     <dimen name="list_column_width">180dp</dimen>
     <dimen name="list_item_margin">8dp</dimen>
+    <dimen name="minTouchTargetSize">48dp</dimen>
 </resources>

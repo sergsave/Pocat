@@ -9,8 +9,8 @@ import java.util.*
 // User can exceed quota if he deletes application data.
 // Also does not protect against changing the system time on the device.
 class LocalDailyQuotaStrategy(private val context: Context,
-                              private val uniqueTag: String,
-                              private val allowedActionsNumber: Long)
+                              private val allowedActionsNumber: Long,
+                              uniqueTag: String)
     : DailyQuotaStrategy {
 
     private val preferences: SharedPreferences

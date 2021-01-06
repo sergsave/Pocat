@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/view_sound_item_background"
-    android:minHeight="?attr/minTouchTargetSize">
+    android:minHeight="@dimen/minTouchTargetSize">
 
     <ImageView
         android:id="@+id/icon_image"

@@ -24,7 +24,6 @@ import com.sergsave.pocat.helpers.FadeOutSoundEffect
 import com.sergsave.pocat.helpers.ImageUtils
 import com.sergsave.pocat.helpers.SupportTransitionListenerAdapter
 import com.sergsave.pocat.models.Card
-import com.sergsave.pocat.models.CatData
 import com.sergsave.pocat.vibration.RingdroidSoundBeatDetector
 import com.sergsave.pocat.vibration.RythmOfSoundVibrator
 import kotlinx.android.synthetic.main.fragment_purring.*

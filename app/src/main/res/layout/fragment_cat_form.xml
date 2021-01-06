@@ -31,7 +31,7 @@
                 android:paddingRight="36dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/photo_stub"
-                app:civ_circle_background_color="@android:color/white"
+                app:civ_circle_background_color="#eeeeee"
                 app:layout_constraintDimensionRatio="1.0"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

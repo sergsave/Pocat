@@ -100,10 +100,6 @@ class NavigationViewModel(card: Card?, isThereSharingInputData: Boolean)
             _tutorialCompletedEvent.value = Event(Unit)
     }
 
-    fun onTutorialCompleted() {
-        _tutorialCompletedEvent.value = Event(Unit)
-    }
-
     fun goToBackScreen() {
         val page = this.page
         if(page is Page.Edit)

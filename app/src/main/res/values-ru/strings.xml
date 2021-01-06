@@ -115,7 +115,7 @@
     <!-- Sharing errors -->
     <string name="connection_error">Грустный мяу :( Нет интернета.</string>
     <string name="daily_quota_error">Котики устали путешествовать к друзьям. Попробуйте завтра.</string>
-    <string name="general_sharing_error">Ой, ошибка! Проверьте интернет-соединение и наличие места в памяти.</string>
+    <string name="general_sharing_error">Ой, ошибка! Возможно, нет интернета или недостаточно памяти.</string>
 
     <!-- Loading cat by link -->
     <string name="loading">Загрузка</string>

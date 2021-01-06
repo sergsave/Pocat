@@ -7,9 +7,9 @@
         <!--colorSecondary colors are most often used as accents on components, such as FABs and -->
         <!--selection controls.-->
         <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryVariant">#cbba83</item>
-        <item name="colorSecondary">#ffccbc</item>
-        <item name="colorSecondaryVariant">#cb9b8c</item>
+        <item name="colorPrimaryVariant">@color/primaryDark</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorSecondaryVariant">@color/secondaryDark</item>
         <!--colorBackground appears behind scrollable content and is used for the default window-->
         <!--background. colorSurface is mapped to the surface of components such as cards, sheets-->
         <!--and menus. colorError is used to indicate an error state for components such as-->
@@ -46,6 +46,15 @@
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowSharedElementsUseOverlay">false</item>
         <item name="android:actionModeBackground">?android:attr/statusBarColor</item>
+        <item name="android:textColorLink">?attr/colorSecondaryVariant</item>
+    </style>
+
+    <style name="MyThemeOverlay.TextInputLayout.OutlinedBox" parent="ThemeOverlay.MaterialComponents.TextInputEditText.OutlinedBox">
+        <item name="colorPrimary">@color/secondaryDark</item>
+    </style>
+
+    <style name="Widget.MyTheme.TextInputLayout.OutlinedBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="materialThemeOverlay">@style/MyThemeOverlay.TextInputLayout.OutlinedBox</item>
     </style>
 
     <!-- Ripple doesn't work after update to 1.2.0-alpha05 :( -->
@@ -86,7 +95,10 @@
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
-    <color name="background">#ffffe5</color>
+    <color name="background">#ffffee</color>
     <color name="primary">#ffecb3</color>
+    <color name="primaryDark">#cbba83</color>
+    <color name="secondary">#e57373</color>
+    <color name="secondaryDark">#af4448</color>
     <color name="text">#000000</color>
 </resources>
