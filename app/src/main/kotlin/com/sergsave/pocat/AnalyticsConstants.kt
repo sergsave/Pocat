@@ -177,7 +177,7 @@ object AnalyticsConstants {
             }
         }
 
-        // WTF errors
+        // TODO: remove WTF errors
         object InvalidSharingDataDownloadedError {
             const val NAME = "invalid_sharing_data_downloaded_error"
         }
