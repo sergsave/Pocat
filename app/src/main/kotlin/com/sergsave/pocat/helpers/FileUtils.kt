@@ -15,6 +15,7 @@ import android.util.TypedValue
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import androidx.core.content.FileProvider
+import timber.log.Timber
 import java.io.IOException
 import java.io.*
 import java.text.SimpleDateFormat
@@ -260,9 +261,16 @@ object FileUtils {
 
     // Clear content on uri returned from "provideContentUriInPublicStorage"
     @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    fun releaseContentUri(context: Context, uri: Uri) {
+    fun releaseContentUri(context: Context, uri: Uri): Boolean {
         // Nothing to release for lower versions
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-            context.contentResolver.delete(uri, null, null)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
+            return true
+
+        return try {
+            context.contentResolver.delete(uri, null, null) != 0
+        } catch(e: SecurityException) {
+            Timber.e(e)
+            false
+        }
     }
 }
