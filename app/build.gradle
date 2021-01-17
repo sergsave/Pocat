@@ -6,6 +6,16 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlinx-serialization'
 apply plugin: 'kotlin-kapt'
 
+def readGooglePlayPublicBase64Key() {
+    def propertiesFile = rootProject.file("keys.properties")
+    if (!propertiesFile.exists())
+        return ""
+
+    def properties = new Properties()
+    properties.load(new FileInputStream(propertiesFile))
+    return properties["googlePlayPublicBase64Key"]
+}
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
@@ -18,12 +28,17 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
+    def appName = "PoCat"
+
     defaultConfig {
         applicationId "com.sergsave.pocat"
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 3
         versionName "1.0-beta01"
+
+        resValue "string", "app_name", "$appName"
+        buildConfigField("String", "GOOGLE_PLAY_PUBLIC_BASE_64_KEY", "\"${readGooglePlayPublicBase64Key()}\"")
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -50,29 +65,50 @@ android {
         }
     }
 
-    flavorDimensions "version"
+    flavorDimensions "default"
+
     productFlavors {
-        def appName = "PoCat"
+        def testDynamicLinkDomain = "https://pocatappdev.page.link"
+        def prodDynamicLinkDomain = "https://pocatapp.page.link"
+        def testFirebaseProjectId = "pocat-app-dev"
+        def prodFirebaseProjectId = "pocat-app"
 
         development {
-            dimension "version"
+            dimension "default"
             applicationIdSuffix ".dev"
+
             versionNameSuffix "_dev"
-            resValue "string", "app_name", "$appName"
             resValue "string", "app_label", "$appName Dev"
-            buildConfigField("String", "DYNAMIC_LINK_DOMAIN", "\"https://pocatappdev.page.link\"")
+
             buildConfigField("Boolean", "HIDE_TEST_ACTION", "false")
             buildConfigField("Boolean", "LOG_ENABLED", "true")
-            manifestPlaceholders = [firebaseProjectId:"pocat-app-dev"]
+
+            buildConfigField("String", "DYNAMIC_LINK_DOMAIN", "\"$testDynamicLinkDomain\"")
+            manifestPlaceholders = [firebaseProjectId: testFirebaseProjectId]
+        }
+        // Use for test purchases
+        staging {
+            dimension "default"
+
+            versionNameSuffix "_staging"
+            resValue "string", "app_label", "$appName Staging"
+
+            buildConfigField("Boolean", "HIDE_TEST_ACTION", "true")
+            buildConfigField("Boolean", "LOG_ENABLED", "true")
+
+            buildConfigField("String", "DYNAMIC_LINK_DOMAIN", "\"$testDynamicLinkDomain\"")
+            manifestPlaceholders = [firebaseProjectId: testFirebaseProjectId]
         }
         production {
-            dimension "version"
-            resValue "string", "app_name", "$appName"
+            dimension "default"
+
             resValue "string", "app_label", "$appName"
-            buildConfigField("String", "DYNAMIC_LINK_DOMAIN", "\"https://pocatapp.page.link\"")
+
             buildConfigField("Boolean", "HIDE_TEST_ACTION", "true")
             buildConfigField("Boolean", "LOG_ENABLED", "false")
-            manifestPlaceholders = [firebaseProjectId:"pocat-app"]
+
+            buildConfigField("String", "DYNAMIC_LINK_DOMAIN", "\"$prodDynamicLinkDomain\"")
+            manifestPlaceholders = [firebaseProjectId: prodFirebaseProjectId]
         }
     }
 

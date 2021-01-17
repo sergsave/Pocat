@@ -19,6 +19,7 @@ import com.sergsave.pocat.helpers.setToolbarAsActionBar
 import kotlinx.android.synthetic.main.activity_main.*
 
 // TODO: Names of constants (XX_BUNDLE_KEY or BUNDLE_KEY_XX)
+// Replace not() on !
 
 class MainActivity : AppCompatActivity() {
 
@@ -86,9 +87,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         menu?.findItem(R.id.action_testing)?.isVisible = BuildConfig.HIDE_TEST_ACTION.not()
-
-        // Not supported now
-        menu?.findItem(R.id.action_donate)?.isVisible = false
 
         if (menu is MenuBuilder)
             menu.setOptionalIconsVisible(true)

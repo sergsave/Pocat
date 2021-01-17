@@ -141,4 +141,9 @@
     <string name="save_success_snackbar_message_text">Cat successfully added to your collection</string>
     <string name="save_failed_snackbar_message_text">Sorry, we couldn\'t save the cat</string>
 
+    <!--    Donation-->
+    <string name="donate_description">Please donate!</string>
+    <string name="no_products_found">Can\'t load info. Check internet connection.</string>
+    <string name="choose_donation">Choose donation</string>
+    <string name="thank_you">Thank You!</string>
 </resources>

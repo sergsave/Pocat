@@ -131,4 +131,9 @@
     <string name="save_success_snackbar_message_text">Котик добавлен в вашу коллекцию</string>
     <string name="save_failed_snackbar_message_text">К сожалению, не получилось сохранить кота</string>
 
+    <!--    Donation-->
+    <string name="donate_description">Ваши пожертвования позволят нам сделать приложение еще лучше :) </string>
+    <string name="no_products_found">Не удалось получить список пожертвований. Проверьте интернет-соединение.</string>
+    <string name="choose_donation">Выберите сумму пожертвования</string>
+    <string name="thank_you">Спасибо!</string>
 </resources>
