@@ -36,6 +36,9 @@
     <!-- About -->
     <string name="version_text">Версия %1$s</string>
     <string name="rate_on_play_market">Оценить на Google Play</string>
+    <string name="share_app">Поделиться приложением</string>
+    <string name="share_app_text">Погладь котиков в этом приложении</string>
+    <string name="share_app_chooser_title">Поделиться</string>
     <string name="contact_us">Написать разработчику</string>
     <string name="licenses">Лицензии открытого ПО</string>
     <string name="credits">Лицензии ресурсов</string>

@@ -31,6 +31,9 @@ class AboutActivity : AppCompatActivity() {
         rate_item.text.text = getString(R.string.rate_on_play_market)
         rate_item.setOnClickListener { openRateAppLink() }
 
+        share_item.text.text = getString(R.string.share_app)
+        share_item.setOnClickListener { sendShareAppLink() }
+
         how_to_use_item.text.text = getString(R.string.how_to_use)
         how_to_use_item.setOnClickListener { openHowToUseDialog() }
 
@@ -47,6 +50,19 @@ class AboutActivity : AppCompatActivity() {
         credits_item.setOnLongClickListener {
             Timber.e(RuntimeException("Test of error logging"))
             false
+        }
+    }
+
+    private fun sendShareAppLink() {
+        val link = "https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}"
+        val message = getString(R.string.share_app_text)
+        val chooserTitle = getString(R.string.share_app_chooser_title)
+        Intent(Intent.ACTION_SEND).also {
+            it.type = "text/plain"
+            it.putExtra(Intent.EXTRA_TEXT, "$message $link")
+            if (it.resolveActivity(packageManager) != null) {
+                startActivity(Intent.createChooser(it, chooserTitle))
+            }
         }
     }
 

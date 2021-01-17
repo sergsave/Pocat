@@ -39,6 +39,9 @@
     <!-- About -->
     <string name="version_text">Version %1$s</string>
     <string name="rate_on_play_market">Rate app on Google Play</string>
+    <string name="share_app">Share app</string>
+    <string name="share_app_text">Pet the cats with this app</string>
+    <string name="share_app_chooser_title">Share</string>
     <string name="contact_us">Send feedback</string>
     <string name="licenses">Licenses</string>
     <string name="credits">Credits</string>

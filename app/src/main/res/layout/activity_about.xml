@@ -61,6 +61,10 @@
                     layout="@layout/view_about_list_item" />
 
                 <include
+                    android:id="@+id/share_item"
+                    layout="@layout/view_about_list_item" />
+
+                <include
                     android:id="@+id/how_to_use_item"
                     layout="@layout/view_about_list_item" />
 
