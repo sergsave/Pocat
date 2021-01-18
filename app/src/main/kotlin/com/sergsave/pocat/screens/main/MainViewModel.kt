@@ -52,7 +52,6 @@ class MainViewModel(
 
     fun cleanUnusedFiles() {
         addDisposable(sharingManager.cleanup().subscribe({}, {
-            analytics.onCleanupError()
             Timber.e(it, "Cleanup failed")
         }))
         cleanUpUnusedContent()
@@ -89,7 +88,6 @@ class MainViewModel(
             }
             .subscribe({}, {
                 Timber.e(it, "Cleanup failed")
-                analytics.onCleanupError()
             })
         addDisposable(disposable)
     }

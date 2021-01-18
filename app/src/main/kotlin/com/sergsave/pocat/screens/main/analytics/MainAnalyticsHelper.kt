@@ -25,7 +25,4 @@ class MainAnalyticsHelper(private val tracker: AnalyticsTracker) {
             R.id.action_about -> tracker.sendEvent(AboutActionClick())
         }
     }
-
-    fun onCatsRemoveError() = tracker.sendEvent(CatsRemovingError())
-    fun onCleanupError() = tracker.sendEvent(CleanupError())
 }

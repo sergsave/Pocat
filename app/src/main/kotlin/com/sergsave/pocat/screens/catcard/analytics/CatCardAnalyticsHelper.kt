@@ -100,6 +100,5 @@ class CatCardAnalyticsHelper(
         tracker.sendEvent(SharingDataDownloadError(cause))
     }
 
-    fun onSharingDataSaveError() = tracker.sendEvent(SharingDataSaveError())
     fun onInvalidDataExtracted() = tracker.sendEvent(InvalidSharingDataDownloadedError())
 }

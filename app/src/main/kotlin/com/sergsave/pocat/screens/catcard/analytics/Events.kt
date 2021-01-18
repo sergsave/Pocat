@@ -14,7 +14,6 @@ import com.sergsave.pocat.AnalyticsConstants.Events.SharingDataDownload
 import com.sergsave.pocat.AnalyticsConstants.Events.SharingDataDownloadError
 import com.sergsave.pocat.AnalyticsConstants.Events.SharingDataUpload
 import com.sergsave.pocat.AnalyticsConstants.Events.SharingDataUploadError
-import com.sergsave.pocat.AnalyticsConstants.Events.SharingDataSaveError
 import com.sergsave.pocat.AnalyticsConstants.Events.InvalidSharingDataDownloadedError
 import com.sergsave.pocat.AnalyticsConstants.Events.SharingTransferParams
 import com.sergsave.pocat.AnalyticsConstants.Events.TryApplyFormChanges
@@ -78,4 +77,3 @@ class SharingDataDownloadError(cause: SharingError):
 class VibrationNotWorkingError: AnalyticsEvent(VibrationNotWorkingError.NAME)
 
 class InvalidSharingDataDownloadedError: AnalyticsEvent(InvalidSharingDataDownloadedError.NAME)
-class SharingDataSaveError: AnalyticsEvent(SharingDataSaveError.NAME)

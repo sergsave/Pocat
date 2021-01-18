@@ -9,8 +9,6 @@ import com.sergsave.pocat.AnalyticsConstants.Events.SettingsActionClick
 import com.sergsave.pocat.AnalyticsConstants.Events.DonateActionClick
 import com.sergsave.pocat.AnalyticsConstants.Events.AboutActionClick
 import com.sergsave.pocat.AnalyticsConstants.Events.CatsRemove
-import com.sergsave.pocat.AnalyticsConstants.Events.CatsRemovingError
-import com.sergsave.pocat.AnalyticsConstants.Events.CleanupError
 import com.sergsave.pocat.AnalyticsConstants.Events.UsersCatsListUpdate
 import com.sergsave.pocat.analytics.AnalyticsEvent
 import com.sergsave.pocat.screens.main.TabInfo
@@ -40,6 +38,3 @@ class UsersCatsListUpdate(count: Int):
 class SettingsActionClick : AnalyticsEvent(SettingsActionClick.NAME)
 class AboutActionClick : AnalyticsEvent(AboutActionClick.NAME)
 class DonateActionClick : AnalyticsEvent(DonateActionClick.NAME)
-
-class CatsRemovingError : AnalyticsEvent(CatsRemovingError.NAME)
-class CleanupError : AnalyticsEvent(CleanupError.NAME)

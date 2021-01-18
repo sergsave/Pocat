@@ -132,7 +132,6 @@ class PurringViewModel(
                 _snackbarMessageEvent.value = Event(R.string.save_success_snackbar_message_text)
             },
             {
-                analytics.onSharingDataSaveError()
                 Timber.e(it, "Save failed")
                 _snackbarMessageEvent.value = Event(R.string.save_failed_snackbar_message_text)
             }

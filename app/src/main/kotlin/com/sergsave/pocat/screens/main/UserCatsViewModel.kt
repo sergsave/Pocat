@@ -40,7 +40,6 @@ class UserCatsViewModel(private val catDataRepository: CatDataRepository,
             catDataRepository.remove(catIds)
                 .doOnComplete { analytics.onCatsRemoved(catIds.size) }
                 .subscribe({}, {
-                    analytics.onCatsRemoveError()
                     Timber.e(it, "Remove failed")
                 })
         )

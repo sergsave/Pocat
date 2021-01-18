@@ -177,25 +177,12 @@ object AnalyticsConstants {
             }
         }
 
-        // TODO: remove WTF errors
         object InvalidSharingDataDownloadedError {
             const val NAME = "invalid_sharing_data_downloaded_error"
         }
 
-        object SharingDataSaveError {
-            const val NAME = "sharing_data_save_error"
-        }
-
         object VibrationNotWorkingError {
             const val NAME = "vibration_not_working_error"
-        }
-
-        object CatsRemovingError {
-            const val NAME = "cats_removing_error"
-        }
-
-        object CleanupError {
-            const val NAME = "cleanup_error"
         }
     }
 }
