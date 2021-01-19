@@ -19,7 +19,6 @@ import com.sergsave.pocat.helpers.setToolbarAsActionBar
 import kotlinx.android.synthetic.main.activity_main.*
 
 // TODO: Names of constants (XX_BUNDLE_KEY or BUNDLE_KEY_XX)
-// Replace not() on !
 
 class MainActivity : AppCompatActivity() {
 
@@ -74,7 +73,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkInputSharingIntent() {
         val isForwarded = intent?.getBooleanExtra(Constants.IS_FORWARDED_INTENT_KEY, false) ?: false
-        if(isForwarded.not())
+        if (!isForwarded)
             return
 
         viewModel.onForwardIntent()
@@ -86,7 +85,7 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("RestrictedApi")
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
-        menu?.findItem(R.id.action_testing)?.isVisible = BuildConfig.HIDE_TEST_ACTION.not()
+        menu?.findItem(R.id.action_testing)?.isVisible = !BuildConfig.HIDE_TEST_ACTION
 
         if (menu is MenuBuilder)
             menu.setOptionalIconsVisible(true)

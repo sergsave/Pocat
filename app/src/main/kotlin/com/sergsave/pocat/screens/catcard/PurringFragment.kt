@@ -157,7 +157,7 @@ class PurringFragment : Fragment() {
     }
 
     private fun showTutorialIfNeeded() {
-        if (viewModel.isTutorialAchieved.not())
+        if (!viewModel.isTutorialAchieved)
             navigation.showTutorial()
     }
 
@@ -222,7 +222,7 @@ class PurringFragment : Fragment() {
         mediaPlayer = MediaPlayer.create(requireContext(), audioUri)?.apply { isLooping = true }
         fadeOutEffect = mediaPlayer?.let { FadeOutSoundEffect(it, FADE_DURATION) }
 
-        if(viewModel.isVibrationEnabled.not())
+        if(!viewModel.isVibrationEnabled)
             return
 
         vibrator = createVibrator(requireContext(), audioUri).apply { prepareAsync() }

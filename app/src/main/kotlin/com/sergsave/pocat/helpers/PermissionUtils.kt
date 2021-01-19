@@ -54,10 +54,10 @@ class PermissionDenyTypeQualifier(private val activity: AppCompatActivity,
 
         val current = ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)
         return when {
-            cached && current -> Type.DENIED
-            cached.not() && current -> Type.DENIED_FIRST_TIME
-            cached && current.not() -> Type.DENIED_PERMANENTLY_FIRST_TIME
-            cached.not() && current.not() -> Type.DENIED_PERMANENTLY
+            cached  && current  -> Type.DENIED
+            !cached && current  -> Type.DENIED_FIRST_TIME
+            cached  && !current -> Type.DENIED_PERMANENTLY_FIRST_TIME
+            !cached && !current -> Type.DENIED_PERMANENTLY
             else -> null
         }
     }

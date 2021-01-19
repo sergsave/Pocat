@@ -31,7 +31,7 @@ private fun savePackToBundleFile(pack: Pack, file: File) {
 }
 
 private fun readPackFromBundleFile(file: File): Pack? {
-    if(file.exists().not())
+    if(!file.exists())
         return null
 
     val text = file.readText()
@@ -62,7 +62,7 @@ private fun readPackFromBundleFile(file: File): Pack? {
 class ZipDataPacker(private val context: Context): DataPacker {
 
     private fun packSync(pack: Pack, buildDir: File): File? {
-        if(buildDir.exists().not()) buildDir.mkdirs()
+        if(!buildDir.exists()) buildDir.mkdirs()
 
         val zipPath = File(buildDir, "cat.zip").path
 
@@ -82,9 +82,9 @@ class ZipDataPacker(private val context: Context): DataPacker {
     }
 
     private fun unpackSync(file: File, buildDir: File): Pack? {
-        if(buildDir.exists().not()) buildDir.mkdirs()
+        if(!buildDir.exists()) buildDir.mkdirs()
 
-        if(file.exists().not())
+        if(!file.exists())
             return null
 
         FileUtils.unzip(file.path, buildDir.path)

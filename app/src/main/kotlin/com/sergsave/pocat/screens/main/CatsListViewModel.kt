@@ -88,7 +88,7 @@ class CatsListViewModel: ViewModel() {
 
     fun onSelectionChanged(selection: List<Long>) {
         this.selection = selection
-        val isSelected = selection.isEmpty().not()
+        val isSelected = !selection.isEmpty()
 
         if(isSelected) {
             changeActionModeState(true)

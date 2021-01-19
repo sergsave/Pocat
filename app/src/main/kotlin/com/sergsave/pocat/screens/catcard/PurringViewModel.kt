@@ -70,7 +70,7 @@ class PurringViewModel(
         if (isCatSaved && card.isShareable)
             actions += R.id.action_share
 
-        if (isCatSaved.not() && card.isSaveable)
+        if (!isCatSaved && card.isSaveable)
             actions += R.id.action_save
 
         setVisibleMenuItems(actions.toList())

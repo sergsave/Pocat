@@ -24,7 +24,7 @@ class AutoFitGridLayoutManager(context: Context, private var columnWidthPx : Int
     }
 
     override fun onLayoutChildren(recycler: Recycler, state: RecyclerView.State) {
-        if (columnWidthChanged.not() || columnWidthPx <= 0) {
+        if (!columnWidthChanged || columnWidthPx <= 0) {
             super.onLayoutChildren(recycler, state)
             return
         }

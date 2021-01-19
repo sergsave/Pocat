@@ -27,7 +27,7 @@ class LocalFilesContentStorage(private val context: Context,
 
     override fun read(): Flowable<List<Uri>> {
         val readFileUris = {
-            dir().walk().filter{ it.isDirectory.not() }.map{ Uri.fromFile(it) }.toList()
+            dir().walk().filter{ !it.isDirectory }.map{ Uri.fromFile(it) }.toList()
         }
         return contentListSubject
             .toFlowable(BackpressureStrategy.LATEST)

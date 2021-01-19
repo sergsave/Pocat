@@ -16,10 +16,10 @@ class SamplesListAdapter : RecyclerView.Adapter<SamplesListAdapter.ViewHolder>()
         set(value) {
             field = value
 
-            if(field.contains(playing).not())
+            if(!field.contains(playing))
                 playing = null
 
-            if(field.contains(selected).not())
+            if(!field.contains(selected))
                 selected = null
 
             uri2adapterPosition.clear()

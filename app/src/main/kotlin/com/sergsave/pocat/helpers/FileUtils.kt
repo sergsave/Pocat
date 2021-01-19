@@ -52,7 +52,7 @@ object FileUtils {
     }
 
     private fun resourceIdFromUri(context: Context, uri: Uri): Int? {
-        if (uri.scheme.equals(ContentResolver.SCHEME_ANDROID_RESOURCE).not())
+        if (!uri.scheme.equals(ContentResolver.SCHEME_ANDROID_RESOURCE))
             return null
 
         // Call of "getIdentifier" can be long.
@@ -176,7 +176,7 @@ object FileUtils {
 
         val dirChecker = { dir: String ->
             val f = File(dir)
-            if (f.isDirectory.not()) {
+            if (!f.isDirectory) {
                 f.mkdirs()
             }
         }

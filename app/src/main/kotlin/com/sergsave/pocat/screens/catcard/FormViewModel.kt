@@ -130,7 +130,7 @@ class FormViewModel(
     fun onApplyPressed() {
         analytics.onTryApplyChanges(isCurrentDataValid())
 
-        if (isCurrentDataValid().not()) {
+        if (!isCurrentDataValid()) {
             _snackbarMessageEvent.value = Event(R.string.fill_the_form)
             return
         }
@@ -139,7 +139,7 @@ class FormViewModel(
     }
 
     fun handleBackPressed(): Boolean {
-        if(wereChangesAfterBackup().not())
+        if(!wereChangesAfterBackup())
             return true
 
         _unsavedChangesMessageEvent.value = Event(Unit)

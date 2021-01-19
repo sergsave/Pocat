@@ -112,7 +112,7 @@ class CatsListFragment : Fragment() {
             ) {
                 val id = viewModel.stringCatIdFrom(catWithId.first)
                 val data = catWithId.second
-                if(id == null || viewModel.handleOnItemClick().not())
+                if(id == null || !viewModel.handleOnItemClick())
                     return
 
                 onItemClickListener?.onItemClick(id, data, sharedElement,
@@ -135,7 +135,7 @@ class CatsListFragment : Fragment() {
             setScrollBarVisibleOnlyOnTouch()
         }
 
-        if(isSelectionEnabled.not())
+        if(!isSelectionEnabled)
             return
 
         catsListAdapter.tracker = createSelectionTracker().apply {

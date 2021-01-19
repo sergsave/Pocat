@@ -84,7 +84,7 @@ class FormFragment : Fragment() {
 
         viewModel.apply {
             name.observe(viewLifecycleOwner, Observer {
-                form_layout.name_edit_text.apply { if (isFocused.not()) setText(it) }
+                form_layout.name_edit_text.apply { if (!isFocused) setText(it) }
             })
 
             photoUri.observe(viewLifecycleOwner, Observer {
@@ -256,7 +256,7 @@ class FormFragment : Fragment() {
         if (resultCode == Activity.RESULT_OK)
             viewModel.changePhoto(if (pickedFromCamera) cameraImageUri else dataUri)
 
-        if (pickedFromCamera.not()) {
+        if (!pickedFromCamera) {
             releaseContent(cameraImageUri)
             cameraImageUri = null
         }

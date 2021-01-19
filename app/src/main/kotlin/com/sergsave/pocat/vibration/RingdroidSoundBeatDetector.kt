@@ -107,7 +107,7 @@ class RingdroidSoundBeatDetector(
     }
 
     private fun isThereBeatInPosition(position: Int): Boolean {
-        if (::fileData.isInitialized.not())
+        if (!::fileData.isInitialized)
             return false
 
         val unboundFrameNumber = (position.toDouble() / fileData.frameDurationMs).roundToInt()

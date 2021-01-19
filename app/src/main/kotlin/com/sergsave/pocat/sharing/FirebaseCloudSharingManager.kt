@@ -62,7 +62,7 @@ class FirebaseCloudSharingManager(
     }
 
     override fun upload(pack: Pack): Single<Intent> {
-        if (uploadQuota.canStartAction().not())
+        if (!uploadQuota.canStartAction())
             return Single.error(WebSharingManager.DailyQuotaExceededException("Quota ends"))
 
         val uploadData = { _pack: Pack, tempDir: File ->
@@ -152,7 +152,7 @@ private fun resizePreview(previewUri: Uri, tempDir: File, context: Context): Sin
     val height = 360
 
     return Single.create { emitter ->
-        if(tempDir.exists().not()) tempDir.mkdirs()
+        if(!tempDir.exists()) tempDir.mkdirs()
 
         ImageUtils.loadInto(context, previewUri, resizedFile, width, height) { res ->
             if(res)
@@ -222,7 +222,7 @@ private fun downloadFile(uri: Uri, dir: File): Single<File> {
     var downloadTask: FileDownloadTask? = null
 
     val downloadSingle = Single.create<File> { emitter ->
-        if(dir.exists().not()) dir.mkdirs()
+        if(!dir.exists()) dir.mkdirs()
 
         Firebase.storage.maxDownloadRetryTimeMillis = 5000
 
