@@ -64,7 +64,8 @@ class AppContainer(context: Context) {
 
     fun provideMainViewModelFactory() =
         ViewModelFactory(MainViewModel::class.java, {
-            MainViewModel(catDataRepo, contentRepo, sharingManager, preferences, mainAnalytics)
+            MainViewModel(catDataRepo, contentRepo, sharingManager,
+                preferences, billingRepo, mainAnalytics)
         })
 
     fun provideSamplesViewModelFactory() =

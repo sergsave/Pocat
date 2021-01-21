@@ -10,6 +10,7 @@ import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import com.sergsave.pocat.helpers.Result
 import com.sergsave.pocat.models.Product
+import io.reactivex.Single
 import java.io.IOException
 
 typealias Sku = String
@@ -20,56 +21,56 @@ class BillingRepository(private val context: Context) {
     private lateinit var billingClient: BillingClient
 
     private var cacheSku2SkuDetails: SkuMap = emptyMap()
-    private val sku2SkuDetails = PublishSubject.create<SkuMap>()
     private val purchaseConfirmed = PublishSubject.create<Result<Sku>>()
-
-    fun observeProductsForPurchase(): Observable<List<Product>> =
-        sku2SkuDetails
-            .doOnNext { cacheSku2SkuDetails = it }
-            .map { it.values.map { details ->
-                details.run { Product(sku, price, title, description) }
-            }
-        }
+    private val connected = PublishSubject.create<Result<Unit>>()
 
     fun observePurchaseConfirmed(): Observable<Result<Sku>> = purchaseConfirmed
 
-    fun startConnectionToBillingService() {
-        // Always reinstanstiate, because a client is not valid after end of connection
-        billingClient = BillingClient.newBuilder(context)
-            .setListener(purchasesUpdatedListener)
-            .enablePendingPurchases()
-            .build()
+    // Will reconnect automatically
+    fun connectToBillingService(): Observable<Result<Unit>> {
+        return connected.doOnSubscribe {
+            // Always reinstanstiate, because a client is not valid after end of connection
+            billingClient = BillingClient.newBuilder(context)
+                .setListener(purchasesUpdatedListener)
+                .enablePendingPurchases()
+                .build()
 
-        tryConnectToBilling()
+            startConnectionToBilling()
+        }
     }
 
-    private fun tryConnectToBilling() {
-        if (billingClient.isReady)
+    private fun startConnectionToBilling() {
+        if (billingClient.isReady) {
+            connected.onNext(Result.Success(Unit))
             return
+        }
 
         billingClient.startConnection(object: BillingClientStateListener {
             override fun onBillingSetupFinished(billingResult: BillingResult) {
-                if (billingResult.responseCode == BillingResponseCode.OK) {
-                    querySkuDetails()
-                    queryPurchases()
-                } else
-                    sku2SkuDetails.onNext(emptyMap())
+                if (billingResult.responseCode == BillingResponseCode.OK)
+                    connected.onNext(Result.Success(Unit))
+                else
+                    connected.onNext(Result.Error(RuntimeException("No connection")))
             }
 
             override fun onBillingServiceDisconnected() {
-                tryConnectToBilling()
+                startConnectionToBilling()
             }
         })
     }
 
-    private fun querySkuDetails() {
+    // No errors expected
+    fun fetchProductsForPurchase(): Single<List<Product>> = Single.create { emitter ->
         val params = SkuDetailsParams.newBuilder()
         params.setSkusList(ALL_SKUS).setType(SkuType.INAPP)
         billingClient.querySkuDetailsAsync(params.build()) { billingResult, detailsList ->
-            if (billingResult.responseCode == BillingResponseCode.OK)
-                sku2SkuDetails.onNext(detailsList.orEmpty().map { it.sku to it }.toMap())
-            else
-                sku2SkuDetails.onNext(emptyMap())
+            if (billingResult.responseCode == BillingResponseCode.OK) {
+                emitter.onSuccess(detailsList.orEmpty().map {
+                    Product(it.sku, it.price, it.title, it.description)
+                })
+                cacheSku2SkuDetails = detailsList.orEmpty().map { it.sku to it }.toMap()
+            } else
+                emitter.onSuccess(emptyList())
         }
     }
 
@@ -85,12 +86,16 @@ class BillingRepository(private val context: Context) {
         billingClient.launchBillingFlow(activity, flowParams)
     }
 
+    fun processPendingPurchases() {
+        queryPurchases()
+    }
+
     private val purchasesUpdatedListener =
         PurchasesUpdatedListener { billingResult, purchases ->
             when (billingResult.responseCode) {
                 BillingResponseCode.OK -> purchases?.forEach { handlePurchase(it) }
                 BillingResponseCode.ITEM_ALREADY_OWNED -> queryPurchases()
-                BillingResponseCode.SERVICE_DISCONNECTED -> tryConnectToBilling()
+                BillingResponseCode.SERVICE_DISCONNECTED -> startConnectionToBilling()
                 else -> { }
             }
         }
@@ -130,9 +135,9 @@ class BillingRepository(private val context: Context) {
         }
     }
 
-    fun endConnectionFromBillingService() {
+    fun disconnectFromBillingService() {
         billingClient.endConnection()
-        sku2SkuDetails.onNext(emptyMap())
+        cacheSku2SkuDetails = emptyMap()
     }
 
     enum class ProductType { DONATION }

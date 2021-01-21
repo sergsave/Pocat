@@ -2,9 +2,11 @@ package com.sergsave.pocat.screens.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.sergsave.pocat.billing.BillingRepository
 import com.sergsave.pocat.content.ContentRepository
 import com.sergsave.pocat.helpers.DisposableViewModel
 import com.sergsave.pocat.helpers.Event
+import com.sergsave.pocat.helpers.Result
 import com.sergsave.pocat.models.extractContent
 import com.sergsave.pocat.persistent.CatDataRepository
 import com.sergsave.pocat.preference.PreferenceManager
@@ -19,6 +21,7 @@ class MainViewModel(
     private val contentRepository: ContentRepository,
     private val sharingManager: WebSharingManager,
     private val preferences: PreferenceManager,
+    private val billingRepo: BillingRepository,
     private val analytics: MainAnalyticsHelper
 ): DisposableViewModel() {
 
@@ -50,11 +53,11 @@ class MainViewModel(
         return tabInfo2tag.keys.find { it.pageNumber == position }
     }
 
-    fun cleanUnusedFiles() {
-        addDisposable(sharingManager.cleanup().subscribe({}, {
-            Timber.e(it, "Cleanup failed")
-        }))
+    fun onActivityStarted() {
+        cleanUpSharingCache()
         cleanUpUnusedContent()
+
+        processPendingPurchases()
     }
 
     fun onPageChanged(position: Int) {
@@ -75,6 +78,12 @@ class MainViewModel(
         _requestPageChangeEvent.value = Event(TabInfo.USER_CATS.pageNumber)
     }
 
+    private fun cleanUpSharingCache() {
+        addDisposable(sharingManager.cleanup().subscribe({}, {
+            Timber.e(it, "Cleanup failed")
+        }))
+    }
+
     private fun cleanUpUnusedContent() {
         val disposable = Flowables.zip(catDataRepository.read(), contentRepository.read())
             .take(1)
@@ -90,6 +99,19 @@ class MainViewModel(
                 Timber.e(it, "Cleanup failed")
             })
         addDisposable(disposable)
+    }
+
+    private fun processPendingPurchases() {
+        val disposable = billingRepo.connectToBillingService()
+            .filter { it is Result.Success }
+            .map { billingRepo.processPendingPurchases() }
+            .subscribe()
+        addDisposable(disposable)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        billingRepo.disconnectFromBillingService()
     }
 }
 

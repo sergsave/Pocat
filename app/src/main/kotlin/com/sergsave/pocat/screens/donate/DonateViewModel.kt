@@ -29,18 +29,6 @@ class DonateViewModel(private val billingRepo: BillingRepository): DisposableVie
     init {
         startConnection()
 
-        addDisposable(billingRepo.observeProductsForPurchase().subscribe { products ->
-            val donationProducts = products.filter {
-                BillingRepository.productTypeFrom(it.sku) == BillingRepository.ProductType.DONATION
-            }
-            _loadingState.value = if (donationProducts.isEmpty())
-                LoadingState.ERROR
-            else
-                LoadingState.SUCCESS
-
-            _donations.value = donationProducts
-        })
-
         addDisposable(billingRepo.observePurchaseConfirmed().subscribe {
             if (it is Result.Success && it.value == recentlyPurchasedSku)
                 _showThankYouEvent.value = Event(Unit)
@@ -50,14 +38,38 @@ class DonateViewModel(private val billingRepo: BillingRepository): DisposableVie
     }
 
     private fun startConnection() {
-        billingRepo.startConnectionToBillingService()
         _loadingState.value = LoadingState.IN_PROGRESS
+
+        addDisposable(billingRepo.connectToBillingService()
+            .filter { it is Result.Success }
+            .map {
+                processPendingPurchases()
+                fetchProductsForPurchase()
+            }.subscribe()
+        )
+    }
+
+    private fun processPendingPurchases() = billingRepo.processPendingPurchases()
+
+    private fun fetchProductsForPurchase() {
+        val disposable = billingRepo.fetchProductsForPurchase().subscribe { products ->
+            val donationProducts = products.filter {
+                BillingRepository.productTypeFrom(it.sku) == BillingRepository.ProductType.DONATION
+            }
+            _loadingState.value = if (donationProducts.isEmpty())
+                LoadingState.ERROR
+            else
+                LoadingState.SUCCESS
+
+            _donations.value = donationProducts
+        }
+
+        addDisposable(disposable)
     }
 
     override fun onCleared() {
         super.onCleared()
-
-        billingRepo.endConnectionFromBillingService()
+        // Not disconnect from billing service. No interruption of purchase needed.
     }
 
     fun onRetryClicked() = startConnection()
