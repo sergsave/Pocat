@@ -22,6 +22,7 @@ class BillingRepository(private val context: Context) {
 
     private var cacheSku2SkuDetails: SkuMap = emptyMap()
     private val purchaseConfirmed = PublishSubject.create<Result<Sku>>()
+    private val productsFetched = PublishSubject.create<List<Product>>()
     private val connected = PublishSubject.create<Result<Unit>>()
 
     fun observePurchaseConfirmed(): Observable<Result<Sku>> = purchaseConfirmed
@@ -60,17 +61,20 @@ class BillingRepository(private val context: Context) {
     }
 
     // No errors expected
-    fun fetchProductsForPurchase(): Single<List<Product>> = Single.create { emitter ->
-        val params = SkuDetailsParams.newBuilder()
-        params.setSkusList(ALL_SKUS).setType(SkuType.INAPP)
-        billingClient.querySkuDetailsAsync(params.build()) { billingResult, detailsList ->
-            if (billingResult.responseCode == BillingResponseCode.OK) {
-                emitter.onSuccess(detailsList.orEmpty().map {
-                    Product(it.sku, it.price, it.title, it.description)
-                })
-                cacheSku2SkuDetails = detailsList.orEmpty().map { it.sku to it }.toMap()
-            } else
-                emitter.onSuccess(emptyList())
+    fun fetchProductsForPurchase(): Observable<List<Product>> {
+        // Hack. Use PublishSubject instead Observable.create to avoid memory leakage
+        return productsFetched.doOnSubscribe {
+            val params = SkuDetailsParams.newBuilder()
+            params.setSkusList(ALL_SKUS).setType(SkuType.INAPP)
+            billingClient.querySkuDetailsAsync(params.build()) { billingResult, detailsList ->
+                if (billingResult.responseCode == BillingResponseCode.OK) {
+                    productsFetched.onNext(detailsList.orEmpty().map {
+                        Product(it.sku, it.price, it.title, it.description)
+                    })
+                    cacheSku2SkuDetails = detailsList.orEmpty().map { it.sku to it }.toMap()
+                } else
+                    productsFetched.onNext(emptyList())
+            }
         }
     }
 
