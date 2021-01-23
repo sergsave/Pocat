@@ -10,7 +10,7 @@ import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import com.sergsave.pocat.helpers.Result
 import com.sergsave.pocat.models.Product
-import io.reactivex.Single
+import timber.log.Timber
 import java.io.IOException
 
 typealias Sku = String
@@ -116,9 +116,10 @@ class BillingRepository(private val context: Context) {
             .build()
 
         billingClient.consumeAsync(consumeParams, { billingResult, _ ->
-            if (billingResult.responseCode == BillingResponseCode.OK)
+            if (billingResult.responseCode == BillingResponseCode.OK) {
                 purchaseConfirmed.onNext(Result.Success(purchase.sku))
-            else
+                Timber.i("Purchase confirmed, sku - ${purchase.sku}")
+            } else
                 purchaseConfirmed.onNext(Result.Error(RuntimeException("Consuming error")))
         })
     }
