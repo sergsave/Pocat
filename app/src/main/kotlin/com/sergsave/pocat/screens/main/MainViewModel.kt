@@ -54,6 +54,7 @@ class MainViewModel(
     }
 
     fun onActivityStarted() {
+        // Do this not in Application, because Application is created only after device reload
         cleanUpSharingCache()
         cleanUpUnusedContent()
 
