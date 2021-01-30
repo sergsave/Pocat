@@ -4,20 +4,20 @@
 
   <Preference
       app:key="@string/samples_preference_key"
-      app:title="@string/samples_title"
-      app:summary="@string/samples_summary"
+      app:title="@string/sound_selection.samples"
+      app:summary="@string/sound_selection.samples_summary"
       app:icon="@drawable/ic_queue_music_black_24dp" />
 
   <Preference
       app:key="@string/recorder_preference_key"
-      app:title="@string/recorder_title"
-      app:summary="@string/recorder_summary"
+      app:title="@string/sound_selection.recorder"
+      app:summary="@string/sound_selection.recorder_summary"
       app:icon="@drawable/ic_mic_none_black_24dp" />
 
   <Preference
       app:key="@string/pick_audio_preference_key"
-      app:title="@string/pick_audio_title"
-      app:summary="@string/pick_audio_summary"
+      app:title="@string/sound_selection.pick_audio"
+      app:summary="@string/sound_selection.pick_audio_summary"
       app:icon="@drawable/ic_folder_open_black_24dp" />
 
 </PreferenceScreen>

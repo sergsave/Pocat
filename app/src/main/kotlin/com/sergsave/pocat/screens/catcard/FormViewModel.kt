@@ -68,7 +68,7 @@ class FormViewModel(
 
     val toolbarTitleStringId: Int
         get() {
-            return if(card == null) R.string.add_new_cat else R.string.edit_cat
+            return if(card == null) R.string.form_new_cat_title else R.string.form_edit_cat_title
         }
 
     fun changeName(name: String) {
@@ -96,7 +96,7 @@ class FormViewModel(
     }
 
     private fun onPhotoChangeError() {
-        _snackbarMessageEvent.value = Event(R.string.file_add_failed)
+        _snackbarMessageEvent.value = Event(R.string.form_popup_file_add_failed)
         analytics.onPhotoChangeError()
     }
 
@@ -109,7 +109,7 @@ class FormViewModel(
         }
 
         if(_audioUri.value != null)
-            _snackbarMessageEvent.value = Event(R.string.audio_changed)
+            _snackbarMessageEvent.value = Event(R.string.form_popup_audio_changed)
 
         if(uri != _audioUri.value) {
             addDisposable(contentRepository.addAudio(uri).subscribe(
@@ -123,7 +123,7 @@ class FormViewModel(
     }
 
     private fun onAudioChangeError() {
-        _snackbarMessageEvent.value = Event(R.string.file_add_failed)
+        _snackbarMessageEvent.value = Event(R.string.form_popup_file_add_failed)
         analytics.onAudioChangeError()
     }
 
@@ -131,7 +131,7 @@ class FormViewModel(
         analytics.onTryApplyChanges(isCurrentDataValid())
 
         if (!isCurrentDataValid()) {
-            _snackbarMessageEvent.value = Event(R.string.fill_the_form)
+            _snackbarMessageEvent.value = Event(R.string.form_popup_fill_the_form)
             return
         }
 

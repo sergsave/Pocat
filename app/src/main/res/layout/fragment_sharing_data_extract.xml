@@ -23,7 +23,7 @@
             android:layout_marginBottom="16dp"
             android:gravity="center"
             android:textAppearance="?attr/textAppearanceHeadline6"
-            android:text="@string/connection_error" />
+            android:text="@string/loading.connection_error" />
 
         <Button
             android:id="@+id/retry_button"
@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:paddingLeft="36dp"
             android:paddingRight="36dp"
-            android:text="@string/retry"
+            android:text="@string/loading.retry"
             android:textColor="?attr/colorOnSurface"
             app:rippleColor="?attr/colorPrimaryVariant" />
     </LinearLayout>

@@ -22,7 +22,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:gravity="center"
-            android:text="@string/empty_users_cats_dummy"
+            android:text="@string/main.add_first_cat"
             android:textAppearance="?attr/textAppearanceHeadline6"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

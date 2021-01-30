@@ -14,7 +14,7 @@ class RemoveConfirmationDialog: DialogFragment() {
 
         return MaterialAlertDialogBuilder(context,
             R.style.MyThemeOverlay_MaterialComponents_MaterialAlertDialog_MessageOnly)
-            .setMessage(R.string.remove_confirmation)
+            .setMessage(R.string.main_remove_dialog_text)
             .setPositiveButton(R.string.yes, { _, _ -> onRemoveConfirmListener?.invoke() })
             .setNegativeButton(R.string.no, { _, _ -> })
             .create()

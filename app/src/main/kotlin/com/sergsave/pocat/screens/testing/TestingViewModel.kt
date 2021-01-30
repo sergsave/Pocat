@@ -64,7 +64,7 @@ class TestingViewModel(
 
     data class CopyButtonState(val stringId: Int, val isEnabled: Boolean)
     val copyButtonStringId: LiveData<CopyButtonState> = Transformations.map(isCopyInProgress, {
-        val stringId = if(it) R.string.copy_in_progress else R.string.copy_cats
+        val stringId = if(it) R.string.testing_copy_in_progress else R.string.testing_copy_cats
         CopyButtonState(stringId, !it)
     })
 

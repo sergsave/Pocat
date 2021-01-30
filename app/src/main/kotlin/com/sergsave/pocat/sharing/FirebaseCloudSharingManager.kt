@@ -87,7 +87,7 @@ class FirebaseCloudSharingManager(
                 val dataLink = it.first
                 val previewLink = if (it.second == Uri.EMPTY) null else it.second
                 val appName = context.getString(R.string.app_name)
-                val header = context.getString(R.string.sharing_text, appName)
+                val header = context.getString(R.string.sharing_message_text, appName)
                 createDynamicLink(dataLink, header, previewLink, pack.cat.name)
             }
             .map { makeIntent(context, it) }
@@ -193,7 +193,8 @@ private fun makeIntent(context: Context, link: Uri): Intent {
         putExtra(Intent.EXTRA_TEXT, text)
         type = "text/plain"
     }
-    return createIntentChooser(listOf(intent), context.getString(R.string.send_data)) ?: intent
+    return createIntentChooser(listOf(intent), context.getString(R.string.sharing_chooser_title))
+        ?: intent
 }
 
 private fun extractDownloadLink(intent: Intent): Single<Uri> {

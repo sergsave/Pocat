@@ -199,7 +199,7 @@ class FormFragment : Fragment() {
 
         val permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
         if (permissionDenyQualifier.handleRequestPermissionResult(permission) == DENIED_PERMANENTLY) {
-            PermissionPermanentlyDeniedDialog.newInstance(R.string.storage_permission)
+            PermissionPermanentlyDeniedDialog.newInstance(R.string.permission_dialog_storage_permission)
                 .show(childFragmentManager, null)
         }
     }
@@ -239,7 +239,7 @@ class FormFragment : Fragment() {
             it.resolveActivity(requireContext().packageManager) != null
         }
 
-        val title = resources.getString(R.string.add_photo_with)
+        val title = resources.getString(R.string.form_add_photo_chooser_title)
         createIntentChooser(intents, title)?.let { startActivityForResult(it, PICK_IMAGE_CODE) }
     }
 

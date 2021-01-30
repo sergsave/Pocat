@@ -4,8 +4,8 @@
 
   <SwitchPreferenceCompat
       app:key="@string/vibration_preference_key"
-      app:title="@string/vibration"
-      app:summary="@string/vibration_summary"
+      app:title="@string/settings.vibration"
+      app:summary="@string/settings.vibration_summary"
       app:icon="@drawable/ic_vibration_black_24dp"
       app:defaultValue="@bool/preference_vibration_default_value"/>
 

@@ -99,11 +99,11 @@ class PurringViewModel(
 
         val handleError = { throwable: Throwable ->
             val stringId = when (throwable) {
-                is WebSharingManager.NoConnectionException -> R.string.connection_error
-                is WebSharingManager.DailyQuotaExceededException -> R.string.daily_quota_error
+                is WebSharingManager.NoConnectionException -> R.string.sharing_popup_connection_error
+                is WebSharingManager.DailyQuotaExceededException -> R.string.sharing_popup_daily_quota_error
                 is IOException -> {
                     Timber.e(throwable, "Unknown sharing error")
-                    R.string.general_sharing_error
+                    R.string.sharing_popup_general_error
                 }
                 else -> throw throwable
             }
@@ -129,11 +129,11 @@ class PurringViewModel(
             { id ->
                 card = card.copy(persistentId = id)
                 updateMenu(true)
-                _snackbarMessageEvent.value = Event(R.string.save_success_snackbar_message_text)
+                _snackbarMessageEvent.value = Event(R.string.loading_popup_save_success)
             },
             {
                 Timber.e(it, "Save failed")
-                _snackbarMessageEvent.value = Event(R.string.save_failed_snackbar_message_text)
+                _snackbarMessageEvent.value = Event(R.string.loading_popup_save_failed)
             }
         )
         addDisposable(disposable)

@@ -48,7 +48,7 @@ class DonateActivity : AppCompatActivity() {
             donations.observe(lifecycleOwner, Observer { setProductChips(it) })
 
             showThankYouEvent.observe(lifecycleOwner, EventObserver {
-                Snackbar.make(main_layout, R.string.thank_you, Snackbar.LENGTH_LONG).show()
+                Snackbar.make(main_layout, R.string.donation_thank_you, Snackbar.LENGTH_LONG).show()
             })
         }
 

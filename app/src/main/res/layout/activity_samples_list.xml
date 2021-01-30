@@ -13,7 +13,7 @@
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
-        app:title="@string/samples_title" />
+        app:title="@string/sound_selection.samples_screen.title" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"

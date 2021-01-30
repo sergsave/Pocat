@@ -4,139 +4,108 @@
     ]>
 
 <resources>
-    <!-- Main screen tabs -->
-    <string name="samples_tab">Котокафе</string>
-    <string name="user_cats_tab">Мои котики</string>
-
-    <!-- Main screen menu -->
-    <string name="settings">Настройки</string>
-    <string name="donate">Сказать спасибо</string>
-    <string name="about">О программе</string>
-
-    <!-- Empty user cats list -->
-    <string name="empty_users_cats_dummy">Добавьте первого котика</string>
-
-    <!-- User cat remove dialog -->
-    <string name="remove_confirmation">Ни минуты покоя с пушистыми. Удаляем?</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
-
-    <!-- Sample cats name -->
-    <string name="sample_cat_1_name">Шейла</string>
-    <string name="sample_cat_2_name">Снежок</string>
-    <string name="sample_cat_3_name">Голди</string>
-    <string name="sample_cat_4_name">Принц</string>
-    <string name="sample_cat_5_name">Медок</string>
-    <string name="sample_cat_6_name">Лео</string>
-
-    <!-- Settings -->
-    <string name="vibration">Вибрация</string>
-    <string name="vibration_summary">Устройство вибрирует, когда кот мурчит</string>
-
-    <!-- About -->
-    <string name="version_text">Версия %1$s</string>
-    <string name="rate_on_play_market">Оценить на Google Play</string>
-    <string name="share_app">Поделиться приложением</string>
-    <string name="share_app_text">Погладь котиков в этом приложении</string>
-    <string name="share_app_chooser_title">Поделиться</string>
-    <string name="contact_us">Написать разработчику</string>
-    <string name="licenses">Лицензии открытого ПО</string>
-    <string name="credits">Лицензии ресурсов</string>
-    <string name="how_to_use">Как использовать?</string>
-    <string name="how_to_use_text">Погладьте котика, и он вам помурчит.\n\nДобавляйте мурчания своих любимцев и делитесь ими с друзьями.</string>
     <string name="ok">Ok</string>
 
-    <!-- %1$s - App Name -->
-    <string name="feedback_email_subject">%1$s обратная связь</string>
+    <string name="main.samples_tab">Котокафе</string>
+    <string name="main.user_cats_tab">Мои котики</string>
+    <string name="main.menu.settings">Настройки</string>
+    <string name="main.menu.donate">Сказать спасибо</string>
+    <string name="main.menu.about">О приложении</string>
+    <string name="main.add_first_cat">Добавьте первого котика</string>
+    <string name="main.remove_dialog.text">Ни минуты покоя с пушистыми. Удаляем?</string>
 
-    <!-- Tutorial screen -->
-    <string name="tutorial_text">Погладьте котика</string>
+    <string-array name="samples.cats.names">
+        <item>Шейла</item>
+        <item>Снежок</item>
+        <item>Голди</item>
+        <item>Принц</item>
+        <item>Медок</item>
+        <item>Лео</item>
+    </string-array>
 
-    <!-- Sound off popup -->
-    <string name="make_louder">Выключите беззвучный режим</string>
+    <string name="settings.title">Настройки</string>
+    <string name="settings.vibration">Вибрация</string>
+    <string name="settings.vibration_summary">Устройство вибрирует, когда кот мурчит</string>
 
-    <!-- Cat form screen  -->
-    <string name="name">Имя</string>
-    <string name="apply">Применить</string>
-    <string name="add_new_cat">Новый котик</string>
-    <string name="edit_cat">Редактирование</string>
-    <string name="file_add_failed">Не получилось добавить файл</string>
+    <string name="about.title">О приложении</string>
+    <string name="about.version">Версия %1$s</string>
+    <string name="about.rate_on_play_market">Оценить на Google Play</string>
+    <string name="about.share_app">Поделиться приложением</string>
+    <string name="about.share_app_text">Погладь котиков в этом приложении</string>
+    <string name="about.share_app_chooser_title">Поделиться</string>
+    <string name="about.contact_us">Написать разработчику</string>
+    <string name="about.licenses_open_source">Лицензии открытого ПО</string>
+    <string name="about.credits">Лицензии ресурсов</string>
+    <string name="about.how_to_use">Как использовать?</string>
+    <string name="about.how_to_use_dialog.text">Погладьте котика, и он вам помурчит.\n\nДобавляйте мурчания своих любимцев и делитесь ими с друзьями.</string>
 
-    <!-- Cat form sound selection button  -->
-    <string name="add_sound">Добавить мурчание</string>
-    <string name="sound_is_added">Мурчание добавлено</string>
+    <string name="feedback.message_subject">%1$s обратная связь</string> <!-- %1$s - App Name -->
 
-    <!-- Sound changed popup. Shown after repeated sound change -->
-    <string name="audio_changed">Мурчание изменено</string>
+    <string name="donation.title">Сказать спасибо</string>
+    <string name="donation.description">Ваши пожертвования позволят нам сделать приложение еще лучше :) </string>
+    <string name="donation.no_products_found">Не удалось получить список пожертвований. Проверьте интернет-соединение.</string>
+    <string name="donation.choose_donation">Выберите сумму пожертвования</string>
+    <string name="donation.thank_you">Спасибо!</string>
+    <string name="donation.retry">Попробовать снова</string>
 
-    <!-- Cat form "discard changes" dialog  -->
-    <string name="_continue">Продолжить</string>
-    <string name="discard">Отменить</string>
-    <string name="changes_not_saved">Вы не все сохранили. Отменить изменения?</string>
+    <string name="cat_screen.tutorial_text">Погладьте котика</string>
+    <string name="cat_screen.popup.make_louder">Выключите беззвучный режим</string>
 
-    <!-- Cat form not "not everything is filled" popup -->
-    <string name="fill_the_form">Котику нужны фото, имя и мурчание</string>
+    <string name="sharing.message_text">Погладь моего кота в приложении %1$s!</string>  <!-- %1$s - App Name -->
+    <string name="sharing.chooser_title">Отправить котика</string>
+    <string name="sharing.popup.connection_error">Грустный мяу :( Нет интернета.</string>
+    <string name="sharing.popup.daily_quota_error">Котики устали путешествовать к друзьям. Попробуйте завтра.</string>
+    <string name="sharing.popup.general_error">Ой, ошибка! Возможно, нет интернета или недостаточно памяти.</string>
 
-    <!-- Add photo chooser title -->
-    <string name="add_photo_with">Добавьте фото</string>
+    <string name="form.new_cat_title">Новый котик</string>
+    <string name="form.edit_cat_title">Редактирование</string>
+    <string name="form.name">Имя</string>
+    <string name="form.apply">Применить</string>
+    <string name="form.sound_button.not_added">Добавить мурчание</string>
+    <string name="form.sound_button.is_added">Мурчание добавлено</string>
+    <string name="form.popup.file_add_failed">Не получилось добавить файл</string>
+    <string name="form.popup.audio_changed">Мурчание изменено</string>
+    <string name="form.popup.fill_the_form">Котику нужны фото, имя и мурчание</string>
+    <string name="form.add_photo_chooser_title">Добавьте фото</string>
+    <string name="form.discard_dialog.text">Вы не все сохранили. Отменить изменения?</string>
+    <string name="form.discard_dialog.continue">Продолжить</string>
+    <string name="form.discard_dialog.discard">Отменить</string>
 
-    <!-- Storage permission required dialog -->
-    <string name="need_permission">Требуются разрешения</string>
-    <!-- %1$s - Permission name, %2$s - App Name -->
-    <string name="need_storage_permission">Для полноценной работы необходимо дать %2$s разрешение на %1$s</string>
-    <string name="show_settings">Показать настройки</string>
-    <string name="storage_permission">доступ к хранилищу</string>
-    <string name="record_audio_permission">запись аудио</string>
+    <string name="permission_dialog.title">Требуются разрешения</string>
+    <string name="permission_dialog.message">Для полноценной работы необходимо дать %2$s разрешение на %1$s</string> <!-- %1$s - Permission name, %2$s - App Name -->
+    <string name="permission_dialog.show_settings">Показать настройки</string>
+    <string name="permission_dialog.storage_permission">доступ к хранилищу</string>
+    <string name="permission_dialog.record_audio_permission">запись аудио</string>
 
-    <!-- Sound selection screen  -->
-    <string name="choose_sound">Выбор мурчания</string>
-    <string name="samples_title">Стандартные</string>
-    <string name="samples_summary">Выберите мурчание из библиотеки</string>
-    <string name="recorder_title">Диктофон</string>
-    <string name="recorder_summary">Запишите мурчание. Максимальный размер файла - %1$d&nbsp;МБ (~%2$d&nbsp;мин)</string>
-    <string name="pick_audio_title">Память устройства</string>
-    <string name="pick_audio_summary">Выберите файл с устройства. Максимальный размер файла - %1$d&nbsp;МБ</string>
+    <string name="sound_selection.title">Выбор мурчания</string>
+    <string name="sound_selection.samples">Стандартные</string>
+    <string name="sound_selection.samples_summary">Выберите мурчание из библиотеки</string>
+    <string name="sound_selection.recorder">Диктофон</string>
+    <string name="sound_selection.recorder_summary">Запишите мурчание. Максимальный размер файла - %1$d&nbsp;МБ (~%2$d&nbsp;мин)</string>
+    <string name="sound_selection.pick_audio">Память устройства</string>
+    <string name="sound_selection.pick_audio_summary">Выберите файл с устройства. Максимальный размер файла - %1$d&nbsp;МБ</string>
+    <string name="sound_selection.add_audio_chooser_title">Добавьте аудио</string>
+    <string name="sound_selection.popup.file_size_exceeded">Файл слишком большой. Выберите файл размером до %1$d&nbsp;МБ.</string>
+    <string name="sound_selection.samples_screen.title">Стандартные</string>
 
-    <!-- Add audio from device chooser title -->
-    <string name="add_audio_with">Добавьте аудио</string>
-
-    <!-- Sound selection "too big file" popup -->
-    <string name="file_size_exceeded_message_text">Файл слишком большой. Выберите файл размером до %1$d&nbsp;МБ.</string>
-
-    <!-- Sound samples screen -->
-    <string name="sample_audio_1_name">Мурка 1</string>
-    <string name="sample_audio_2_name">Мурка 2</string>
-    <string name="sample_audio_3_name">Мурка 3</string>
-    <string name="sample_audio_4_name">Мурка 4</string>
-    <string name="sample_audio_5_name">Мурка 5</string>
-    <string name="sample_audio_6_name">Мурка 6</string>
-
-    <!-- Sharing app selection chooser title -->
-    <string name="send_data">Отправить котика</string>
-
-    <!-- Sharing text in message with link. %1$s - App name -->
-    <string name="sharing_text">Погладь моего кота в приложении %1$s!</string>
-
-    <!-- Sharing errors -->
-    <string name="connection_error">Грустный мяу :( Нет интернета.</string>
-    <string name="daily_quota_error">Котики устали путешествовать к друзьям. Попробуйте завтра.</string>
-    <string name="general_sharing_error">Ой, ошибка! Возможно, нет интернета или недостаточно памяти.</string>
+    <string-array name="samples.sounds.names">
+        <item>Мурка 1</item>
+        <item>Мурка 2</item>
+        <item>Мурка 3</item>
+        <item>Мурка 4</item>
+        <item>Мурка 5</item>
+        <item>Мурка 6</item>
+    </string-array>
 
     <!-- Loading cat by link -->
-    <string name="loading">Загрузка</string>
-
-    <!-- Loading cat errors -->
-    <string name="invalid_link_error">Котик убежал и по этой ссылке недоступен. Попросите отправить вам ссылку еще раз.</string>
-    <string name="invalid_data_error">Ошибка загрузки. Данные повреждены.</string>
-    <string name="retry">Попробовать снова</string>
-
-    <!-- "On save loaded cat" popup -->
-    <string name="save_success_snackbar_message_text">Котик добавлен в вашу коллекцию</string>
-    <string name="save_failed_snackbar_message_text">К сожалению, не получилось сохранить кота</string>
-
-    <!--    Donation-->
-    <string name="donate_description">Ваши пожертвования позволят нам сделать приложение еще лучше :) </string>
-    <string name="no_products_found">Не удалось получить список пожертвований. Проверьте интернет-соединение.</string>
-    <string name="choose_donation">Выберите сумму пожертвования</string>
-    <string name="thank_you">Спасибо!</string>
+    <string name="loading.title">Загрузка</string>
+    <string name="loading.connection_error">Грустный мяу :( Нет интернета.</string>
+    <string name="loading.general_error">Ой, ошибка! Возможно, нет интернета или недостаточно памяти.</string>
+    <string name="loading.invalid_link_error">Котик убежал и по этой ссылке недоступен. Попросите отправить вам ссылку еще раз.</string>
+    <string name="loading.invalid_data_error">Ошибка загрузки. Данные повреждены.</string>
+    <string name="loading.retry">Попробовать снова</string>
+    <string name="loading.popup.save_success">Котик добавлен в вашу коллекцию</string>
+    <string name="loading.popup.save_failed">К сожалению, не получилось сохранить кота</string>
 </resources>

@@ -19,7 +19,7 @@
             android:id="@+id/name_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/name"
+            android:hint="@string/form.name"
             android:inputType="textFilter" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             app:iconGravity="textStart"
             app:iconTint="@color/mtrl_outlined_icon_tint"
-            android:text="@string/add_sound"
+            android:text="@string/form.sound_button.not_added"
             app:icon="@drawable/ic_music_note_black_24dp"/>
 
         <Button
@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             app:iconGravity="textStart"
             app:iconTint="?attr/colorSecondary"
-            android:text="@string/sound_is_added"
+            android:text="@string/form.sound_button.is_added"
             app:icon="@drawable/ic_check_circle_black_24dp"/>
 
     </FrameLayout>
@@ -62,7 +62,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="@string/apply"
+        android:text="@string/form.apply"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/add_sound_layout" />

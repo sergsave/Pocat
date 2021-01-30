@@ -17,9 +17,9 @@ class PermissionPermanentlyDeniedDialog(): DialogFragment() {
         val appName = getString(R.string.app_name)
         val permissionName = getString(arguments?.getInt(ARG_PERMISSION) ?: 0)
         return MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.need_permission)
-            .setMessage(getString(R.string.need_storage_permission, permissionName, appName))
-            .setPositiveButton(R.string.show_settings, { _, _ -> goToSettings() })
+            .setTitle(R.string.permission_dialog_title)
+            .setMessage(getString(R.string.permission_dialog_message, permissionName, appName))
+            .setPositiveButton(R.string.permission_dialog_show_settings, { _, _ -> goToSettings() })
             .create()
     }
 

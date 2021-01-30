@@ -12,7 +12,7 @@ class HowToUseDialog: DialogFragment() {
 
         return MaterialAlertDialogBuilder(requireContext(),
             R.style.MyThemeOverlay_MaterialComponents_MaterialAlertDialog_MessageOnly)
-            .setMessage(R.string.how_to_use_text)
+            .setMessage(R.string.about_how_to_use_dialog_text)
             .setPositiveButton(R.string.ok, { _, _ -> })
             .create()
     }

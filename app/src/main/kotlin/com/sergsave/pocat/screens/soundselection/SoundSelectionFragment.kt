@@ -134,8 +134,8 @@ class SoundSelectionFragment: PreferenceFragmentCompat() {
         }
 
         when(deniedPermission) {
-            RECORD_AUDIO -> R.string.record_audio_permission
-            READ_EXTERNAL_STORAGE -> R.string.storage_permission
+            RECORD_AUDIO -> R.string.permission_dialog_record_audio_permission
+            READ_EXTERNAL_STORAGE -> R.string.permission_dialog_storage_permission
             else -> null
         }?.let {
             PermissionPermanentlyDeniedDialog.newInstance(it).show(childFragmentManager, null)
@@ -166,7 +166,7 @@ class SoundSelectionFragment: PreferenceFragmentCompat() {
             }
         ).filter { it.resolveActivity(requireContext().packageManager) != null }
 
-        val title = getString(R.string.add_audio_with)
+        val title = getString(R.string.sound_selection_add_audio_chooser_title)
         createIntentChooser(intents, title)?.let {
             startActivityForResult(it, PICK_AUDIO_CODE)
         }

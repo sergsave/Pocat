@@ -181,7 +181,7 @@ class PurringFragment : Fragment() {
             return false
 
         if(event.action == ACTION_DOWN && isDeviceInSilentMode()) {
-            showSnackbar(getString(R.string.make_louder))
+            showSnackbar(getString(R.string.cat_screen_popup_make_louder))
             return true
         }
 

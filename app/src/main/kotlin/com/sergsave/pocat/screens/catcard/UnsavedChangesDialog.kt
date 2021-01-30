@@ -14,9 +14,11 @@ class UnsavedChangesDialog: DialogFragment() {
 
         return MaterialAlertDialogBuilder(context,
             R.style.MyThemeOverlay_MaterialComponents_MaterialAlertDialog_MessageOnly)
-            .setMessage(R.string.changes_not_saved)
-            .setPositiveButton(R.string.discard, { _, _ -> onDiscardChangesListener?.invoke() })
-            .setNegativeButton(R.string._continue, { _, _ -> })
+            .setMessage(R.string.form_discard_dialog_text)
+            .setPositiveButton(R.string.form_discard_dialog_discard, { _, _ ->
+                onDiscardChangesListener?.invoke()
+            })
+            .setNegativeButton(R.string.form_discard_dialog_continue, { _, _ -> })
             .create()
     }
 }

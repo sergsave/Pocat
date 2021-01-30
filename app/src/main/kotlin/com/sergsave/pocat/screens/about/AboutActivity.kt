@@ -26,24 +26,24 @@ class AboutActivity : AppCompatActivity() {
         setContentView(R.layout.activity_about)
         setToolbarAsActionBar(toolbar, showBackButton = true)
 
-        version_text.text = getString(R.string.version_text, BuildConfig.VERSION_NAME)
+        version_text.text = getString(R.string.about_version, BuildConfig.VERSION_NAME)
 
-        rate_item.text.text = getString(R.string.rate_on_play_market)
+        rate_item.text.text = getString(R.string.about_rate_on_play_market)
         rate_item.setOnClickListener { openRateAppLink() }
 
-        share_item.text.text = getString(R.string.share_app)
+        share_item.text.text = getString(R.string.about_share_app)
         share_item.setOnClickListener { sendShareAppLink() }
 
-        how_to_use_item.text.text = getString(R.string.how_to_use)
+        how_to_use_item.text.text = getString(R.string.about_how_to_use)
         how_to_use_item.setOnClickListener { openHowToUseDialog() }
 
-        contact_item.text.text = getString(R.string.contact_us)
+        contact_item.text.text = getString(R.string.about_contact_us)
         contact_item.setOnClickListener { sendEmail() }
 
-        licenses_item.text.text = getString(R.string.licenses)
+        licenses_item.text.text = getString(R.string.about_licenses_open_source)
         licenses_item.setOnClickListener { openLicensesDialog() }
 
-        credits_item.text.text = getString(R.string.credits)
+        credits_item.text.text = getString(R.string.about_credits)
         credits_item.setOnClickListener { openCreditsActivity() }
 
         // Secret way to check error logging
@@ -55,8 +55,8 @@ class AboutActivity : AppCompatActivity() {
 
     private fun sendShareAppLink() {
         val link = "https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}"
-        val message = getString(R.string.share_app_text)
-        val chooserTitle = getString(R.string.share_app_chooser_title)
+        val message = getString(R.string.about_share_app_text)
+        val chooserTitle = getString(R.string.about_share_app_chooser_title)
         Intent(Intent.ACTION_SEND).also {
             it.type = "text/plain"
             it.putExtra(Intent.EXTRA_TEXT, "$message $link")
@@ -67,8 +67,8 @@ class AboutActivity : AppCompatActivity() {
     }
 
     private fun sendEmail() {
-        val address = getString(R.string.dev_email)
-        val subject = getString(R.string.feedback_email_subject, getString(R.string.app_name))
+        val address = getString(R.string.feedback_email)
+        val subject = getString(R.string.feedback_message_subject, getString(R.string.app_name))
         Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:")).also {
             it.putExtra(Intent.EXTRA_EMAIL, arrayOf(address))
             it.putExtra(Intent.EXTRA_SUBJECT, subject)

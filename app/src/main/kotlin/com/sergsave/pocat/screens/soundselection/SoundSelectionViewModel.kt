@@ -17,7 +17,7 @@ class SoundSelectionViewModel(private val fileSizeByteCalculator: (Uri) -> Long,
 
     val samplesSummary: Message
         get() {
-            return Message(R.string.samples_summary, listOf<Any>())
+            return Message(R.string.sound_selection_samples_summary, listOf<Any>())
         }
 
     val recorderSummary: Message
@@ -25,13 +25,13 @@ class SoundSelectionViewModel(private val fileSizeByteCalculator: (Uri) -> Long,
             val averageSizeMBPerMin = 1.25
             val approxMaxDurationMin = (maxFileSizeMB.toFloat() / averageSizeMBPerMin).roundToLong()
 
-            return Message(R.string.recorder_summary,
+            return Message(R.string.sound_selection_recorder_summary,
                 listOf<Any>(maxFileSizeMB, approxMaxDurationMin))
         }
 
     val pickAudioSummary: Message
         get() {
-            return Message(R.string.pick_audio_summary, listOf<Any>(maxFileSizeMB))
+            return Message(R.string.sound_selection_pick_audio_summary, listOf<Any>(maxFileSizeMB))
         }
 
     private val _validationFailedEvent = MutableLiveData<Event<Message>>()
@@ -43,7 +43,7 @@ class SoundSelectionViewModel(private val fileSizeByteCalculator: (Uri) -> Long,
         get() = _validationSuccessEvent
 
     fun validateResult(uri: Uri) {
-        val error = Message(R.string.file_size_exceeded_message_text, listOf(maxFileSizeMB))
+        val error = Message(R.string.sound_selection_popup_file_size_exceeded, listOf(maxFileSizeMB))
         val size = fileSizeByteCalculator(uri)
 
         val result = size < maxFileSizeMB * 1000000

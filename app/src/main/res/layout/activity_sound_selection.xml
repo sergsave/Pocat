@@ -14,7 +14,7 @@
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
-        app:title="@string/choose_sound" />
+        app:title="@string/sound_selection.title" />
 
     <LinearLayout
         android:id="@+id/container"

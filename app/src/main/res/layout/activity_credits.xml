@@ -14,7 +14,7 @@
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
-        app:title="@string/credits" />
+        app:title="@string/about.credits" />
 
     <ScrollView
         android:layout_width="match_parent"

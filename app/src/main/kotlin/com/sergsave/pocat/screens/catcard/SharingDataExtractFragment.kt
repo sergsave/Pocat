@@ -43,7 +43,7 @@ class SharingDataExtractFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         (activity as? AppCompatActivity)?.supportActionBar?.title =
-            resources.getString(R.string.loading)
+            resources.getString(R.string.loading_title)
 
         val sharingIntent = arguments?.getParcelable<Intent>(ARG_INTENT)
 
@@ -62,9 +62,9 @@ class SharingDataExtractFragment: Fragment() {
                     .forEach { it.visibility = View.INVISIBLE }
 
                 val errorTexts = mapOf(
-                    ExtractState.INVALID_LINK_ERROR to R.string.invalid_link_error,
-                    ExtractState.INVALID_DATA_ERROR to R.string.invalid_data_error,
-                    ExtractState.UNKNOWN_ERROR to R.string.general_sharing_error
+                    ExtractState.INVALID_LINK_ERROR to R.string.loading_invalid_link_error,
+                    ExtractState.INVALID_DATA_ERROR to R.string.loading_invalid_data_error,
+                    ExtractState.UNKNOWN_ERROR to R.string.loading_general_error
                 )
 
                 when (it) {

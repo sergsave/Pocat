@@ -45,7 +45,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
-            android:text="@string/tutorial_text"
+            android:text="@string/cat_screen.tutorial_text"
             android:textAppearance="?attr/textAppearanceHeadline5"
             android:textColor="@android:color/white"
             app:layout_constraintBottom_toBottomOf="parent"

@@ -8,14 +8,16 @@ import com.sergsave.pocat.helpers.FileUtils
 class SoundSampleProvider(private val context: Context) {
     fun provide(): List<Pair<String, Uri>> {
         val ids = listOf<Pair<Int, Int>>(
-            Pair(R.string.sample_audio_1_name, R.raw.sample_audio_1),
-            Pair(R.string.sample_audio_2_name, R.raw.sample_audio_2),
-            Pair(R.string.sample_audio_3_name, R.raw.sample_audio_3),
-            Pair(R.string.sample_audio_4_name, R.raw.sample_audio_4),
-            Pair(R.string.sample_audio_5_name, R.raw.sample_audio_5),
-            Pair(R.string.sample_audio_6_name, R.raw.sample_audio_6)
+            Pair(0, R.raw.sample_audio_1),
+            Pair(1, R.raw.sample_audio_2),
+            Pair(2, R.raw.sample_audio_3),
+            Pair(3, R.raw.sample_audio_4),
+            Pair(4, R.raw.sample_audio_5),
+            Pair(5, R.raw.sample_audio_6)
         )
-        return ids.map { Pair(context.getString(it.first),
-            FileUtils.uriOfResource(context, it.second)) }
+        val getName = { stringArrayIndex: Int ->
+            context.resources.getStringArray(R.array.samples_sounds_names)[stringArrayIndex]
+        }
+        return ids.map { Pair(getName(it.first), FileUtils.uriOfResource(context, it.second)) }
     }
 }
