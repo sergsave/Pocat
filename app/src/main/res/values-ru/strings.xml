@@ -44,7 +44,7 @@
     <string name="feedback.message_subject">%1$s обратная связь</string> <!-- %1$s - App Name -->
 
     <string name="donation.title">Сказать спасибо</string>
-    <string name="donation.description">Ваши пожертвования позволят нам сделать приложение еще лучше :) </string>
+    <string name="donation.description">Помоги проекту, и мы станем еще лучше :) </string>
     <string name="donation.no_products_found">Не удалось получить список пожертвований. Проверьте интернет-соединение.</string>
     <string name="donation.choose_donation">Выберите сумму пожертвования</string>
     <string name="donation.thank_you">Спасибо!</string>
@@ -107,5 +107,5 @@
     <string name="loading.invalid_data_error">Ошибка загрузки. Данные повреждены.</string>
     <string name="loading.retry">Попробовать снова</string>
     <string name="loading.popup.save_success">Котик добавлен в вашу коллекцию</string>
-    <string name="loading.popup.save_failed">К сожалению, не получилось сохранить кота</string>
+    <string name="loading.popup.save_failed">Котик не сохранился :( Попробуйте еще раз. </string>
 </resources>

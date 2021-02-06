@@ -34,8 +34,8 @@ android {
         applicationId "com.sergsave.pocat"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 4
-        versionName "1.0-beta02"
+        versionCode 5
+        versionName "1.0"
 
         resValue "string", "app_name", "$appName"
         buildConfigField("String", "GOOGLE_PLAY_PUBLIC_BASE_64_KEY", "\"${readGooglePlayPublicBase64Key()}\"")
