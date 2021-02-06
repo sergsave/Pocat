@@ -33,13 +33,13 @@
     <string name="about.version">Version %1$s</string>
     <string name="about.rate_on_play_market">Rate app on Google Play</string>
     <string name="about.share_app">Share app</string>
-    <string name="about.share_app_text">Pet your cats in the app</string>
+    <string name="about.share_app_text">Pet cats in the app</string>
     <string name="about.share_app_chooser_title">Share</string>
     <string name="about.contact_us">Send feedback</string>
     <string name="about.licenses_open_source">Licenses</string>
     <string name="about.credits">Credits</string>
     <string name="about.how_to_use">How to use</string>
-    <string name="about.how_to_use_dialog.text">Pet your cat and enjoy it purrs.\n\nAdd your cat\'s purrs and share them with the world.</string>
+    <string name="about.how_to_use_dialog.text">Pet a cat and enjoy it purrs.\n\nAdd your cat\'s purrs and share them with the world.</string>
 
     <string name="feedback.message_subject">%1$s feedback</string> <!-- %1$s - App Name -->
     <string name="feedback.email" translatable="false">sergsave.dev@gmail.com</string>
@@ -51,14 +51,8 @@
     <string name="donation.thank_you">Thank You!</string>
     <string name="donation.retry">Retry</string>
 
-    <string name="cat_screen.tutorial_text">Pet your kitty</string>
+    <string name="cat_screen.tutorial_text">Pet the kitty</string>
     <string name="cat_screen.popup.make_louder">Please turn up the volume</string>
-
-    <string name="sharing.message_text">Check out my cat in %1$s App!</string>  <!-- %1$s - App Name -->
-    <string name="sharing.chooser_title">Share the furball</string>
-    <string name="sharing.popup.connection_error">Sad meow. No internet connection.</string>
-    <string name="sharing.popup.daily_quota_error">Cats are tired of traveling. Try it tomorrow.</string>
-    <string name="sharing.popup.general_error">Oops! Maybe there is no internet or not enough memory.</string>
 
     <string name="form.new_cat_title">New kitty</string>
     <string name="form.edit_cat_title">Edit</string>
@@ -100,9 +94,15 @@
         <item>Purr 6</item>
     </string-array>
 
+    <string name="sharing.message_text">Check out my cat in %1$s App!</string>  <!-- %1$s - App Name -->
+    <string name="sharing.chooser_title">Share the furball</string>
+    <string name="sharing.popup.connection_error">Sad meow :( No internet connection.</string>
+    <string name="sharing.popup.daily_quota_error">Cats are tired of traveling. Try it tomorrow.</string>
+    <string name="sharing.popup.general_error">Oops! Maybe there is no internet or not enough memory.</string>
+
     <!-- Loading cat by link -->
     <string name="loading.title">Loading</string>
-    <string name="loading.connection_error">Sad meow. No internet connection</string>
+    <string name="loading.connection_error">Sad meow :( No internet connection</string>
     <string name="loading.general_error">Oops! Maybe there is no internet or not enough memory.</string>
     <string name="loading.invalid_link_error">The cat ran away and is not available at this link anymore. Ask to send you the link again.</string>
     <string name="loading.invalid_data_error">Loading failed. The data is corrupted.</string>

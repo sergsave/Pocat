@@ -53,12 +53,6 @@
     <string name="cat_screen.tutorial_text">Погладьте котика</string>
     <string name="cat_screen.popup.make_louder">Выключите беззвучный режим</string>
 
-    <string name="sharing.message_text">Погладь моего кота в приложении %1$s!</string>  <!-- %1$s - App Name -->
-    <string name="sharing.chooser_title">Отправить котика</string>
-    <string name="sharing.popup.connection_error">Грустный мяу :( Нет интернета.</string>
-    <string name="sharing.popup.daily_quota_error">Котики устали путешествовать к друзьям. Попробуйте завтра.</string>
-    <string name="sharing.popup.general_error">Ой, ошибка! Возможно, нет интернета или недостаточно памяти.</string>
-
     <string name="form.new_cat_title">Новый котик</string>
     <string name="form.edit_cat_title">Редактирование</string>
     <string name="form.name">Имя</string>
@@ -99,6 +93,12 @@
         <item>Мурка 6</item>
     </string-array>
 
+    <string name="sharing.message_text">Погладь моего кота в приложении %1$s!</string>  <!-- %1$s - App Name -->
+    <string name="sharing.chooser_title">Отправить котика</string>
+    <string name="sharing.popup.connection_error">Грустный мяу :( Нет интернета.</string>
+    <string name="sharing.popup.daily_quota_error">Котики устали путешествовать к друзьям. Попробуйте завтра.</string>
+    <string name="sharing.popup.general_error">Ой, ошибка! Возможно, нет интернета или недостаточно памяти.</string>
+    
     <!-- Loading cat by link -->
     <string name="loading.title">Загрузка</string>
     <string name="loading.connection_error">Грустный мяу :( Нет интернета.</string>
