@@ -4,8 +4,10 @@ import android.content.Intent
 import android.content.res.AssetManager
 import android.net.Uri
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.sergsave.pocat.BuildConfig
+import com.sergsave.pocat.MyApplication
 import com.sergsave.pocat.R
 import com.sergsave.pocat.helpers.openRateAppLink
 import com.sergsave.pocat.helpers.setToolbarAsActionBar
@@ -15,6 +17,10 @@ import kotlinx.android.synthetic.main.view_about_list_item.view.*
 import timber.log.Timber
 
 class AboutActivity : AppCompatActivity() {
+
+    private val viewModel: AboutViewModel by viewModels {
+        (application as MyApplication).appContainer.provideAboutViewModelFactory()
+    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -49,6 +55,12 @@ class AboutActivity : AppCompatActivity() {
         // Secret way to check error logging
         credits_item.setOnLongClickListener {
             Timber.e(RuntimeException("Test of error logging"))
+            false
+        }
+
+        // For test only. Remove this!
+        rate_item.setOnLongClickListener {
+            viewModel.askToRate(this)
             false
         }
     }
