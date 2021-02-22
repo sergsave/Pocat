@@ -3,6 +3,7 @@ package com.sergsave.pocat
 import android.app.Application
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import com.sergsave.pocat.analytics.AnalyticsLoggingDecorator
 import com.sergsave.pocat.analytics.FirebaseAnalyticsTracker
 import com.sergsave.pocat.billing.BillingRepository
@@ -123,6 +124,15 @@ class MyApplication : Application() {
     val appContainer: AppContainer by lazy { AppContainer(applicationContext) }
 
     override fun onCreate() {
+        // APK Sideloading crash prevention
+        @Suppress("DEPRECATION")
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            val manager = com.google.android.play.core.missingsplits.MissingSplitsManagerFactory
+                .create(this)
+            if (manager.disableAppIfMissingRequiredSplits())
+                return
+        }
+
         super.onCreate()
 
         Timber.plant(if (BuildConfig.LOG_ENABLED) Timber.DebugTree() else FirebaseCrashlyticsTree())
