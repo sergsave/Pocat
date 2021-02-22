@@ -44,7 +44,7 @@
     <string name="feedback.message_subject">%1$s обратная связь</string> <!-- %1$s - App Name -->
 
     <string name="donation.title">Сказать спасибо</string>
-    <string name="donation.description">Помоги проекту, и мы станем еще лучше :) </string>
+    <string name="donation.description">Помогите проекту, и мы станем еще лучше :) </string>
     <string name="donation.no_products_found">Не удалось получить список пожертвований. Проверьте интернет-соединение.</string>
     <string name="donation.choose_donation">Выберите сумму пожертвования</string>
     <string name="donation.thank_you">Спасибо!</string>
