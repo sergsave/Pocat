@@ -18,7 +18,7 @@ private typealias SkuMap = Map<Sku, SkuDetails>
 
 class BillingRepository(private val context: Context) {
 
-    private lateinit var billingClient: BillingClient
+    private var billingClient: BillingClient? = null
 
     private var cacheSku2SkuDetails: SkuMap = emptyMap()
     private val purchaseConfirmed = PublishSubject.create<Result<Sku>>()
@@ -41,12 +41,12 @@ class BillingRepository(private val context: Context) {
     }
 
     private fun startConnectionToBilling() {
-        if (billingClient.isReady) {
+        if (billingClient?.isReady == true) {
             connected.onNext(Result.Success(Unit))
             return
         }
 
-        billingClient.startConnection(object: BillingClientStateListener {
+        billingClient?.startConnection(object: BillingClientStateListener {
             override fun onBillingSetupFinished(billingResult: BillingResult) {
                 if (billingResult.responseCode == BillingResponseCode.OK)
                     connected.onNext(Result.Success(Unit))
@@ -66,7 +66,7 @@ class BillingRepository(private val context: Context) {
         return productsFetched.doOnSubscribe {
             val params = SkuDetailsParams.newBuilder()
             params.setSkusList(ALL_SKUS).setType(SkuType.INAPP)
-            billingClient.querySkuDetailsAsync(params.build()) { billingResult, detailsList ->
+            billingClient?.querySkuDetailsAsync(params.build()) { billingResult, detailsList ->
                 if (billingResult.responseCode == BillingResponseCode.OK) {
                     productsFetched.onNext(detailsList.orEmpty().map {
                         Product(it.sku, it.price, it.title, it.description)
@@ -80,14 +80,15 @@ class BillingRepository(private val context: Context) {
 
     fun startPurchase(activity: Activity, sku: Sku) {
         val skuDetails = cacheSku2SkuDetails.get(sku)
-        if (skuDetails == null)
+        val client = billingClient
+        if (skuDetails == null  || client == null)
             return
 
         val flowParams = BillingFlowParams.newBuilder()
             .setSkuDetails(skuDetails)
             .build()
 
-        billingClient.launchBillingFlow(activity, flowParams)
+        client.launchBillingFlow(activity, flowParams)
     }
 
     fun processPendingPurchases() {
@@ -105,6 +106,10 @@ class BillingRepository(private val context: Context) {
         }
 
     private fun handlePurchase(purchase: Purchase) {
+        val client = billingClient
+        if (client == null)
+            return
+
         if (purchase.purchaseState != Purchase.PurchaseState.PURCHASED ||
             !isSignatureValid(purchase)) {
             purchaseConfirmed.onNext(Result.Error(RuntimeException("Invalid purchase")))
@@ -115,7 +120,7 @@ class BillingRepository(private val context: Context) {
             .setPurchaseToken(purchase.getPurchaseToken())
             .build()
 
-        billingClient.consumeAsync(consumeParams, { billingResult, _ ->
+        client.consumeAsync(consumeParams, { billingResult, _ ->
             if (billingResult.responseCode == BillingResponseCode.OK) {
                 purchaseConfirmed.onNext(Result.Success(purchase.sku))
                 Timber.i("Purchase confirmed, sku - ${purchase.sku}")
@@ -135,13 +140,13 @@ class BillingRepository(private val context: Context) {
     }
 
     private fun queryPurchases() {
-        billingClient.queryPurchases(BillingClient.SkuType.INAPP)?.purchasesList?.forEach {
+        billingClient?.queryPurchases(BillingClient.SkuType.INAPP)?.purchasesList?.forEach {
             handlePurchase(it)
         }
     }
 
     fun disconnectFromBillingService() {
-        billingClient.endConnection()
+        billingClient?.endConnection()
         cacheSku2SkuDetails = emptyMap()
     }
 
