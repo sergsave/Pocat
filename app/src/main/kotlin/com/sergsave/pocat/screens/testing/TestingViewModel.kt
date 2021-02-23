@@ -4,15 +4,14 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import com.sergsave.pocat.R
 import com.sergsave.pocat.content.ContentRepository
-import com.sergsave.pocat.persistent.CatDataRepository
 import com.sergsave.pocat.helpers.DisposableViewModel
 import com.sergsave.pocat.models.CatData
-import com.sergsave.pocat.R
+import com.sergsave.pocat.persistent.CatDataRepository
 import com.sergsave.pocat.preference.PreferenceManager
 import io.reactivex.Single
 import io.reactivex.rxkotlin.Singles
-import java.lang.IllegalStateException
 
 class TestingViewModel(
     private val catDataRepository: CatDataRepository,

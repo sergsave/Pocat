@@ -185,6 +185,7 @@ class PurringFragment : Fragment() {
             return true
         }
 
+        navigation.onCatPetted()
         playAudio()
         return true
     }

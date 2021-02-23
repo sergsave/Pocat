@@ -110,10 +110,19 @@
     <string name="loading.popup.save_success">The cat was added to your collection</string>
     <string name="loading.popup.save_failed">The kitty wasn\'t saved. Try again.</string>
 
+    <string name="apprate_dialog.title">Cats are asking to rate the app</string>
+    <string name="apprate_dialog.ask_later">Not now</string>
+    <string name="apprate_dialog.ask_never">Never</string>
+
+    <string name="feedback_dialog.title">Want to give feedback to the developer?</string>
+    <string name="feedback_dialog.positive_button">Send</string>
+    <string name="feedback_dialog.negative_button">Cancel</string>
+
     <!-- Test screen (dev build only) -->
     <string name="main.menu.testing" translatable="false">Testing</string>
     <string name="testing.title" translatable="false">Testing</string>
     <string name="testing.copy_cats" translatable="false">Clone all cats</string>
     <string name="testing.copy_in_progress" translatable="false">Сloning in progress…</string>
     <string name="testing.reset_tutorial" translatable="false">Reset tutorial</string>
+    <string name="testing.reset_apprate" translatable="false">Reset apprate</string>
 </resources>

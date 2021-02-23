@@ -1,14 +1,15 @@
 package com.sergsave.pocat.screens.main.analytics
 
+import com.sergsave.pocat.AnalyticsConstants.Events.AboutActionClick
+import com.sergsave.pocat.AnalyticsConstants.Events.AddButtonClick
+import com.sergsave.pocat.AnalyticsConstants.Events.AppRated
 import com.sergsave.pocat.AnalyticsConstants.Events.AppStart
+import com.sergsave.pocat.AnalyticsConstants.Events.CatsRemove
+import com.sergsave.pocat.AnalyticsConstants.Events.DonateActionClick
+import com.sergsave.pocat.AnalyticsConstants.Events.SampleCardClick
+import com.sergsave.pocat.AnalyticsConstants.Events.SettingsActionClick
 import com.sergsave.pocat.AnalyticsConstants.Events.TabOpen
 import com.sergsave.pocat.AnalyticsConstants.Events.UsersCatCardClick
-import com.sergsave.pocat.AnalyticsConstants.Events.SampleCardClick
-import com.sergsave.pocat.AnalyticsConstants.Events.AddButtonClick
-import com.sergsave.pocat.AnalyticsConstants.Events.SettingsActionClick
-import com.sergsave.pocat.AnalyticsConstants.Events.DonateActionClick
-import com.sergsave.pocat.AnalyticsConstants.Events.AboutActionClick
-import com.sergsave.pocat.AnalyticsConstants.Events.CatsRemove
 import com.sergsave.pocat.AnalyticsConstants.Events.UsersCatsListUpdate
 import com.sergsave.pocat.analytics.AnalyticsEvent
 import com.sergsave.pocat.screens.main.TabInfo
@@ -31,6 +32,9 @@ class SampleCardClick(id: String):
 class AddButtonClick : AnalyticsEvent(AddButtonClick.NAME)
 class CatsRemove(count: Int):
     AnalyticsEvent(CatsRemove.NAME, mapOf(CatsRemove.Params.COUNT to count))
+
+class AppRated(rating: Int):
+    AnalyticsEvent(AppRated.NAME, mapOf(AppRated.Params.RATING to rating))
 
 class UsersCatsListUpdate(count: Int):
     AnalyticsEvent(UsersCatsListUpdate.NAME, mapOf(UsersCatsListUpdate.Params.COUNT to count))

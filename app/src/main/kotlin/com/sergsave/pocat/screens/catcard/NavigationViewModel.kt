@@ -54,6 +54,10 @@ class NavigationViewModel(card: Card?, isThereSharingInputData: Boolean)
     val tutorialCompletedEvent: LiveData<Event<Unit>>
         get() = _tutorialCompletedEvent
 
+    private val _wasCatPetted = MutableLiveData<Boolean>(false)
+    val wasCatPetted: LiveData<Boolean>
+        get() = _wasCatPetted
+
     val isSharedElementTransitionPostponed = MutableLiveData<Boolean>(false)
 
     init {
@@ -98,6 +102,10 @@ class NavigationViewModel(card: Card?, isThereSharingInputData: Boolean)
 
         if (area == TutorialTouchArea.CONTENT)
             _tutorialCompletedEvent.value = Event(Unit)
+    }
+
+    fun onCatPetted() {
+        _wasCatPetted.value = true
     }
 
     fun goToBackScreen() {

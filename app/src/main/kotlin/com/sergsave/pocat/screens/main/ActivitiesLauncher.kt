@@ -2,8 +2,6 @@ package com.sergsave.pocat.screens.main
 
 import android.app.Activity
 import android.content.Intent
-import android.view.View
-import androidx.core.app.ActivityOptionsCompat
 import com.sergsave.pocat.Constants
 import com.sergsave.pocat.models.Card
 import com.sergsave.pocat.screens.about.AboutActivity
@@ -12,26 +10,25 @@ import com.sergsave.pocat.screens.donate.DonateActivity
 import com.sergsave.pocat.screens.settings.SettingsActivity
 import com.sergsave.pocat.screens.testing.TestingActivity
 
-fun Activity.launchCatCard() {
-    startActivity(Intent(this, CatCardActivity::class.java))
+fun Activity.launchCatCard(activityRequestCode: Int) {
+    startActivityForResult(Intent(this, CatCardActivity::class.java),
+        activityRequestCode)
 }
 
-fun Activity.launchCatCard(forwardedIntent: Intent) {
+fun Activity.launchCatCard(activityRequestCode: Int, forwardedIntent: Intent) {
     val intent = Intent(this, CatCardActivity::class.java)
     intent.putExtra(Constants.SHARING_INPUT_INTENT_KEY, forwardedIntent)
 
-    startActivity(intent)
+    startActivityForResult(intent, activityRequestCode)
 }
 
-fun Activity.launchCatCard(card: Card, sharedElement: View, sharedElementTransitionName: String) {
+fun Activity.launchCatCard(activityRequestCode: Int, card: Card,
+                           transition: SharedElementTransitionData) {
     val intent = Intent(this, CatCardActivity::class.java)
     intent.putExtra(Constants.CARD_INTENT_KEY, card)
-    intent.putExtra(Constants.SHARED_TRANSITION_NAME_INTENT_KEY, sharedElementTransitionName)
+    intent.putExtra(Constants.SHARED_TRANSITION_NAME_INTENT_KEY, transition.name)
 
-    val transitionOption = ActivityOptionsCompat.makeSceneTransitionAnimation(
-        this, sharedElement, sharedElementTransitionName)
-
-    startActivity(intent, transitionOption.toBundle())
+    startActivityForResult(intent, activityRequestCode, transition.sceneTransitionAnimation)
 }
 
 fun Activity.launchSettings() {

@@ -12,7 +12,6 @@ import com.sergsave.pocat.R
 
 class PermissionPermanentlyDeniedDialog(): DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        super.onCreateDialog(savedInstanceState)
 
         val appName = getString(R.string.app_name)
         val permissionName = getString(arguments?.getInt(ARG_PERMISSION) ?: 0)

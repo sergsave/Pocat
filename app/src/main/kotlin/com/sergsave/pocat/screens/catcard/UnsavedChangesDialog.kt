@@ -10,8 +10,6 @@ class UnsavedChangesDialog: DialogFragment() {
     var onDiscardChangesListener: (() -> Unit)? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        super.onCreateDialog(savedInstanceState)
-
         return MaterialAlertDialogBuilder(context,
             R.style.MyThemeOverlay_MaterialComponents_MaterialAlertDialog_MessageOnly)
             .setMessage(R.string.form_discard_dialog_text)

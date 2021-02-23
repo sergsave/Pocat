@@ -108,4 +108,11 @@
     <string name="loading.retry">Попробовать снова</string>
     <string name="loading.popup.save_success">Котик добавлен в вашу коллекцию</string>
     <string name="loading.popup.save_failed">Котик не сохранился :( Попробуйте еще раз. </string>
+
+    <string name="apprate_dialog.title">Котики очень просят вас оценить приложение</string>
+    <string name="apprate_dialog.ask_later">Не сейчас</string>
+    <string name="apprate_dialog.ask_never">Никогда</string>
+    <string name="feedback_dialog.title">Пожалуйста, расскажите, что вам не понравилось</string>
+    <string name="feedback_dialog.positive_button">Написать</string>
+    <string name="feedback_dialog.negative_button">Отмена</string>
 </resources>

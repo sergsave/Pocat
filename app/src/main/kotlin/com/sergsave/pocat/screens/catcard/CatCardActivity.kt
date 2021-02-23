@@ -1,5 +1,6 @@
 package com.sergsave.pocat.screens.catcard
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -8,12 +9,17 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialFadeThrough
 import com.sergsave.pocat.Constants
 import com.sergsave.pocat.R
-import com.sergsave.pocat.models.Card
 import com.sergsave.pocat.helpers.EventObserver
 import com.sergsave.pocat.helpers.ViewModelFactory
 import com.sergsave.pocat.helpers.setToolbarAsActionBar
+import com.sergsave.pocat.models.Card
 import kotlinx.android.synthetic.main.activity_cat_card.*
 
+/**
+ * Returns intent with Boolean value, which indicates that the cat has been petted.
+ *
+ * Key - [Constants.WAS_CAT_PETTED_INTENT_KEY].
+ */
 class CatCardActivity : AppCompatActivity() {
     private val navigation: NavigationViewModel by viewModels {
         ViewModelFactory(NavigationViewModel::class.java, {
@@ -71,6 +77,11 @@ class CatCardActivity : AppCompatActivity() {
             })
 
             finishEvent.observe(lifecycleOwner, EventObserver {
+                val intent = Intent().apply {
+                    putExtra(Constants.WAS_CAT_PETTED_INTENT_KEY,
+                        navigation.wasCatPetted.value == true)
+                }
+                setResult(Activity.RESULT_OK, intent)
                 super.onBackPressed()
             })
 

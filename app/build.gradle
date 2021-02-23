@@ -93,7 +93,7 @@ android {
             versionNameSuffix "_staging"
             resValue "string", "app_label", "$appName Staging"
 
-            buildConfigField("Boolean", "HIDE_TEST_ACTION", "true")
+            buildConfigField("Boolean", "HIDE_TEST_ACTION", "false")
             buildConfigField("Boolean", "LOG_ENABLED", "true")
 
             buildConfigField("String", "DYNAMIC_LINK_DOMAIN", "\"$testDynamicLinkDomain\"")
@@ -156,6 +156,7 @@ dependencies {
 
     implementation 'de.psdev.licensesdialog:licensesdialog:2.1.0'
     implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation 'com.codemybrainsout.rating:ratingdialog:1.0.8'
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.4'
 

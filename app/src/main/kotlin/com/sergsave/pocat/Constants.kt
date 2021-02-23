@@ -6,6 +6,7 @@ object Constants {
     const val SHARING_INPUT_INTENT_KEY = "SharingIntent"
     const val IS_FORWARDED_INTENT_KEY = "IsForwardedIntent"
     const val SHARED_TRANSITION_NAME_INTENT_KEY = "SharedTransitionNameIntent"
+    const val WAS_CAT_PETTED_INTENT_KEY = "WasCatPetted"
 
     const val SHARING_CACHE_DIR_NAME = "sharing"
     const val SHARING_SHARED_PREFERENCES_NAME = "sharing"
