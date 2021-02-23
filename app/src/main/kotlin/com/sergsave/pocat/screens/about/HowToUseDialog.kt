@@ -8,8 +8,6 @@ import com.sergsave.pocat.R
 
 class HowToUseDialog: DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        super.onCreateDialog(savedInstanceState)
-
         return MaterialAlertDialogBuilder(requireContext(),
             R.style.MyThemeOverlay_MaterialComponents_MaterialAlertDialog_MessageOnly)
             .setMessage(R.string.about_how_to_use_dialog_text)

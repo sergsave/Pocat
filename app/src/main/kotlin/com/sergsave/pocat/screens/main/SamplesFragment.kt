@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.sergsave.pocat.MyApplication
@@ -16,6 +17,8 @@ class SamplesFragment : Fragment() {
         (requireActivity().application as MyApplication)
             .appContainer.provideSamplesViewModelFactory()
     }
+
+    private val navigation by activityViewModels<NavigationViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,12 +47,11 @@ class SamplesFragment : Fragment() {
             override fun onItemClick(
                 id: String,
                 data: CatData,
-                sharedElement: View,
-                sharedElementTransitionName: String
+                transition: SharedElementTransitionData
             ) {
                 viewModel.onCardClicked(id)
                 val card = viewModel.makeCard(data)
-                activity?.launchCatCard(card, sharedElement, sharedElementTransitionName)
+                navigation.openCat(card, transition)
             }
         }
 

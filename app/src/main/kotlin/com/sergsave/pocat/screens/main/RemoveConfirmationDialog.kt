@@ -10,8 +10,6 @@ class RemoveConfirmationDialog: DialogFragment() {
     var onRemoveConfirmListener: (() -> Unit)? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        super.onCreateDialog(savedInstanceState)
-
         return MaterialAlertDialogBuilder(context,
             R.style.MyThemeOverlay_MaterialComponents_MaterialAlertDialog_MessageOnly)
             .setMessage(R.string.main_remove_dialog_text)

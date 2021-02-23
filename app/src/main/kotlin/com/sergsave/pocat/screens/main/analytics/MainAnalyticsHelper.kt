@@ -18,6 +18,8 @@ class MainAnalyticsHelper(private val tracker: AnalyticsTracker) {
 
     fun onCatsRemoved(count: Int) = tracker.sendEvent(CatsRemove(count))
 
+    fun onAppRated(rating: Int) = tracker.sendEvent(AppRated(rating))
+
     fun onOptionsItemSelected(menuId: Int) {
         when(menuId) {
             R.id.action_settings -> tracker.sendEvent(SettingsActionClick())

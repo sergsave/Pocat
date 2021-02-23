@@ -2,12 +2,13 @@ package com.sergsave.pocat.screens.about
 
 import android.content.Intent
 import android.content.res.AssetManager
-import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.sergsave.pocat.BuildConfig
 import com.sergsave.pocat.R
 import com.sergsave.pocat.helpers.openRateAppLink
+import com.sergsave.pocat.helpers.sendEmail
+import com.sergsave.pocat.helpers.sendShareAppLink
 import com.sergsave.pocat.helpers.setToolbarAsActionBar
 import de.psdev.licensesdialog.LicensesDialogFragment
 import kotlinx.android.synthetic.main.activity_about.*
@@ -54,27 +55,15 @@ class AboutActivity : AppCompatActivity() {
     }
 
     private fun sendShareAppLink() {
-        val link = "https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}"
         val message = getString(R.string.about_share_app_text)
         val chooserTitle = getString(R.string.about_share_app_chooser_title)
-        Intent(Intent.ACTION_SEND).also {
-            it.type = "text/plain"
-            it.putExtra(Intent.EXTRA_TEXT, "$message $link")
-            if (it.resolveActivity(packageManager) != null) {
-                startActivity(Intent.createChooser(it, chooserTitle))
-            }
-        }
+        sendShareAppLink(message, chooserTitle)
     }
 
     private fun sendEmail() {
         val address = getString(R.string.feedback_email)
         val subject = getString(R.string.feedback_message_subject, getString(R.string.app_name))
-        Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:")).also {
-            it.putExtra(Intent.EXTRA_EMAIL, arrayOf(address))
-            it.putExtra(Intent.EXTRA_SUBJECT, subject)
-            if (it.resolveActivity(packageManager) != null)
-                startActivity(it)
-        }
+        sendEmail(address, subject)
     }
 
     // Workaround for webview bug inside LicenseDialog

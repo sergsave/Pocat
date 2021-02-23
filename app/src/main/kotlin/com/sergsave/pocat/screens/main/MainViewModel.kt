@@ -25,8 +25,6 @@ class MainViewModel(
     private val analytics: MainAnalyticsHelper
 ): DisposableViewModel() {
 
-    private var pagePosition: Int? = null
-
     private val tabInfo2tag = mapOf<TabInfo, String>(
         TabInfo.SAMPLES to "samples",
         TabInfo.USER_CATS to "user_cats"
@@ -62,10 +60,6 @@ class MainViewModel(
     }
 
     fun onPageChanged(position: Int) {
-        if(position != pagePosition)
-            _clearSelectionEvent.value = Event(Unit)
-
-        pagePosition = position
         val tabInfo = tabInfoForPosition(position)
         val tag = tabInfo?.let { tabInfo2tag.get(it) }
         tag?.let { preferences.lastTabTag = it }
@@ -77,6 +71,10 @@ class MainViewModel(
 
     fun onForwardIntent() {
         _requestPageChangeEvent.value = Event(TabInfo.USER_CATS.pageNumber)
+    }
+
+    fun onAppRated(rating: Int) {
+        analytics.onAppRated(rating)
     }
 
     private fun cleanUpSharingCache() {

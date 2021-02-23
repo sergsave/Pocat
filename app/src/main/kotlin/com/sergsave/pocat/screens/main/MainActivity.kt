@@ -1,6 +1,8 @@
 package com.sergsave.pocat.screens.main
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -26,6 +28,8 @@ class MainActivity : AppCompatActivity() {
         (application as MyApplication).appContainer.provideMainViewModelFactory()
     }
 
+    private val navigation by viewModels<NavigationViewModel>()
+
     override fun onDestroy() {
         super.onDestroy()
     }
@@ -49,10 +53,26 @@ class MainActivity : AppCompatActivity() {
             pager.setCurrentItem(it, false)
         })
 
+        navigation.apply {
+            val activity = this@MainActivity
+
+            openCatEvent.observe(activity, EventObserver {
+                activity.launchCatCard(CAT_CARD_ACTITITY_REQUEST_CODE, it.card, it.transition)
+            })
+
+            addNewCatEvent.observe(activity, EventObserver {
+                activity.launchCatCard(CAT_CARD_ACTITITY_REQUEST_CODE)
+            })
+        }
+
         setupPager()
 
         setToolbarAsActionBar(toolbar, showBackButton = false)
         supportActionBar?.elevation = 0f
+
+        (supportFragmentManager.findFragmentByTag(APP_RATE_DIALOG_TAG) as? AppRateDialog)?.let {
+            init(it)
+        }
     }
 
     private fun setupPager() {
@@ -61,6 +81,7 @@ class MainActivity : AppCompatActivity() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 viewModel.onPageChanged(position)
+                navigation.onPageChanged(position)
             }
         })
 
@@ -78,7 +99,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.onForwardIntent()
 
         // Forward further
-        launchCatCard(this.intent)
+        launchCatCard(CAT_CARD_ACTITITY_REQUEST_CODE, this.intent)
     }
 
     @SuppressLint("RestrictedApi")
@@ -102,5 +123,25 @@ class MainActivity : AppCompatActivity() {
             else -> return super.onOptionsItemSelected(item)
         }
         return true
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode != Activity.RESULT_OK || requestCode != CAT_CARD_ACTITITY_REQUEST_CODE)
+            return
+
+        val wasCatPetted = data?.getBooleanExtra(Constants.WAS_CAT_PETTED_INTENT_KEY, false) == true
+        if (wasCatPetted) {
+            AppRateDialog().apply { init(this) }.show(supportFragmentManager, APP_RATE_DIALOG_TAG)
+        }
+    }
+
+    private fun init(dialog: AppRateDialog) {
+        dialog.onAppRatedListener = { viewModel.onAppRated(it) }
+    }
+
+    companion object {
+        private const val APP_RATE_DIALOG_TAG = "AppRateDialog"
+        private const val CAT_CARD_ACTITITY_REQUEST_CODE = 1000
     }
 }

@@ -47,6 +47,14 @@ object AnalyticsConstants {
             }
         }
 
+        object AppRated {
+            const val NAME = "app_rated"
+
+            object Params {
+                const val RATING = "rating"
+            }
+        }
+
         object AddButtonClick {
             const val NAME = "add_button_click"
         }

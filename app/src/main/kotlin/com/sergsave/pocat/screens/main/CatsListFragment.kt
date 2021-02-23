@@ -2,6 +2,7 @@ package com.sergsave.pocat.screens.main
 
 import android.os.Bundle
 import android.view.*
+import androidx.core.app.ActivityOptionsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -21,8 +22,7 @@ class CatsListFragment : Fragment() {
     }
 
     interface OnItemClickListener {
-        fun onItemClick(id: String, data: CatData,
-            sharedElement: View, sharedElementTransitionName: String)
+        fun onItemClick(id: String, data: CatData, transition: SharedElementTransitionData)
     }
 
     var onRemoveSelectionRequestedListener: OnRemoveSelectionRequestedListener? = null
@@ -115,8 +115,13 @@ class CatsListFragment : Fragment() {
                 if(id == null || !viewModel.handleOnItemClick())
                     return
 
-                onItemClickListener?.onItemClick(id, data, sharedElement,
+                val transitionOption = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    requireActivity(), sharedElement, sharedElementTransitionName)
+
+                val transition = SharedElementTransitionData(transitionOption.toBundle(),
                     sharedElementTransitionName)
+
+                onItemClickListener?.onItemClick(id, data, transition)
             }
         }
 
