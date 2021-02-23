@@ -5,7 +5,6 @@ import android.content.Context
 import android.net.Uri
 import com.sergsave.pocat.analytics.AnalyticsLoggingDecorator
 import com.sergsave.pocat.analytics.FirebaseAnalyticsTracker
-import com.sergsave.pocat.apprate.AppRateManager
 import com.sergsave.pocat.billing.BillingRepository
 import com.sergsave.pocat.content.ContentRepository
 import com.sergsave.pocat.content.CopySavingStrategy
@@ -20,7 +19,6 @@ import com.sergsave.pocat.persistent.RoomCatDataStorage
 import com.sergsave.pocat.preference.PreferenceManager
 import com.sergsave.pocat.samples.CatSampleProvider
 import com.sergsave.pocat.samples.SoundSampleProvider
-import com.sergsave.pocat.screens.about.AboutViewModel
 import com.sergsave.pocat.screens.catcard.FormViewModel
 import com.sergsave.pocat.screens.catcard.PurringViewModel
 import com.sergsave.pocat.screens.catcard.SharingDataExtractViewModel
@@ -54,7 +52,6 @@ class AppContainer(context: Context) {
     private val soundSampleProvider = SoundSampleProvider(context)
     private val catSampleProvider = CatSampleProvider(context)
     private val billingRepo = BillingRepository(context)
-    private val appRateManager = AppRateManager(context)
 
     // TODO: To background
     private val fileSizeCalculator = { uri: Uri -> FileUtils.resolveContentFileSize(context, uri) }
@@ -114,11 +111,6 @@ class AppContainer(context: Context) {
     fun provideDonateViewModelFactory() =
         ViewModelFactory(DonateViewModel::class.java, {
             DonateViewModel(billingRepo)
-        })
-
-    fun provideAboutViewModelFactory() =
-        ViewModelFactory(AboutViewModel::class.java, {
-            AboutViewModel(appRateManager)
         })
 
     fun provideTestingViewModelFactory() =
