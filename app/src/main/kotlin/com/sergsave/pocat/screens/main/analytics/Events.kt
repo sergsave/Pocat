@@ -2,7 +2,10 @@ package com.sergsave.pocat.screens.main.analytics
 
 import com.sergsave.pocat.AnalyticsConstants.Events.AboutActionClick
 import com.sergsave.pocat.AnalyticsConstants.Events.AddButtonClick
-import com.sergsave.pocat.AnalyticsConstants.Events.AppRated
+import com.sergsave.pocat.AnalyticsConstants.Events.AppRateAccepted
+import com.sergsave.pocat.AnalyticsConstants.Events.AppRateDeclined
+import com.sergsave.pocat.AnalyticsConstants.Events.AppRateShowed
+import com.sergsave.pocat.AnalyticsConstants.Events.AppRatePostponed
 import com.sergsave.pocat.AnalyticsConstants.Events.AppStart
 import com.sergsave.pocat.AnalyticsConstants.Events.CatsRemove
 import com.sergsave.pocat.AnalyticsConstants.Events.DonateActionClick
@@ -33,8 +36,10 @@ class AddButtonClick : AnalyticsEvent(AddButtonClick.NAME)
 class CatsRemove(count: Int):
     AnalyticsEvent(CatsRemove.NAME, mapOf(CatsRemove.Params.COUNT to count))
 
-class AppRated(rating: Int):
-    AnalyticsEvent(AppRated.NAME, mapOf(AppRated.Params.RATING to rating))
+class AppRateShowed(): AnalyticsEvent(AppRateShowed.NAME)
+class AppRateAccepted(): AnalyticsEvent(AppRateAccepted.NAME)
+class AppRateDeclined(): AnalyticsEvent(AppRateDeclined.NAME)
+class AppRatePostponed(): AnalyticsEvent(AppRatePostponed.NAME)
 
 class UsersCatsListUpdate(count: Int):
     AnalyticsEvent(UsersCatsListUpdate.NAME, mapOf(UsersCatsListUpdate.Params.COUNT to count))

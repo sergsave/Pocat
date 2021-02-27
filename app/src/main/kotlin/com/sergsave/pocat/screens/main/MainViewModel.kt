@@ -32,9 +32,9 @@ class MainViewModel(
 
     private val tag2tabInfo = tabInfo2tag.map { Pair(it.value, it.key) }.toMap()
 
-    private val _clearSelectionEvent = MutableLiveData<Event<Unit>>()
-    val clearSelectionEvent: LiveData<Event<Unit>>
-        get() = _clearSelectionEvent
+    private val _shouldShowAppRate = MutableLiveData<Boolean>(false)
+    val shouldShowAppRate: LiveData<Boolean>
+        get() = _shouldShowAppRate
 
     private val _requestPageChangeEvent = MutableLiveData<Event<Int>>()
     val requestPageChangeEvent: LiveData<Event<Int>>
@@ -51,7 +51,7 @@ class MainViewModel(
         return tabInfo2tag.keys.find { it.pageNumber == position }
     }
 
-    fun onActivityStarted() {
+    fun onFirstActivityStarted() {
         // Do this not in Application, because Application is created only after device reload
         cleanUpSharingCache()
         cleanUpUnusedContent()
@@ -73,8 +73,25 @@ class MainViewModel(
         _requestPageChangeEvent.value = Event(TabInfo.USER_CATS.pageNumber)
     }
 
-    fun onAppRated(rating: Int) {
-        analytics.onAppRated(rating)
+    fun onAppRateShowed() {
+        analytics.onAppRateShowed()
+        _shouldShowAppRate.value = false
+    }
+
+    fun onAppRateAccepted() {
+        analytics.onAppRateAccepted()
+    }
+
+    fun onAppRateShowLater() {
+        analytics.onAppRatePostponed()
+    }
+
+    fun onAppRateDeclined() {
+        analytics.onAppRateDeclined()
+    }
+
+    fun onCatWasPetted() {
+        _shouldShowAppRate.value = true
     }
 
     private fun cleanUpSharingCache() {

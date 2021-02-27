@@ -1,6 +1,5 @@
 package com.sergsave.pocat.screens.testing
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -18,9 +17,10 @@ class TestingActivity : AppCompatActivity() {
         setContentView(R.layout.activity_testing)
 
         setToolbarAsActionBar(toolbar, showBackButton = true)
+        val appContainer = (application as MyApplication).appContainer
 
         val viewModel: TestingViewModel by viewModels {
-            (application as MyApplication).appContainer.provideTestingViewModelFactory()
+            appContainer.provideTestingViewModelFactory()
         }
 
         copy_all_button.setOnClickListener { viewModel.onCopyAllClicked() }
@@ -32,10 +32,7 @@ class TestingActivity : AppCompatActivity() {
         reset_tutorial_button.setOnClickListener { viewModel.onResetTutorialClicked() }
 
         reset_apprate_button.setOnClickListener {
-            // hack of com.codemybrainsout.ratingdialog.RatingDialog
-            val sharedPreferencesName = "RatingDialog"
-            val preferences = getSharedPreferences(sharedPreferencesName, Context.MODE_PRIVATE)
-            preferences.edit().clear().commit()
+            appContainer.appRateManager.clearSavedRateInfo()
         }
     }
 }

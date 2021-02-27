@@ -104,19 +104,17 @@
     <string name="loading.title">Loading</string>
     <string name="loading.connection_error">Sad meow :( No internet connection</string>
     <string name="loading.general_error">Oops! Maybe there is no internet or not enough memory.</string>
-    <string name="loading.invalid_link_error">The cat ran away and is not available at this link anymore. Ask to send you the link again.</string>
+    <string name="loading.invalid_link_error">The cat ran away and is not available at this link anymore.\nAsk to send you the link again.</string>
     <string name="loading.invalid_data_error">Loading failed. The data is corrupted.</string>
     <string name="loading.retry">Retry</string>
     <string name="loading.popup.save_success">The cat was added to your collection</string>
     <string name="loading.popup.save_failed">The kitty wasn\'t saved. Try again.</string>
 
     <string name="apprate_dialog.title">Cats are asking to rate the app</string>
-    <string name="apprate_dialog.ask_later">Not now</string>
-    <string name="apprate_dialog.ask_never">Never</string>
-
-    <string name="feedback_dialog.title">Want to give feedback to the developer?</string>
-    <string name="feedback_dialog.positive_button">Send</string>
-    <string name="feedback_dialog.negative_button">Cancel</string>
+    <string name="apprate_dialog.message">If you enjoy playing this app, would you mind taking a moment to rate it? Thanks for your support!</string>
+    <string name="apprate_dialog.ask_later">Remind me later</string>
+    <string name="apprate_dialog.rate_now">Rate it now</string>
+    <string name="apprate_dialog.ask_never">No, thanks</string>
 
     <!-- Test screen (dev build only) -->
     <string name="main.menu.testing" translatable="false">Testing</string>

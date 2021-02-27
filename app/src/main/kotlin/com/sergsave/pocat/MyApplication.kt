@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Build
 import com.sergsave.pocat.analytics.AnalyticsLoggingDecorator
 import com.sergsave.pocat.analytics.FirebaseAnalyticsTracker
+import com.sergsave.pocat.apprate.AppRateManager
 import com.sergsave.pocat.billing.BillingRepository
 import com.sergsave.pocat.content.ContentRepository
 import com.sergsave.pocat.content.CopySavingStrategy
@@ -118,6 +119,8 @@ class AppContainer(context: Context) {
         ViewModelFactory(TestingViewModel::class.java, {
             TestingViewModel(catDataRepo, contentRepo, preferences)
         })
+
+    val appRateManager = AppRateManager(context)
 }
 
 class MyApplication : Application() {

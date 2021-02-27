@@ -157,7 +157,7 @@ dependencies {
 
     implementation 'de.psdev.licensesdialog:licensesdialog:2.1.0'
     implementation 'com.jakewharton.timber:timber:4.7.1'
-    implementation 'com.codemybrainsout.rating:ratingdialog:1.0.8'
+    implementation 'com.vorlonsoft:androidrate:1.2.1'
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.4'
 

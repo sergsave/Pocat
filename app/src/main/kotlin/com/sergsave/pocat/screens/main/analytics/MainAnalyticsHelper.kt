@@ -1,8 +1,8 @@
 package com.sergsave.pocat.screens.main.analytics
 
+import com.sergsave.pocat.R
 import com.sergsave.pocat.analytics.AnalyticsTracker
 import com.sergsave.pocat.screens.main.TabInfo
-import com.sergsave.pocat.R
 
 class MainAnalyticsHelper(private val tracker: AnalyticsTracker) {
     fun onAppStarted() = tracker.sendEvent(AppStarted())
@@ -18,7 +18,10 @@ class MainAnalyticsHelper(private val tracker: AnalyticsTracker) {
 
     fun onCatsRemoved(count: Int) = tracker.sendEvent(CatsRemove(count))
 
-    fun onAppRated(rating: Int) = tracker.sendEvent(AppRated(rating))
+    fun onAppRateShowed() = tracker.sendEvent(AppRateShowed())
+    fun onAppRateAccepted() = tracker.sendEvent(AppRateAccepted())
+    fun onAppRateDeclined() = tracker.sendEvent(AppRateDeclined())
+    fun onAppRatePostponed() = tracker.sendEvent(AppRatePostponed())
 
     fun onOptionsItemSelected(menuId: Int) {
         when(menuId) {

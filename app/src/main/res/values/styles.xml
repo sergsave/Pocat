@@ -82,8 +82,21 @@
         <item name="android:textColor">?attr/colorOnBackground</item>
     </style>
 
+    <style name="AlertDialogButtonStyle.Highlighted" parent="AlertDialogButtonStyle">
+        <item name="android:textColor">?attr/colorSecondary</item>
+    </style>
+
     <style name="AlertDialogTitleTextStyle" parent="@style/MaterialAlertDialog.MaterialComponents.Title.Text">
         <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Headline6</item>
+    </style>
+
+    <style name="MyTheme.NonMaterialAlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:buttonBarButtonStyle">@style/AlertDialogButtonStyle</item>
+        <item name="android:background">@color/background</item>
+    </style>
+
+    <style name="MyTheme.NonMaterialAlertDialog.HighlightPositiveButton" parent="MyTheme.NonMaterialAlertDialog">
+        <item name="android:buttonBarPositiveButtonStyle">@style/AlertDialogButtonStyle.Highlighted</item>
     </style>
 
     <!-- Outlined Button -->

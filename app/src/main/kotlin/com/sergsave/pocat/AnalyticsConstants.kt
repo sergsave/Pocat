@@ -47,12 +47,20 @@ object AnalyticsConstants {
             }
         }
 
-        object AppRated {
-            const val NAME = "app_rated"
+        object AppRateShowed {
+            const val NAME = "app_rate_showed"
+        }
 
-            object Params {
-                const val RATING = "rating"
-            }
+        object AppRateAccepted{
+            const val NAME = "app_rate_accepted"
+        }
+
+        object AppRateDeclined {
+            const val NAME = "app_rate_declined"
+        }
+
+        object AppRatePostponed {
+            const val NAME = "app_rate_postponed"
         }
 
         object AddButtonClick {

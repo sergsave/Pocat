@@ -9,12 +9,14 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.menu.MenuBuilder
+import androidx.lifecycle.Observer
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import com.sergsave.pocat.BuildConfig
 import com.sergsave.pocat.Constants
 import com.sergsave.pocat.MyApplication
 import com.sergsave.pocat.R
+import com.sergsave.pocat.apprate.AppRateManager
 import com.sergsave.pocat.helpers.EventObserver
 import com.sergsave.pocat.helpers.FirstTimeLaunchBugWorkaround
 import com.sergsave.pocat.helpers.setToolbarAsActionBar
@@ -29,9 +31,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val navigation by viewModels<NavigationViewModel>()
+    private val appRater = (application as MyApplication).appContainer.appRateManager
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStop() {
+        appRater.dismissRateDialog()
+        super.onStop()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,23 +49,36 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         
         if (savedInstanceState == null) {
-            viewModel.onActivityStarted()
+            viewModel.onFirstActivityStarted()
             checkInputSharingIntent()
         }
 
-        viewModel.requestPageChangeEvent.observe(this, EventObserver {
-            pager.setCurrentItem(it, false)
-        })
+        appRater.onRootActivityStart()
 
-        navigation.apply {
-            val activity = this@MainActivity
+        val lifecycleOwner = this
 
-            openCatEvent.observe(activity, EventObserver {
-                activity.launchCatCard(CAT_CARD_ACTITITY_REQUEST_CODE, it.card, it.transition)
+        viewModel.apply {
+            requestPageChangeEvent.observe(lifecycleOwner, EventObserver {
+                pager.setCurrentItem(it, false)
             })
 
-            addNewCatEvent.observe(activity, EventObserver {
-                activity.launchCatCard(CAT_CARD_ACTITITY_REQUEST_CODE)
+            shouldShowAppRate.observe(lifecycleOwner, Observer { shouldShow ->
+                if (shouldShow) {
+                    val showed = appRater.showAppRateDialogIfPossible(lifecycleOwner, {
+                        onAppRateFinished(it)
+                    })
+                    if (showed) viewModel.onAppRateShowed()
+                }
+            })
+        }
+
+        navigation.apply {
+            openCatEvent.observe(lifecycleOwner, EventObserver {
+                lifecycleOwner.launchCatCard(CAT_CARD_ACTIVITY_REQUEST_CODE, it.card, it.transition)
+            })
+
+            addNewCatEvent.observe(lifecycleOwner, EventObserver {
+                lifecycleOwner.launchCatCard(CAT_CARD_ACTIVITY_REQUEST_CODE)
             })
         }
 
@@ -69,9 +86,13 @@ class MainActivity : AppCompatActivity() {
 
         setToolbarAsActionBar(toolbar, showBackButton = false)
         supportActionBar?.elevation = 0f
+    }
 
-        (supportFragmentManager.findFragmentByTag(APP_RATE_DIALOG_TAG) as? AppRateDialog)?.let {
-            init(it)
+    private fun onAppRateFinished(action: AppRateManager.ActionType) {
+        when (action) {
+            AppRateManager.ActionType.DECLINE -> viewModel.onAppRateDeclined()
+            AppRateManager.ActionType.ACCEPT -> viewModel.onAppRateAccepted()
+            AppRateManager.ActionType.SHOW_LATER -> viewModel.onAppRateShowLater()
         }
     }
 
@@ -99,7 +120,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.onForwardIntent()
 
         // Forward further
-        launchCatCard(CAT_CARD_ACTITITY_REQUEST_CODE, this.intent)
+        launchCatCard(CAT_CARD_ACTIVITY_REQUEST_CODE, this.intent)
     }
 
     @SuppressLint("RestrictedApi")
@@ -127,21 +148,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode != Activity.RESULT_OK || requestCode != CAT_CARD_ACTITITY_REQUEST_CODE)
+        if (resultCode != Activity.RESULT_OK || requestCode != CAT_CARD_ACTIVITY_REQUEST_CODE)
             return
 
         val wasCatPetted = data?.getBooleanExtra(Constants.WAS_CAT_PETTED_INTENT_KEY, false) == true
-        if (wasCatPetted) {
-            AppRateDialog().apply { init(this) }.show(supportFragmentManager, APP_RATE_DIALOG_TAG)
-        }
-    }
-
-    private fun init(dialog: AppRateDialog) {
-        dialog.onAppRatedListener = { viewModel.onAppRated(it) }
+        if (wasCatPetted)
+            viewModel.onCatWasPetted()
     }
 
     companion object {
-        private const val APP_RATE_DIALOG_TAG = "AppRateDialog"
-        private const val CAT_CARD_ACTITITY_REQUEST_CODE = 1000
+        private const val CAT_CARD_ACTIVITY_REQUEST_CODE = 1000
     }
 }
