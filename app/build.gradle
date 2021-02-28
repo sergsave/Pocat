@@ -40,6 +40,8 @@ android {
         resValue "string", "app_name", "$appName"
         buildConfigField("String", "GOOGLE_PLAY_PUBLIC_BASE_64_KEY", "\"${readGooglePlayPublicBase64Key()}\"")
 
+        resConfigs "en", "ru"
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         vectorDrawables.useSupportLibrary = true
