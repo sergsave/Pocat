@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val navigation by viewModels<NavigationViewModel>()
-    private val appRater = (application as MyApplication).appContainer.appRateManager
+    private val appRater by lazy { (application as MyApplication).appContainer.appRateManager }
 
     override fun onStop() {
         appRater.dismissRateDialog()
