@@ -13,9 +13,9 @@ class AppRateManager(private val context: Context) {
         AppRate
             .with(context)
             .setThemeResId(R.style.MyTheme_NonMaterialAlertDialog_HighlightPositiveButton)
-            .setInstallDays(2)
+            .setInstallDays(1)
             .setLaunchTimes(3)
-            .setRemindInterval(2)
+            .setRemindInterval(1)
             .setCancelable(true)
             .setShowLaterButton(true)
             .setTitle(R.string.apprate_dialog_title)

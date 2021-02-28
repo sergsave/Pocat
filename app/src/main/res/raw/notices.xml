@@ -73,4 +73,10 @@
         <copyright>Copyright 2013 Jake Wharton</copyright>
         <license>Apache Software License 2.0</license>
     </notice>
+    <notice>
+        <name>AndroidRate</name>
+        <url>https://vorlonsoft.github.io/AndroidRate/</url>
+        <copyright>Copyright (c) 2017 - 2018 Vorlonsoft LLC</copyright>
+        <license>MIT License</license>
+    </notice>
 </notices>
