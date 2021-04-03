@@ -23,59 +23,59 @@
         <item>Prince</item>
         <item>Honey</item>
         <item>Leo</item>
+
+        <item>Max</item>
+        <item>Riley</item>
+        <item>Oliver</item>
+        <item>Brooklyn</item>
+        <item>Lia</item>
+        <item>Sophia</item>
+
+        <item>Luke</item>
+        <item>Zack</item>
+        <item>Jamie</item>
+        <item>Tessa</item>
+        <item>Angel</item>
+        <item>Dolly</item>
+
+        <item>Fitz</item>
+        <item>Ryder</item>
+        <item>Jake</item>
+        <item>Trixie</item>
+        <item>Emma</item>
+        <item>Roxie</item>
+
+        <item>Mickey</item>
+        <item>Alex</item>
+        <item>Zeke</item>
+        <item>Zelda</item>
+        <item>Rose</item>
+        <item>Daisy</item>
+
+        <item>Mack</item>
+        <item>Charlie</item>
+        <item>Nico</item>
+        <item>Lily</item>
+        <item>Zoe</item>
+        <item>Sasha</item>
+
+        <item>Oreo</item>
+        <item>Puffin</item>
+        <item>Marmalade</item>
+        <item>Dipsy</item>
+        <item>Cookie</item>
+        <item>Candy</item>
+
+        <item>Cara</item>
+        <item>Paloma</item>
+        <item>Leche</item>
+        <item>Merry</item>
+        <item>Fluffy</item>
+        <item>Beans</item>
+
+        <item>Pumpkin</item>
+        <item>Taffy</item>
     </string-array>
-
-    <!--        <item>Max</item>-->
-    <!--        <item>Riley</item>-->
-    <!--        <item>Oliver</item>-->
-    <!--        <item>Brooklyn</item>-->
-    <!--        <item>Lia</item>-->
-    <!--        <item>Sophia</item>-->
-
-    <!--        <item>Luke</item>-->
-    <!--        <item>Zack</item>-->
-    <!--        <item>Jamie</item>-->
-    <!--        <item>Tessa</item>-->
-    <!--        <item>Angel</item>-->
-    <!--        <item>Dolly</item>-->
-
-    <!--        <item>Fitz</item>-->
-    <!--        <item>Ryder</item>-->
-    <!--        <item>Jake</item>-->
-    <!--        <item>Trixie</item>-->
-    <!--        <item>Emma</item>-->
-    <!--        <item>Roxie</item>-->
-
-    <!--        <item>Mickey</item>-->
-    <!--        <item>Alex</item>-->
-    <!--        <item>Zeke</item>-->
-    <!--        <item>Zelda</item>-->
-    <!--        <item>Rose</item>-->
-    <!--        <item>Daisy</item>-->
-
-    <!--        <item>Mack</item>-->
-    <!--        <item>Charlie</item>-->
-    <!--        <item>Nico</item>-->
-    <!--        <item>Lily</item>-->
-    <!--        <item>Zoe</item>-->
-    <!--        <item>Sasha</item>-->
-
-    <!--        <item>Oreo</item>-->
-    <!--        <item>Puffin</item>-->
-    <!--        <item>Marmalade</item>-->
-    <!--        <item>Dipsy</item>-->
-    <!--        <item>Cookie</item>-->
-    <!--        <item>Candy</item>-->
-
-    <!--        <item>Cara</item>-->
-    <!--        <item>Paloma</item>-->
-    <!--        <item>Leche</item>-->
-    <!--        <item>Merry</item>-->
-    <!--        <item>Fluffy</item>-->
-    <!--        <item>Beans</item>-->
-
-    <!--        <item>Pumpkin</item>-->
-    <!--        <item>Taffy</item>-->
 
     <string name="settings.title">Settings</string>
     <string name="settings.vibration">Vibration</string>

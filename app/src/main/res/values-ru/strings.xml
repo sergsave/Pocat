@@ -23,58 +23,59 @@
         <item>Принц</item>
         <item>Медок</item>
         <item>Лео</item>
+
+        <item>Оскар</item>
+        <item>Симба</item>
+        <item>Кайзер</item>
+        <item>Агата</item>
+        <item>Адель</item>
+        <item>Бaгирa</item>
+
+        <item>Васаби</item>
+        <item>Байкал</item>
+        <item>Байрон</item>
+        <item>Джесси</item>
+        <item>Китти</item>
+        <item>Масяня</item>
+
+        <item>Спорти</item>
+        <item>Бегемот</item>
+        <item>Пушок</item>
+        <item>Лилу</item>
+        <item>Сима</item>
+        <item>Ириска</item>
+
+        <item>Ленивец</item>
+        <item>Рокки</item>
+        <item>Том</item>
+        <item>Муся</item>
+        <item>Жизель</item>
+        <item>Никси</item>
+
+        <item>Вальс</item>
+        <item>Баскет</item>
+        <item>Бейлиз</item>
+        <item>Ракель</item>
+        <item>Винки</item>
+        <item>Жасмин</item>
+
+        <item>Изюм</item>
+        <item>Месси</item>
+        <item>Кокос</item>
+        <item>Бонни</item>
+        <item>Вейси</item>
+        <item>Груня</item>
+
+        <item>Зефир</item>
+        <item>Смайлик</item>
+        <item>Голди</item>
+        <item>Дейзи</item>
+        <item>Жози</item>
+        <item>Кэсси</item>
+
+        <item>Оптимус</item>
+        <item>Метеор</item>
     </string-array>
-<!--        <item>Оскар</item>-->
-<!--        <item>Симба</item>-->
-<!--        <item>Кайзер</item>-->
-<!--        <item>Агата</item>-->
-<!--        <item>Адель</item>-->
-<!--        <item>Бaгирa</item>-->
-
-<!--        <item>Васаби</item>-->
-<!--        <item>Байкал</item>-->
-<!--        <item>Байрон</item>-->
-<!--        <item>Джесси</item>-->
-<!--        <item>Китти</item>-->
-<!--        <item>Масяня</item>-->
-
-<!--        <item>Спорти</item>-->
-<!--        <item>Бегемот</item>-->
-<!--        <item>Пушок</item>-->
-<!--        <item>Лилу</item>-->
-<!--        <item>Сима</item>-->
-<!--        <item>Ириска</item>-->
-
-<!--        <item>Ленивец</item>-->
-<!--        <item>Рокки</item>-->
-<!--        <item>Том</item>-->
-<!--        <item>Муся</item>-->
-<!--        <item>Жизель</item>-->
-<!--        <item>Никси</item>-->
-
-<!--        <item>Вальс</item>-->
-<!--        <item>Баскет</item>-->
-<!--        <item>Бейлиз</item>-->
-<!--        <item>Ракель</item>-->
-<!--        <item>Винки</item>-->
-<!--        <item>Жасмин</item>-->
-
-<!--        <item>Изюм</item>-->
-<!--        <item>Месси</item>-->
-<!--        <item>Кокос</item>-->
-<!--        <item>Бонни</item>-->
-<!--        <item>Вейси</item>-->
-<!--        <item>Груня</item>-->
-
-<!--        <item>Зефир</item>-->
-<!--        <item>Смайлик</item>-->
-<!--        <item>Голди</item>-->
-<!--        <item>Дейзи</item>-->
-<!--        <item>Жози</item>-->
-<!--        <item>Кэсси</item>-->
-
-<!--        <item>Оптимус</item>-->
-<!--        <item>Метеор</item>-->
 
     <string name="settings.title">Настройки</string>
     <string name="settings.vibration">Вибрация</string>
